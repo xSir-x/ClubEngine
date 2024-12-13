@@ -79,15 +79,16 @@ pic	str	128	用户头像图片
 profile	str	256	用户个人简介
 email	str	32	邮箱用户
 
-## 后端接口
+## 后端接口: 活动板块
 
-活动板块：
 ●收藏活动
-addFavActivity
+
+```addFavActivity
 request: loc_code=hk，act_id=xxx，uid=xxx
 response: {
              res：1-success， 0-fail
-.           }
+           }
+```
 
 ●获取所有活动类型
 getAllType
