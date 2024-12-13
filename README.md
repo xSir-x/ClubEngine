@@ -101,6 +101,7 @@ response: {
 
 > 获取所有活动列表
 - getActivitiesByType
+
   request: type: str(指定type字段/all), loc_code:str，uid:(可以为空), pageId=0（指定pageid）, pageSize=7 (默认7，[1, 100])
   response: {
             res:[{
@@ -155,6 +156,7 @@ request: loc_code，uid
 
 > 获取我的活动类型
 - getMyActivitiesType
+
   request: loc_code=hk, uid: str
   response: {
             res:[{
@@ -165,6 +167,7 @@ order_status
 
 > 获取我的活动列表
 - getMyActivitiesBytype
+  
   request: type: (ongoing/past/new/all)，uid: str
   response: {
             actlist:[{
@@ -179,6 +182,7 @@ order_status
 
 > 获取我的单个活动列表
 - getMySingleActivity
+  
   request:  order_id:int，uid：str
   response: {
                 order_id: string
@@ -202,6 +206,7 @@ payActivity
 
 > 收藏商家
 - addCoopFav
+  
 request: loc_code:string，uid:string，coopid:string
 response: {
              res：1-success， 0-fail
@@ -217,6 +222,7 @@ response: {
 
 > 获取合作商家信息
 - getClubCoopListByType
+  
  request:  type:str，loc_code:string,uid=xxxx, pageId=0（从第一页开始）,   pageSize=7 (默认7，[1, 100])
  response: {
              coopList：[{
@@ -230,6 +236,7 @@ response: {
 
 > 获取单个合作商家详情
 - getOneCoopDetail
+  
 request: coopid: str
 response: {
              coopInfo：{
@@ -308,6 +315,7 @@ request: type=all，userId：string
 
 > 注册会员：
 - upgradeMembership
+  
 request：userid：string， wechat：string， e-mail：string， phone：string， profession：string，location：string
 
 response： {
