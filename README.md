@@ -3,8 +3,9 @@
 ## 关系型数据库设计
 ● 活动信息表：
 > primary key：act_id
+
 |字段列表	|类型	|长度	|描述|
-|--|--|--|--|
+|-----|-----|-----|-----|
 |act_id(PK)	|str	|64	|活动id|
 |coopid	|str	|64	|商户ID|
 |type	|char	|64	|活动类型: ongoing/past/new(入参可all)|
