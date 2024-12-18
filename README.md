@@ -16,7 +16,7 @@
 |detail	|str	|256	|活动详情描述|
 |act_time	|time	|--	|活动时间|
 |is_recommend	|int	|4	|1-推荐 0-不推荐 （默认置0）|
-|price	double	|64	|活动价格都以人民币存储|
+|price	|double	|64	|活动价格都以人民币存储|
 
 ● 商家信息表：
 > primary key：coopid
