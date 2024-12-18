@@ -8,7 +8,7 @@ from dbModel.models import ActivityInfoTable, MerchantInfoTable, UserInforTable,
 class addFavActivity(View):
     def execuate(self, loc_code, act_id, uid):
         """
-        收藏活动操作：根据loc_code, act_id 查询表ActivityInfoTable，按照uid新增UserOrderTable？？
+        收藏活动操作：根据loc_code, act_id 查询表ActivityInfoTable，按照uid新增UserOrderTable ??????
         :param loc_code:
         :param act_id:
         :param uid:
