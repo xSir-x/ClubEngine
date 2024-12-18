@@ -8,7 +8,7 @@ from dbModel.models import ActivityInfoTable, MerchantInfoTable, UserInforTable,
 class addFavActivity(View):
     def execuate(self, loc_code, act_id, uid):
         """
-        收藏活动操作：根据loc_code, act_id 查询表ActivityInfoTable，按照uid新增UserOrderTable ??????
+        收藏活动操作：根据loc_code, act_id 查询表ActivityInfoTable，按照uid新增UserOrderTable ??????(逻辑存疑)
         :param loc_code:
         :param act_id:
         :param uid:
@@ -22,7 +22,7 @@ class addFavActivity(View):
 class getAllType(View):
     def execuate(self, loc_code):
         """
-        获取所有活动类型: 直接读取表ActivityInfoTable中的type
+        获取所有活动类型: 直接读取表ActivityInfoTable中的type??????(存疑: 返回的数据类型 需要确认)
         :param loc_code:
         :return:
             {act_id: type}
@@ -65,7 +65,7 @@ class getActivitiesByType(View):
 class getRecommandActivities(View):
     def execuate(self, loc_code, uid):
         """
-        获取活动推荐列表: 操作ActivityInfoTable，按照input字段过滤
+        获取活动推荐列表: 操作ActivityInfoTable，按照input字段过滤  ??????(存疑： 读取ActivityInfoTable获取所有推荐活动， 然后根据活动ID 和 uid 查询UserOrderTable, 组合结果输出？)
         :param loc_code:
         :param uid:
         :return:
@@ -76,7 +76,7 @@ class getRecommandActivities(View):
 class getSingleActivityDetail(View):
     def execuate(self, uid, act_id, type):
         """
-        获取单个活动细节: 操作ActivityInfoTable
+        获取单个活动细节: 操作ActivityInfoTable  ??????(存疑：查询用户已经下单的活动的细节？
 
         :param uid:
         :param act_id:
@@ -89,7 +89,7 @@ class getSingleActivityDetail(View):
 class getMyActivitiesType(View):
     def execuate(self, uid, loc_code):
         """
-        获取我的活动类型:
+        获取我的活动类型: ??????(存疑：查询用户已经下单的活动的细节？返回数据类型确认一下？
         :param uid:
         :param loc_code:
         :return:
