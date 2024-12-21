@@ -125,7 +125,7 @@
         , ...]
 ```
 改动：time -> act_time
-
+<font color=red>
   request: type: str(指定type字段/all), loc_code:str，uid:(可以为空), pageId=0（指定pageid）, pageSize=7 (默认7，[1, 100])
   response: {
             res:[{
@@ -141,6 +141,7 @@
 .                }]
 .           }
 注意: ①、page查询需要进行缓存，设置过期时间；②、input para异常处理
+</font>
 
 > Func: 获取活动推荐列表（每个地区有一个默认的推荐活动，来自运营打标）【getRecommandActivities】
 ```
