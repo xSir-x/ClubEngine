@@ -1,14 +1,14 @@
 from django.db import models
 
 
-class orders(models.Model):
-    orderId = models.IntegerField()
-    orderTime = models.IntegerField()
-    skuId = models.IntegerField()
-    userId = models.IntegerField()
-    status = models.IntegerField()
-    price = models.FloatField(max_length=15)
-    pay = models.FloatField(max_length=15)
+# class orders(models.Model):
+#     orderId = models.IntegerField()
+#     orderTime = models.IntegerField()
+#     skuId = models.IntegerField()
+#     userId = models.IntegerField()
+#     status = models.IntegerField()
+#     price = models.FloatField(max_length=15)
+#     pay = models.FloatField(max_length=15)
 
 
 class ActivityInfoTable(models.Model):
@@ -72,15 +72,29 @@ class UserOrderTable(models.Model):
         verbose_name = "userOrder"
 
 
-class UserFavTable(models.Model):
-    """用户收藏商家表"""
+class ActsMarkTable(models.Model):
+    """收藏活动表"""
+    uid = models.AutoField(verbose_name="用户id", primary_key=True)
+    act_id = models.CharField(verbose_name="活动id", max_length=64)
+    is_mark = models.IntegerField(verbose_name="收藏状态：0-未收藏；1-收藏", max_length=4)
+    update_time = models.DateTimeField(verbose_name="收藏日期")
+
+    class Meta:
+        db_table = "活动收藏表"
+        get_latest_by = "update_time"
+        ordering = ['update_time']
+        verbose_name = "userAct"
+
+
+class MerchantMaskTable(models.Model):
+    """收藏商家表"""
     uid = models.AutoField(verbose_name="用户id", primary_key=True)
     coopid = models.CharField(verbose_name="商户id", max_length=64)
     is_mark = models.IntegerField(verbose_name="收藏商家状态：0-未收藏；1-收藏", max_length=4)
     update_time = models.DateTimeField(verbose_name="收藏日期")
 
     class Meta:
-        db_table = "用户收藏表"
+        db_table = "商家收藏表"
         get_latest_by = "update_time"
         ordering = ['update_time']
         verbose_name = "userFav"
