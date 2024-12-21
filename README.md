@@ -81,26 +81,36 @@
 
 ## 后端接口: 活动板块
 
-> 收藏活动
-- addFavActivity
-
+> Func: 收藏活动【addFavActivity】
 ```
-request: loc_code=hk，act_id=xxx，uid=xxx
-response: {
-             res：1-success， 0-fail
-           }
+-  request: act_id, uid
+-  response: int(0: 失败，1: 成功)
 ```
 
-> 获取所有活动类型
-- getAllType
+> Func: 获取所有活动类型 【getAllType】
+```
+-  request: loc_code
+-  response: 
+        [{"act_id": , "type": }
+        , ...]
+```
 
-  request: loc_code=hk
-  response: {
-            res:[String]
-.           }
-
-> 获取所有活动列表
-- getActivitiesByType
+> Func: 获取所有活动列表【getActivitiesByType】
+```
+-  request: type, loc_code, , pageId=0（指定pageid）, pageSize=7 (默认7，[1, 100])
+-  response: 
+        [{"act_id": , 
+        "type": , 
+        "title": , 
+        "pic": , 
+        "loc_code": , 
+        "tag": , 
+        "is_mark": , 
+        "act_time": , 
+        "attendence": }
+        , ...]
+```
+改动：time -> act_time
 
   request: type: str(指定type字段/all), loc_code:str，uid:(可以为空), pageId=0（指定pageid）, pageSize=7 (默认7，[1, 100])
   response: {
@@ -108,7 +118,7 @@ response: {
                  act_id: string
                  type：string
 .                title: string
-.                time: timestamp
+.                act_time: timestamp
 .                pic: string
 				   loc_code：string
                  tag：string（i.e Y-club/new）
@@ -118,8 +128,23 @@ response: {
 .           }
 注意: ①、page查询需要进行缓存，设置过期时间；②、input para异常处理
 
-> 获取活动推荐列表（每个地区有一个默认的推荐活动，来自运营打标）
-- getRecommandActivities
+> Func: 获取活动推荐列表（每个地区有一个默认的推荐活动，来自运营打标）【getRecommandActivities】
+```
+-  request: loc_code, uid
+-  response: 
+        [{"act_id": ,
+            "type": ,
+            "title": ,
+            "act_time": ,
+            "pic": ,
+            "loc_code": ,
+            "tag": ,
+            "attendence": ,
+            "is_mark}, 
+        ...]
+```
+
+改动：time -> act_time
 
 request: loc_code，uid
   response: {
@@ -137,9 +162,23 @@ request: loc_code，uid
 .           }
 
 
-> 获取单个活动细节
-- getSingleActivityDetail
-  
+> Func: 获取单个活动细节【getSingleActivityDetail】
+```
+-  request: type, act_id, uid
+-  response: 
+        {act_id": ,
+            "title": ,
+            "time": ,
+            "detail": ,
+            "price": ,
+            "loc_code": ,
+            "tag": ,
+            "pic": ,
+            "attendence": ,
+            "is_mark": }
+```
+改动：删除了uid， time -> act_time
+
   request: type=single, act_id:string，uid: str
   response: {
                  act_id: string
@@ -154,8 +193,14 @@ request: loc_code，uid
  is_mark: int (1-收藏，0-未收藏)
 .           }
 
-> 获取我的活动类型
-- getMyActivitiesType
+> Func: 获取我的活动类型【getMyActivitiesType】
+```
+-  request: uid, loc_code
+-  response: 
+        [{"order_id": ,
+          "order_status": }
+          , ...]
+```
 
   request: loc_code=hk, uid: str
   response: {
@@ -165,9 +210,22 @@ order_status
 }]
 .           }
 
-> 获取我的活动列表
-- getMyActivitiesBytype
-  
+> Func: 获取我的活动列表【getMyActivitiesBytype】
+```
+-  request: uid, loc_code
+-  response: 
+        [{"order_id": ,
+            "act_id": ,
+            "act_time": ,
+            "pic": ,
+            "price": ,
+            "order_status": 
+            "title": }
+            , ...]
+```
+改动： time -> act_time
+
+
   request: type: (ongoing/past/new/all)，uid: str
   response: {
             actlist:[{
@@ -180,9 +238,23 @@ order_status
 .                }]
 .           }
 
-> 获取我的单个活动列表
-- getMySingleActivity
-  
+> Func: 获取我的单个活动列表【getMySingleActivity】
+```
+-  request: uid, loc_code
+-  response: 
+        {"order_id": , 
+        "title": , 
+        "order_time": , 
+        "detail": , 
+        "price": ,
+        "loc_code": ,
+        "pic": ,
+        "order_status": , 
+        "paymentid": , 
+        "pay_time": }
+```
+改动： time -> order_time
+
   request:  order_id:int，uid：str
   response: {
                 order_id: string
@@ -204,25 +276,35 @@ payActivity
 
 ### 商家板块
 
-> 收藏商家
-- addCoopFav
-  
-request: loc_code:string，uid:string，coopid:string
-response: {
-             res：1-success， 0-fail
-.           }
-注：商户收藏表，写数据表
+> Func: 收藏商家【addCoopFav】
+```
+-  request: loc_code, uid, coopid
+-  response: int(0: 失败，1: 成功)
+```
+改动： loc_code用处是？？
 
-> 获取合作商家类型
-- getClubCoopListType
+> Func: 获取合作商家类型【getClubCoopListType】
+```
+-  request: loc_code
+-  response: 
+        [{"coopid": coopid, "type": type},
+            ...]
+```
   request: loc_code=hk
   response: {
              res：[type: string, ...]
 .           }
 
-> 获取合作商家信息
-- getClubCoopListByType
-  
+> Func: 获取合作商家信息【getClubCoopListByType】
+```
+-  request: type, loc_code, uid, pageId=0, pageSize=7 (默认7，[1, 100])
+-  response: 
+        [{"coopid": , "name": , "type": , "pic": , "loc_code": },
+            ...]
+```
+改动： uid, pageId两个字段好像没有用？？
+
+
  request:  type:str，loc_code:string,uid=xxxx, pageId=0（从第一页开始）,   pageSize=7 (默认7，[1, 100])
  response: {
              coopList：[{
@@ -234,8 +316,13 @@ response: {
 .             }]
 .           }
 
-> 获取单个合作商家详情
-- getOneCoopDetail
+> Func: 获取单个合作商家详情【getOneCoopDetail】
+```
+-  request: coopid
+-  response: 
+        {"coopid", "name", "detail", "pic", "loc_code", "email", "wechatid",
+                EventList: [{"act_id", "type", "title", "act_time", "pic", "loc_code", "tag", "attendence"}]}
+```
   
 request: coopid: str
 response: {
