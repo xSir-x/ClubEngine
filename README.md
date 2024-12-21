@@ -31,6 +31,7 @@
 |wechatid	|str	|32	|商家微信ID|
 |email	|str	|32	|商家邮箱|
 |detail|	str	|256	|商家详情描述|
+|update_time|||更新时间|
 
 ● 用户订单表：
 > primary key：order_id   （自增）
@@ -39,7 +40,7 @@
 |-----|-----|-----|-----|
 |order_id(PK)	|int	|64	订单ID|
 |uid	|str	|64	|用户ID|
-|act_id	str	|64	|活动ID|
+|act_id	|str	|64	|活动ID|
 |coop_id	|str	|int	|商户ID|
 |pay_time	|time	|--	|支付时间|
 |order_time	|time	|--	|下单时间|
@@ -47,8 +48,9 @@
 |paymentid	|int	|64	|支付ID：成功支付才存在，否则为空|
 |order_status	|int	|4	|订单状态：1-未支付 2-支付成功 3-支付失败|
 |is_mark	|int	|4	|收藏状态：0-未收藏；1-收藏|
+|update_time|||入库时间|
 
-● 用户商户收藏表：
+● 商户收藏表：
 > primary key：uid
 
 |字段列表	|类型	|长度	|描述|
@@ -56,6 +58,17 @@
 |uid(PK)|	str|	64|	用户id|
 |coopid|	str|	64|	商户id|
 |is_mark|	int|	4|	收藏商家状态：0-未收藏；1-收藏|
+|update_time|||收藏日期|
+
+● 活动收藏表：
+> primary key：uid
+
+|字段列表	|类型	|长度	|描述|
+|-----|-----|-----|-----|
+|uid(PK)|	str|	64|	用户id|
+|act_id|	str|	64|	商户id|
+|is_mark|	int|	4|	收藏商家状态：0-未收藏；1-收藏|
+|update_time|||收藏日期|
 
 ● 地区编码表：
 > primary key：loc_code
@@ -78,6 +91,7 @@
 |pic	|str	|128	|用户头像图片|
 |profile	|str	|256	|用户个人简介|
 |email	|str	|32	|邮箱用户|
+|update_time|||注册日期|
 
 ## 后端接口: 活动板块
 
