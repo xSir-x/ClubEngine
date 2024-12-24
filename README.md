@@ -99,6 +99,7 @@
 ## 活动板块
 
 ### Func: 收藏活动【addFavActivity】
+
 ```
 -  request: act_id, uid, lang(取值范围: [en, zh])
 -  response: {
@@ -110,6 +111,7 @@
 
 
 ### Func: 获取所有活动类型 【getAllType】
+
 ```
 -  request: loc_code
 -  response: {
@@ -121,6 +123,7 @@
 
 
 ### Func: 获取所有活动列表【getActivitiesByType】
+
 ```
 -  request: type, loc_code, uid, lang(取值范围: ["en", "zh"]), pageId=0（指定pageid）, pageSize=7 (默认7，[1, 100])
 -  response: {
@@ -147,6 +150,7 @@
 
 
 ### Func: 获取活动推荐列表（每个地区有一个默认的推荐活动，来自运营打标）【getRecommandActivities】
+
 ```
 -  request: loc_code, uid
 -  response: {
@@ -166,6 +170,7 @@
 
 
 ### Func: 获取单个活动细节【getSingleActivityDetail】
+
 ```
 -  request: type, act_id, uid
 -  response: {
@@ -190,6 +195,7 @@
 
 
 ### Func: 获取我的活动类型【getMyActivitiesType】(接口删除)
+
 ```
 -  request: uid, loc_code
 -  response: {
@@ -201,6 +207,7 @@
 
 
 ### Func: 获取我的活动列表【getMyActivitiesBytype】
+
 ```
 -  request: uid, loc_code
 -  response:{
@@ -217,9 +224,8 @@
 ```
 注意： 所有活动信息这边都需要传
 
-
-
 ### Func: 获取我的单个活动列表【getMySingleActivity】
+
 ```
 -  request: uid, loc_code
 -  response: {
@@ -248,6 +254,7 @@ payActivity
 ## 商家板块
 
 ### Func: 收藏商家【addCoopFav】
+
 ```
 -  request: loc_code, uid, coopid, lang (loc_code用处是？)
 -  response:{
@@ -266,8 +273,7 @@ payActivity
 	"exceptions": "异常详情", （非必填） 
 	"res": [{"type": "类型1"}, {"type": "类型2"}, ...]
 }
-```      
-
+```
 
 ### Func: 获取合作商家信息【getClubCoopListByType】
 ```
