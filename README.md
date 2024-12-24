@@ -17,6 +17,7 @@
 |act_time	|time	|--	|活动时间|
 |is_recommend	|int	|4	|1-推荐 0-不推荐 （默认置0）|
 |price	|double	|64	|活动价格都以人民币存储|
+|timestamp	|time	|--	|格式: 1607829282121|
 
 ● 商家信息表：
 > primary key：coopid
@@ -97,118 +98,91 @@
 
 > Func: 收藏活动【addFavActivity】
 ```
--  request: act_id, uid
--  response: int(0: 失败，1: 成功)
+-  request: act_id, uid, lang(取值范围: [en, zh])
+-  response: {
+	"state": 200,
+	"res": 0/1(int, 0: 失败，1: 成功)
+}
 ```
+
 
 > Func: 获取所有活动类型 【getAllType】
 ```
 -  request: loc_code
--  response: 
-        [{"act_id": , "type": }
-        , ...]
+-  response: {
+	"state": 200,
+	"res": [{"type": "类型1"}, {"type": "类型2"}, ...]
+}
 ```
+
 
 > Func: 获取所有活动列表【getActivitiesByType】
 ```
--  request: type, loc_code, , pageId=0（指定pageid）, pageSize=7 (默认7，[1, 100])
--  response: 
-        [{"act_id": , 
-        "type": , 
-        "title": , 
-        "pic": , 
-        "loc_code": , 
-        "tag": , 
-        "is_mark": , 
-        "act_time": , 
-        "attendence": }
-        , ...]
+-  request: type, loc_code, uid, lang(取值范围: ["en", "zh"]), pageId=0（指定pageid）, pageSize=7 (默认7，[1, 100])
+-  response: {
+	"state": 200,
+	"total": 21,
+	"res": [{"act_id": , 
+	        "type": , 
+	        "title": ,
+		"starttime": 1607829282121, (字段是哪个表？)
+	        "pic": , 
+	        "loc_code": ,
+		"address": ,
+		"latitude": ,(经度, str)
+		"atitude": ,(经度, str)
+	        "tag": , 
+	        "is_mark": , 
+	        "act_time": , 
+	        "attendence": }, ...]	(数据如何计算？)
+}
+        
 ```
-改动：time -> act_time
-<font color=red>
-  request: type: str(指定type字段/all), loc_code:str，uid:(可以为空), pageId=0（指定pageid）, pageSize=7 (默认7，[1, 100])
-  response: {
-            res:[{
-                 act_id: string
-                 type：string
-.                title: string
-.                act_time: timestamp
-.                pic: string
-				   loc_code：string
-                 tag：string（i.e Y-club/new）
-				   attendence：[string]
-                 is_mark: int (1-收藏，0-未收藏)
-.                }]
-.           }
-注意: ①、page查询需要进行缓存，设置过期时间；②、input para异常处理
-</font>
+注意: ①、page查询需要进行redis缓存，redis设置过期时间；②、input para异常处理
+
 
 > Func: 获取活动推荐列表（每个地区有一个默认的推荐活动，来自运营打标）【getRecommandActivities】
 ```
 -  request: loc_code, uid
--  response: 
-        [{"act_id": ,
+-  response: {
+	"state": 200,
+        "res": [{"act_id": ,
             "type": ,
             "title": ,
-            "act_time": ,
+            "starttime": , (取自: timestamp字段)
             "pic": ,
             "loc_code": ,
             "tag": ,
-            "attendence": ,
-            "is_mark}, 
-        ...]
+            "attendence": , (数据如何计算？)
+            "is_mark": }, ...]
+}
 ```
-
-改动：time -> act_time
-
-request: loc_code，uid
-  response: {
-            res:[{
-                 act_id: string
-                 type：string
-.                title: string
-.                time: timestamp
-.                pic: string
-				   loc_code：string
-                 tag：string（i.e Y-club/new）
-                 attendence：[string]（需要同步计算有多少个人报名了？？？）
-					is_mark: int (1-收藏，0-未收藏)
-.                }]
-.           }
 
 
 > Func: 获取单个活动细节【getSingleActivityDetail】
 ```
 -  request: type, act_id, uid
--  response: 
-        {act_id": ,
-            "title": ,
-            "time": ,
-            "detail": ,
-            "price": ,
-            "loc_code": ,
-            "tag": ,
-            "pic": ,
-            "attendence": ,
-            "is_mark": }
+-  response: {
+	"state": 200,
+	"res": {"act_id": ,
+	    	"title": ,
+	    	"starttime": , (字段是哪个表？)
+	    	"endtime": , (字段是哪个表？)
+	    	"detail": ,
+	    	"price": ,
+	    	"loc_code": ,
+		"address": ,
+		"latitude": ,(经度, str)
+		"atitude": ,(经度, str)
+	    	"tag": ,
+	    	"pic": ,
+	    	"attendence": , (数据如何计算？)
+	    	"is_mark": }
+}
 ```
-改动：删除了uid， time -> act_time
 
-  request: type=single, act_id:string，uid: str
-  response: {
-                 act_id: string
-.                title: string
-.                time: timestamp
-.                detail: string
-.                price: string
-.                loc_code: string
-				   tag：string（i.e Y-club/new）
-.                pic: [string]
-				  attendence：[string]]（需要同步计算有多少个人报名了？？？）
- is_mark: int (1-收藏，0-未收藏)
-.           }
 
-> Func: 获取我的活动类型【getMyActivitiesType】
+> Func: 获取我的活动类型【getMyActivitiesType】(接口删除)
 ```
 -  request: uid, loc_code
 -  response: 
@@ -217,41 +191,24 @@ request: loc_code，uid
           , ...]
 ```
 
-  request: loc_code=hk, uid: str
-  response: {
-            res:[{
-				 order_id
-order_status
-}]
-.           }
 
 > Func: 获取我的活动列表【getMyActivitiesBytype】
 ```
 -  request: uid, loc_code
--  response: 
-        [{"order_id": ,
+-  response:{
+	"state": 200,
+	"res": [{"order_id": ,
             "act_id": ,
             "act_time": ,
             "pic": ,
             "price": ,
             "order_status": 
-            "title": }
-            , ...]
+            "title": }, ...]
+}
 ```
-改动： time -> act_time
+注意： 所有活动信息这边都需要传
 
 
-  request: type: (ongoing/past/new/all)，uid: str
-  response: {
-            actlist:[{
-                order_id: string
-.                title: string
-.                time: timestamp
-.                pic: string
-.                price: double
-.                order_status: int 备注：1-未支付 2-支付成功 3-支付失败
-.                }]
-.           }
 
 > Func: 获取我的单个活动列表【getMySingleActivity】
 ```
@@ -268,21 +225,7 @@ order_status
         "paymentid": , 
         "pay_time": }
 ```
-改动： time -> order_time
-
-  request:  order_id:int，uid：str
-  response: {
-                order_id: string
-.                title: string
-.                time: timestamp
-.                detail: string
-.                price: double
-.                loc_code: string
-.                pic: string
-。              order_status: int 备注：1-未支付 2-支付成功 3-支付失败
-。              paymentid：int
-。              payTime：timeStamp
-.           }
+注意： 所有活动信息这边都需要传
 
 
 支付活动（跟Canyu讨论下细节）
@@ -293,77 +236,68 @@ payActivity
 
 > Func: 收藏商家【addCoopFav】
 ```
--  request: loc_code, uid, coopid
--  response: int(0: 失败，1: 成功)
+-  request: loc_code, uid, coopid, lang (loc_code用处是？)
+-  response:{
+	"state": 200,
+	"status": 0/1(int，0: 失败，1: 成功)
+}
 ```
-改动： loc_code用处是？？
+
 
 > Func: 获取合作商家类型【getClubCoopListType】
 ```
 -  request: loc_code
--  response: 
-        [{"coopid": coopid, "type": type},
-            ...]
-```
-  request: loc_code=hk
-  response: {
-             res：[type: string, ...]
-.           }
+-  response: {
+	"state": 200,
+	"res": [{"type": "类型1"}, {"type": "类型2"}, ...]
+}
+```      
+
 
 > Func: 获取合作商家信息【getClubCoopListByType】
 ```
--  request: type, loc_code, uid, pageId=0, pageSize=7 (默认7，[1, 100])
--  response: 
-        [{"coopid": , "name": , "type": , "pic": , "loc_code": },
-            ...]
+-  request: type, loc_code, uid, lang, pageId=0, pageSize=7 (默认7，[1, 100])
+-  response: {
+	"state": 200,
+	"total": 21, 
+        "coopList": [{
+		"coopid": ,
+		"name": ,
+		"type": ,
+		"pic": ,
+		"address": ,
+		"latitude": ,(经度, str)
+		"atitude": ,(经度, str)
+		"is_mark": ,
+		"loc_code": }, ...]
+   }
 ```
-改动： uid, pageId两个字段好像没有用？？
 
-
- request:  type:str，loc_code:string,uid=xxxx, pageId=0（从第一页开始）,   pageSize=7 (默认7，[1, 100])
- response: {
-             coopList：[{
-.                coopid:string,
-                name:string,
-.               type:string,
-.               pic: string,
-.               loc_code:string
-.             }]
-.           }
 
 > Func: 获取单个合作商家详情【getOneCoopDetail】
 ```
--  request: coopid
--  response: 
-        {"coopid", "name", "detail", "pic", "loc_code", "email", "wechatid",
-                EventList: [{"act_id", "type", "title", "act_time", "pic", "loc_code", "tag", "attendence"}]}
+-  request: coopid, lang
+-  response: {
+	"state": 200,
+	"coop_detail": {"coopid": ,
+			"name": ,
+			"detail": ,
+			"pic": ,
+			"loc_code": ,
+			"email": ,
+			"wechatid": ,
+			"address": , 
+			"EventList": [{"act_id": ,
+					"type": ,
+					"title": ,
+					"act_time": ,
+					"pic": ,
+					"loc_code": ,
+					"tag": ,
+					"attendence": }]}
+}   
 ```
-  
-request: coopid: str
-response: {
-             coopInfo：{
-.                coopid:string,
-                name:string,
-.               detail:string
-.               pic: string,
-.               loc_code:string,
-.               email:string
-.               wechatid:string
-.               EventList:[{
-                 act_id: string
-                 type：string
-.                title: string
-.                time: timestamp
-.                pic: string
-				   loc_code：string
-                 tag：string（i.e Y-club/new）
-				   attendence：[pic,string]
-                }]
-.             }
-.           }
-
-注：需要关联多个表
-
+注： EventList需活动字段细节一致
 
 
 ### 会员板块：
