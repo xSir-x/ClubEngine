@@ -106,7 +106,7 @@
 ```
 
 
-> Func: 获取所有活动类型 【getAllType】
+> ### Func: 获取所有活动类型 【getAllType】
 ```
 -  request: loc_code
 -  response: {
@@ -116,7 +116,7 @@
 ```
 
 
-> Func: 获取所有活动列表【getActivitiesByType】
+> ### Func: 获取所有活动列表【getActivitiesByType】
 ```
 -  request: type, loc_code, uid, lang(取值范围: ["en", "zh"]), pageId=0（指定pageid）, pageSize=7 (默认7，[1, 100])
 -  response: {
@@ -141,7 +141,7 @@
 注意: ①、page查询需要进行redis缓存，redis设置过期时间；②、input para异常处理
 
 
-> Func: 获取活动推荐列表（每个地区有一个默认的推荐活动，来自运营打标）【getRecommandActivities】
+> ### Func: 获取活动推荐列表（每个地区有一个默认的推荐活动，来自运营打标）【getRecommandActivities】
 ```
 -  request: loc_code, uid
 -  response: {
@@ -159,7 +159,7 @@
 ```
 
 
-> Func: 获取单个活动细节【getSingleActivityDetail】
+> ### Func: 获取单个活动细节【getSingleActivityDetail】
 ```
 -  request: type, act_id, uid
 -  response: {
@@ -182,7 +182,7 @@
 ```
 
 
-> Func: 获取我的活动类型【getMyActivitiesType】(接口删除)
+> ### Func: 获取我的活动类型【getMyActivitiesType】(接口删除)
 ```
 -  request: uid, loc_code
 -  response: {
@@ -192,7 +192,7 @@
 ```
 
 
-> Func: 获取我的活动列表【getMyActivitiesBytype】
+> ### Func: 获取我的活动列表【getMyActivitiesBytype】
 ```
 -  request: uid, loc_code
 -  response:{
@@ -210,7 +210,7 @@
 
 
 
-> Func: 获取我的单个活动列表【getMySingleActivity】
+> ### Func: 获取我的单个活动列表【getMySingleActivity】
 ```
 -  request: uid, loc_code
 -  response: {
@@ -237,7 +237,7 @@ payActivity
 
 ### 商家板块
 
-> Func: 收藏商家【addCoopFav】
+> ### Func: 收藏商家【addCoopFav】
 ```
 -  request: loc_code, uid, coopid, lang (loc_code用处是？)
 -  response:{
@@ -247,7 +247,7 @@ payActivity
 ```
 
 
-> Func: 获取合作商家类型【getClubCoopListType】
+> ### Func: 获取合作商家类型【getClubCoopListType】
 ```
 -  request: loc_code
 -  response: {
@@ -257,7 +257,7 @@ payActivity
 ```      
 
 
-> Func: 获取合作商家信息【getClubCoopListByType】
+> ### Func: 获取合作商家信息【getClubCoopListByType】
 ```
 -  request: type, loc_code, uid, lang, pageId=0, pageSize=7 (默认7，[1, 100])
 -  response: {
@@ -277,7 +277,7 @@ payActivity
 ```
 
 
-> Func: 获取单个合作商家详情【getOneCoopDetail】
+> ### Func: 获取单个合作商家详情【getOneCoopDetail】
 ```
 -  request: coopid, lang
 -  response: {
