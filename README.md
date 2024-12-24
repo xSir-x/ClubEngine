@@ -96,7 +96,7 @@
 
 ## 后端接口: 活动板块
 
-> Func: 收藏活动【addFavActivity】
+> ### Func: 收藏活动【addFavActivity】
 ```
 -  request: act_id, uid, lang(取值范围: [en, zh])
 -  response: {
@@ -185,10 +185,10 @@
 > Func: 获取我的活动类型【getMyActivitiesType】(接口删除)
 ```
 -  request: uid, loc_code
--  response: 
-        [{"order_id": ,
-          "order_status": }
-          , ...]
+-  response: {
+	"state": 200,
+	"act_types": 
+}
 ```
 
 
@@ -213,17 +213,20 @@
 > Func: 获取我的单个活动列表【getMySingleActivity】
 ```
 -  request: uid, loc_code
--  response: 
-        {"order_id": , 
-        "title": , 
-        "order_time": , 
-        "detail": , 
-        "price": ,
-        "loc_code": ,
-        "pic": ,
-        "order_status": , 
-        "paymentid": , 
-        "pay_time": }
+-  response: {
+	"state": 200,
+	"actList": {"order_id": , 
+		"title": , 
+		"order_time": , 
+		"detail": , 
+		"price": ,
+		"loc_code": ,
+		"pic": ,
+		"order_status": , 
+		"paymentid": , 
+		"pay_time": }
+}
+        
 ```
 注意： 所有活动信息这边都需要传
 
