@@ -94,33 +94,38 @@
 |email	|str	|32	|邮箱用户|
 |update_time|||注册日期|
 
-## 后端接口: 活动板块
+# 后端接口: 
+- 接口异常代码： (200: 成功, 300: 程序异常)
+## 活动板块
 
-> ### Func: 收藏活动【addFavActivity】
+### Func: 收藏活动【addFavActivity】
 ```
 -  request: act_id, uid, lang(取值范围: [en, zh])
 -  response: {
-	"state": 200,
-	"res": 0/1(int, 0: 失败，1: 成功)
+	"state": 200
+	"exceptions": "异常详情", （非必填） 
+	"status": 0/1(int，0: 失败，1: 成功)
 }
 ```
 
 
-> ### Func: 获取所有活动类型 【getAllType】
+### Func: 获取所有活动类型 【getAllType】
 ```
 -  request: loc_code
 -  response: {
-	"state": 200,
+	"state": 200
+	"exceptions": "异常详情", （非必填） 
 	"res": [{"type": "类型1"}, {"type": "类型2"}, ...]
 }
 ```
 
 
-> ### Func: 获取所有活动列表【getActivitiesByType】
+### Func: 获取所有活动列表【getActivitiesByType】
 ```
 -  request: type, loc_code, uid, lang(取值范围: ["en", "zh"]), pageId=0（指定pageid）, pageSize=7 (默认7，[1, 100])
 -  response: {
-	"state": 200,
+	"state": 200
+	"exceptions": "异常详情", （非必填） 
 	"total": 21,
 	"res": [{"act_id": , 
 	        "type": , 
@@ -141,11 +146,12 @@
 注意: ①、page查询需要进行redis缓存，redis设置过期时间；②、input para异常处理
 
 
-> ### Func: 获取活动推荐列表（每个地区有一个默认的推荐活动，来自运营打标）【getRecommandActivities】
+### Func: 获取活动推荐列表（每个地区有一个默认的推荐活动，来自运营打标）【getRecommandActivities】
 ```
 -  request: loc_code, uid
 -  response: {
-	"state": 200,
+	"state": 200
+	"exceptions": "异常详情", （非必填） 
         "res": [{"act_id": ,
             "type": ,
             "title": ,
@@ -159,11 +165,12 @@
 ```
 
 
-> ### Func: 获取单个活动细节【getSingleActivityDetail】
+### Func: 获取单个活动细节【getSingleActivityDetail】
 ```
 -  request: type, act_id, uid
 -  response: {
-	"state": 200,
+	"state": 200
+	"exceptions": "异常详情", （非必填） 
 	"res": {"act_id": ,
 	    	"title": ,
 	    	"starttime": , (字段是哪个表？)
@@ -182,21 +189,23 @@
 ```
 
 
-> ### Func: 获取我的活动类型【getMyActivitiesType】(接口删除)
+### Func: 获取我的活动类型【getMyActivitiesType】(接口删除)
 ```
 -  request: uid, loc_code
 -  response: {
-	"state": 200,
-	"act_types": 
+	"state": 200
+	"exceptions": "异常详情", （非必填） 
+	"res": 
 }
 ```
 
 
-> ### Func: 获取我的活动列表【getMyActivitiesBytype】
+### Func: 获取我的活动列表【getMyActivitiesBytype】
 ```
 -  request: uid, loc_code
 -  response:{
-	"state": 200,
+	"state": 200
+	"exceptions": "异常详情", （非必填） 
 	"res": [{"order_id": ,
             "act_id": ,
             "act_time": ,
@@ -210,12 +219,13 @@
 
 
 
-> ### Func: 获取我的单个活动列表【getMySingleActivity】
+### Func: 获取我的单个活动列表【getMySingleActivity】
 ```
 -  request: uid, loc_code
 -  response: {
-	"state": 200,
-	"actList": {"order_id": , 
+	"state": 200
+	"exceptions": "异常详情", （非必填） 
+	"res": {"order_id": , 
 		"title": , 
 		"order_time": , 
 		"detail": , 
@@ -235,35 +245,38 @@
 payActivity
 
 
-### 商家板块
+## 商家板块
 
-> ### Func: 收藏商家【addCoopFav】
+### Func: 收藏商家【addCoopFav】
 ```
 -  request: loc_code, uid, coopid, lang (loc_code用处是？)
 -  response:{
-	"state": 200,
+	"state": 200
+	"exceptions": "异常详情", （非必填） 
 	"status": 0/1(int，0: 失败，1: 成功)
 }
 ```
 
 
-> ### Func: 获取合作商家类型【getClubCoopListType】
+### Func: 获取合作商家类型【getClubCoopListType】
 ```
 -  request: loc_code
 -  response: {
-	"state": 200,
+	"state": 200
+	"exceptions": "异常详情", （非必填） 
 	"res": [{"type": "类型1"}, {"type": "类型2"}, ...]
 }
 ```      
 
 
-> ### Func: 获取合作商家信息【getClubCoopListByType】
+### Func: 获取合作商家信息【getClubCoopListByType】
 ```
 -  request: type, loc_code, uid, lang, pageId=0, pageSize=7 (默认7，[1, 100])
 -  response: {
-	"state": 200,
+	"state": 200
+	"exceptions": "异常详情", （非必填） 
 	"total": 21, 
-        "coopList": [{
+        "res": [{
 		"coopid": ,
 		"name": ,
 		"type": ,
@@ -277,27 +290,28 @@ payActivity
 ```
 
 
-> ### Func: 获取单个合作商家详情【getOneCoopDetail】
+### Func: 获取单个合作商家详情【getOneCoopDetail】
 ```
 -  request: coopid, lang
 -  response: {
-	"state": 200,
-	"coop_detail": {"coopid": ,
-			"name": ,
-			"detail": ,
-			"pic": ,
-			"loc_code": ,
-			"email": ,
-			"wechatid": ,
-			"address": , 
-			"EventList": [{"act_id": ,
-					"type": ,
-					"title": ,
-					"act_time": ,
-					"pic": ,
-					"loc_code": ,
-					"tag": ,
-					"attendence": }]}
+	"state": 200
+	"exceptions": "异常详情", （非必填） 
+	"res": {"coopid": ,
+		"name": ,
+		"detail": ,
+		"pic": ,
+		"loc_code": ,
+		"email": ,
+		"wechatid": ,
+		"address": , 
+		"EventList": [{"act_id": ,
+				"type": ,
+				"title": ,
+				"act_time": ,
+				"pic": ,
+				"loc_code": ,
+				"tag": ,
+				"attendence": }]}
 }   
 ```
 注： EventList需活动字段细节一致
@@ -305,61 +319,64 @@ payActivity
 
 ### 会员板块：
 
-> 获取商会信息
-- getClubInfo
+### Func: 获取商会信息【getClubInfo】
+```
+- request: type
+- response: {
+	"state": 200
+	"exceptions": "异常详情", （非必填） 
+	"res"：string
+}
+```
 
-request: type=all
-  response: {
-             detail：string
-.           }
+### Func: 获取会员制度信息【getMembershipInfo】
+```
+- request: type
+- response: {
+	"state": 200
+	"exceptions": "异常详情", （非必填） 
+}
+```
 
-
-
-> 获取会员制度信息
-- getMembershipInfo
-
-request: type=all
-  response: {
-             detail：string
-.           }
-
-
-
-> 获取商会联系方式
-- getClubContactInfo
-
-request: type=all
-response: {
-             wechatID：string
-。           e-mail：string
-.           }
-
+### Func: 获取商会联系方式【getClubContactInfo】
+```
+- request: type
+- response: {
+	"state": 200
+	"exceptions": "异常详情", （非必填） 
+}
+```
 
 
 
-> 获取会员详细信息
-- getMemberInfo
- 
-request: type=all，userId：string
-  response: {
-.             userid:string
-             name：string
-。           activityCnt：int
-。           membershipExpDays：int
-。           memebrshipLevel：string
-。           memebrshipLevelStatus：int
-。           profilePic：string
-.           }
+### Func: 获取会员详细信息【getMemberInfo】
+```
+- request: type=all，userId：string
+- response: {
+	"state": 200
+	"exceptions": "异常详情", （非必填） 
+	"res":{
+		userid:string
+             	name：string
+           	activityCnt：int
+         	membershipExpDays：int
+           	memebrshipLevel：string
+           	memebrshipLevelStatus：int
+           	profilePic：string
+	}
+}
+```
 
+### Func: 注册会员：【upgradeMembership】
+```
+- request: userid, wechat, email, phone, profession, location
+- response: {
+	"state": 200
+	"exceptions": "异常详情", （非必填） 
+	"status": 0/1(int，0: 失败，1: 成功)
+}
+```
 
-> 注册会员：
-- upgradeMembership
-  
-request：userid：string， wechat：string， e-mail：string， phone：string， profession：string，location：string
-
-response： {
-status:1-成功，2-失败s
-.}
 
 
 
