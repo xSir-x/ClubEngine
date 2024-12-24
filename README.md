@@ -10,7 +10,7 @@
 |coopid	|str	|64	|商户ID|
 |type	|char	|64	|活动类型: ongoing/past/new(入参可all)|
 |title	|str	|32	|活动标题|
-|pic	|str	128	|活动图片链接：注意图片大小/像素等|
+|pic	|str	|128	|活动图片链接：注意图片大小/像素等|
 |loc_code	|str	|32	|地区编码|
 |tag	|str	|32	|活动自定义表示，属于Y-Club or others|
 |detail	|str	|256	|活动详情描述|
