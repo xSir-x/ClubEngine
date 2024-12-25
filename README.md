@@ -1,7 +1,7 @@
 # Y-Club backend
 
 ## 关系型数据库设计
-● 活动信息表：
+● 活动信息表：【ActivityInfoTable】
 > primary key：act_id
 
 |字段列表	|类型	|长度	|描述|
@@ -14,12 +14,15 @@
 |loc_code	|str	|32	|地区编码|
 |tag	|str	|32	|活动自定义表示，属于Y-Club or others|
 |detail	|str	|256	|活动详情描述|
-|act_time	|time	|--	|活动时间|
 |is_recommend	|int	|4	|1-推荐 0-不推荐 （默认置0）|
 |price	|double	|64	|活动价格都以人民币存储|
-|timestamp	|time	|--	|格式: 1607829282121|
+|start_time	|time	|--	|格式: 1607829282121|
+|end_time	|time	|--	|格式: 1607829282121|
+|address	|str	|	|地址|
+|latitude	|str	|	|经度|
+|atitude	|str	|	|维度|
 
-● 商家信息表：
+● 商家信息表：【MerchantInfoTable】
 > primary key：coopid
 
 |字段列表	|类型	|长度	|描述|
@@ -32,9 +35,11 @@
 |wechatid	|str	|32	|商家微信ID|
 |email	|str	|32	|商家邮箱|
 |detail|	str	|256	|商家详情描述|
-|update_time|||更新时间|
+|address	|str	|	|地址|
+|latitude	|str	|	|经度|
+|atitude	|str	|	|维度|
 
-● 用户订单表：
+● 用户订单表：【UserOrderTable】
 > primary key：order_id   （自增）
              
 |字段列表	|类型	|长度	|描述|
@@ -48,10 +53,8 @@
 |exp_time	|time	|--	|过期时间|
 |paymentid	|int	|64	|支付ID：成功支付才存在，否则为空|
 |order_status	|int	|4	|订单状态：1-未支付 2-支付成功 3-支付失败|
-|is_mark	|int	|4	|收藏状态：0-未收藏；1-收藏|
-|update_time|||入库时间|
 
-● 商户收藏表：
+● 商户收藏表：【MerchantMaskTable】
 > primary key：uid
 
 |字段列表	|类型	|长度	|描述|
@@ -59,9 +62,8 @@
 |uid(PK)|	str|	64|	用户id|
 |coopid|	str|	64|	商户id|
 |is_mark|	int|	4|	收藏商家状态：0-未收藏；1-收藏|
-|update_time|||收藏日期|
 
-● 活动收藏表：
+● 活动收藏表：【ActsMarkTable】
 > primary key：uid
 
 |字段列表	|类型	|长度	|描述|
@@ -69,9 +71,8 @@
 |uid(PK)|	str|	64|	用户id|
 |act_id|	str|	64|	商户id|
 |is_mark|	int|	4|	收藏商家状态：0-未收藏；1-收藏|
-|update_time|||收藏日期|
 
-● 地区编码表：
+● 地区编码表：【AreaCodeTable】
 > primary key：loc_code
 
 |字段列表	|类型	|长度	|描述|
@@ -80,7 +81,7 @@
 |eng_name	|str	|16	|英文名|
 |chn_name	|str	|16	|中文名|
 
-● 用户信息表（会员标记）
+● 用户信息表（会员标记）【UserInforTable】
 > primary key：uid
 
 |字段列表	|类型	|长度	|描述|
@@ -92,7 +93,7 @@
 |pic	|str	|128	|用户头像图片|
 |profile	|str	|256	|用户个人简介|
 |email	|str	|32	|邮箱用户|
-|update_time|||注册日期|
+|register_time|||注册日期|
 
 # 后端接口: 
 - 接口异常代码： (200: 成功, 300: 程序异常)
