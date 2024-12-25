@@ -2,18 +2,19 @@
 
 ## 关系型数据库设计
 ● 活动信息表：【ActivityInfoTable】
-> primary key：act_id
 
 |字段列表	|类型	|长度	|描述|
 |-----|-----|-----|-----|
 |act_id(PK)	|str	|64	|活动id|
 |coopid	|str	|64	|商户ID|
 |type	|char	|64	|活动类型: ongoing/past/new(入参可all)|
-|title	|str	|32	|活动标题|
+|title_en	|str	|32	|活动标题|
+|title_zh	|str	|32	|活动标题|
 |pic	|str	|128	|活动图片链接：注意图片大小/像素等|
 |loc_code	|str	|32	|地区编码|
 |tag	|str	|32	|活动自定义表示，属于Y-Club or others|
-|detail	|str	|256	|活动详情描述|
+|detail_zh	|str	|256	|活动详情描述|
+|detail_en	|str	|256	|活动详情描述|
 |is_recommend	|int	|4	|1-推荐 0-不推荐 （默认置0）|
 |price	|double	|64	|活动价格都以人民币存储|
 |start_time	|time	|--	|格式: 1607829282121|
@@ -23,7 +24,6 @@
 |atitude	|str	|	|维度|
 
 ● 商家信息表：【MerchantInfoTable】
-> primary key：coopid
 
 |字段列表	|类型	|长度	|描述|
 |-----|-----|-----|-----|
@@ -34,17 +34,17 @@
 |name	|str	|16	|商家名称|
 |wechatid	|str	|32	|商家微信ID|
 |email	|str	|32	|商家邮箱|
-|detail|	str	|256	|商家详情描述|
+|detail_zh	|str	|256	|商户描述|
+|detail_en	|str	|256	|商户描述|
 |address	|str	|	|地址|
 |latitude	|str	|	|经度|
 |atitude	|str	|	|维度|
 
 ● 用户订单表：【UserOrderTable】
-> primary key：order_id   （自增）
              
 |字段列表	|类型	|长度	|描述|
 |-----|-----|-----|-----|
-|order_id(PK)	|int	|64	订单ID|
+|order_id(PK)	|int	|64	|订单ID（自增）|
 |uid	|str	|64	|用户ID|
 |act_id	|str	|64	|活动ID|
 |coop_id	|str	|int	|商户ID|
@@ -55,7 +55,6 @@
 |order_status	|int	|4	|订单状态：1-未支付 2-支付成功 3-支付失败|
 
 ● 商户收藏表：【MerchantMaskTable】
-> primary key：uid
 
 |字段列表	|类型	|长度	|描述|
 |-----|-----|-----|-----|
@@ -64,7 +63,6 @@
 |is_mark|	int|	4|	收藏商家状态：0-未收藏；1-收藏|
 
 ● 活动收藏表：【ActsMarkTable】
-> primary key：uid
 
 |字段列表	|类型	|长度	|描述|
 |-----|-----|-----|-----|
@@ -73,7 +71,6 @@
 |is_mark|	int|	4|	收藏商家状态：0-未收藏；1-收藏|
 
 ● 地区编码表：【AreaCodeTable】
-> primary key：loc_code
 
 |字段列表	|类型	|长度	|描述|
 |-----|-----|-----|-----|
@@ -82,7 +79,6 @@
 |chn_name	|str	|16	|中文名|
 
 ● 用户信息表（会员标记）【UserInforTable】
-> primary key：uid
 
 |字段列表	|类型	|长度	|描述|
 |-----|-----|-----|-----|
@@ -93,7 +89,7 @@
 |pic	|str	|128	|用户头像图片|
 |profile	|str	|256	|用户个人简介|
 |email	|str	|32	|邮箱用户|
-|register_time|||注册日期|
+|register_time|time|--|注册日期|
 
 # 后端接口: 
 - 接口异常代码： (200: 成功, 300: 程序异常)
