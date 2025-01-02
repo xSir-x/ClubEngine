@@ -14,6 +14,280 @@ import json
 from util.external_api import get_openid, validate_accessToken
 from django.core.cache import cache
 
+
+def validate_accessToken(access_token):
+    """
+    访问权限验证
+    """
+
+    return True
+
+@csrf_exempt
+def add_fav_act(request):
+    """
+    收藏活动
+    """
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = int(request_res.get('access_token', 0))
+        if not validate_accessToken(access_token):
+            message = {"data": {}, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        act_id = request_res.get('act_id', '')
+        uid = request_res.get('uid', '')
+        state, message = addFavActivity.execuate(act_id=act_id, uid=uid)
+        message = {"status": state, "state": 200, "succeed": False, "msg": message}
+
+    except Exception as e:
+        message = {"status": 0, "state": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+@csrf_exempt
+def get_all_type(request):
+    """
+    获取所有活动类型
+    """
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = int(request_res.get('access_token', 0))
+        if not validate_accessToken(access_token):
+            message = {"data": {}, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        loc_code = request_res.get('loc_code', "")
+        response = getAllType.execuate(loc_code=loc_code)
+        message = {"data": response, "state": 200, "succeed": True, "msg": message}
+
+    except Exception as e:
+        message = {"data": {}, "state": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+@csrf_exempt
+def get_acts_bytype(request):
+    """
+    根据类型获取活动列表
+    """
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = int(request_res.get('access_token', 0))
+        if not validate_accessToken(access_token):
+            message = {"data": {}, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        type = request_res.get('type')
+        loc_code = request_res.get('loc_code')
+        lang = request_res.get('lang')
+        uid = request_res.get('uid')
+        pageId = request_res.get('pageId')
+        pageSize = request_res.get('pageSize')
+        response = getActivitiesByType.execuate(type=type, loc_code=loc_code, lang=lang, uid=uid, pageId=pageId, pageSize=pageSize)
+        message = {"data": response, "state": 200, "succeed": True, "msg": message}
+
+    except Exception as e:
+        message = {"data": {}, "state": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+@csrf_exempt
+def get_recomm_acts(request):
+    """
+    获取活动推荐列表
+    """
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = int(request_res.get('access_token', 0))
+        if not validate_accessToken(access_token):
+            message = {"data": {}, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        loc_code = request_res.get('loc_code')
+        response = getRecommandActivities.execuate(loc_code=loc_code)
+        message = {"data": response, "state": 200, "succeed": True, "msg": message}
+
+    except Exception as e:
+        message = {"data": {}, "state": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+@csrf_exempt
+def get_recomm_acts(request):
+    """
+    获取活动推荐列表
+    """
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = int(request_res.get('access_token', 0))
+        if not validate_accessToken(access_token):
+            message = {"data": {}, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        loc_code = request_res.get('loc_code')
+        response = getRecommandActivities.execuate(loc_code=loc_code)
+        message = {"data": response, "state": 200, "succeed": True, "msg": message}
+
+    except Exception as e:
+        message = {"data": {}, "state": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+@csrf_exempt
+def get_act_det(request):
+    """
+    获取单个活动细节
+    """
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = int(request_res.get('access_token', 0))
+        if not validate_accessToken(access_token):
+            message = {"data": {}, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        act_id = request_res.get('act_id')
+        type = request_res.get('type')
+        response = getSingleActivityDetail().execuate(act_id=act_id, type=type)
+        message = {"data": response, "state": 200, "succeed": True, "msg": message}
+
+    except Exception as e:
+        message = {"data": {}, "state": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+@csrf_exempt
+def get_my_acts_bytype(request):
+    """
+    获取我的活动类型
+    """
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = int(request_res.get('access_token', 0))
+        if not validate_accessToken(access_token):
+            message = {"data": {}, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        uid = request_res.get('uid')
+        type = request_res.get('type')
+        response = getMyActivitiesBytype().execuate(uid=uid, type=type)
+        message = {"data": response, "state": 200, "succeed": True, "msg": message}
+
+    except Exception as e:
+        message = {"data": {}, "state": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+@csrf_exempt
+def get_my_act(request):
+    """
+    获取我的活动类型
+    """
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = int(request_res.get('access_token', 0))
+        if not validate_accessToken(access_token):
+            message = {"data": {}, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        uid = request_res.get('uid')
+        order_id = request_res.get('order_id')
+        response = getMySingleActivity().execuate(uid=uid, order_id=order_id)
+        message = {"data": response, "state": 200, "succeed": True, "msg": message}
+
+    except Exception as e:
+        message = {"data": {}, "state": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+
+
+@csrf_exempt
+def add_coopfav(request):
+    """
+    获取我的活动类型
+    """
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = int(request_res.get('access_token', 0))
+        if not validate_accessToken(access_token):
+            message = {"data": {}, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        uid = request_res.get('uid')
+        coop_id = request_res.get('coop_id')
+        response = addCoopFav().execuate(uid=uid, coop_id=coop_id)
+        message = {"data": response, "state": 200, "succeed": True, "msg": message}
+
+    except Exception as e:
+        message = {"data": {}, "state": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+@csrf_exempt
+def get_cooplist_type(request):
+    """
+    获取我的活动类型
+    """
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = int(request_res.get('access_token', 0))
+        if not validate_accessToken(access_token):
+            message = {"data": {}, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        loc_code = request_res.get('loc_code')
+        response = getClubCoopListType().execuate(loc_code=loc_code)
+        message = {"data": response, "state": 200, "succeed": True, "msg": message}
+
+    except Exception as e:
+        message = {"data": {}, "state": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+@csrf_exempt
+def get_coopdet_bytype(request):
+    """
+    获取我的活动类型
+    """
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = int(request_res.get('access_token', 0))
+        if not validate_accessToken(access_token):
+            message = {"data": {}, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        loc_code = request_res.get('loc_code')
+        response = getClubCoopListByType().execuate(loc_code=loc_code)
+        message = {"data": response, "state": 200, "succeed": True, "msg": message}
+
+    except Exception as e:
+        message = {"data": {}, "state": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+@csrf_exempt
+def get_coopdet(request):
+    """
+    获取我的活动类型
+    """
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = int(request_res.get('access_token', 0))
+        if not validate_accessToken(access_token):
+            message = {"data": {}, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        coop_id = request_res.get('coop_id')
+        response = getOneCoopDetail().execuate(coop_id=coop_id)
+        message = {"data": response, "state": 200, "succeed": True, "msg": message}
+
+    except Exception as e:
+        message = {"data": {}, "state": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+
+
+
 # 接收POST请求数据
 @csrf_exempt
 # def add(request):
