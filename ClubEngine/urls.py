@@ -26,18 +26,15 @@ urlpatterns = [
     path('userlogin', views.auth_user),
     path('testAccess', views.test_access),
 
-    
-    path('engine/', admin.site.urls),
     path('add_fav_act', views.add_fav_act),
     path('get_all_type', views.get_all_type),
-
-    path('get_acts_bytype', views.get_acts_bytype),
+    path('get_acts_bytype', views.get_acts_bytype),  # redis缓存
     path('get_recomm_acts', views.get_recomm_acts),
-    path('get_act_det', views.get_act_det),
+    path('get_single_act_det', views.get_single_act_det),
     path('get_my_acts_bytype', views.get_my_acts_bytype),
-    path('get_my_act', views.get_my_act),
+    path('get_my_act', views.get_my_act), 
     path('add_coopfav', views.add_coopfav),
     path('get_cooplist_type', views.get_cooplist_type),
-    path('get_coopdet_bytype', views.get_coopdet_bytype),
+    path('get_coopdet_bytype', views.get_coopdet_bytype),  # redis缓存
     path('get_coopdet', views.get_coopdet),
 ]
