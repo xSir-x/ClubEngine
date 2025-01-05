@@ -13,6 +13,7 @@ import hashlib
 import json
 from util.external_api import get_openid, validate_accessToken
 from django.core.cache import cache
+from dbModel.views import *
 
 
 @csrf_exempt
