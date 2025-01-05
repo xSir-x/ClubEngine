@@ -11,10 +11,9 @@ from django.db import models
 #     pay = models.FloatField(max_length=15)
 
 
-
 class ActivityInfoTable(models.Model):
     """活动信息表"""
-    act_id = models.AutoField(verbose_name="活动id", primary_key=True)
+    act_id = models.CharField(verbose_name="活动id", max_length=64, primary_key=True)
     coop_id = models.CharField(verbose_name="商户ID", max_length=64)
     type = models.CharField(verbose_name="活动类型: ongoing/past/new(入参可all)", max_length=64)
     title_en = models.CharField(verbose_name="英文活动标题", max_length=32)
@@ -41,7 +40,7 @@ class ActivityInfoTable(models.Model):
 
 class MerchantInfoTable(models.Model):
     """商家信息表"""
-    coop_id = models.AutoField(verbose_name="商户ID", primary_key=True)
+    coop_id = models.CharField(verbose_name="商户ID", max_length=64, primary_key=True)
     type = models.CharField(verbose_name="商户类型: ", max_length=64)
     pic = models.CharField(verbose_name="商户图片链接", max_length=128)
     loc_code = models.CharField(verbose_name="地区编码", max_length=32)
@@ -64,7 +63,7 @@ class MerchantInfoTable(models.Model):
 
 class UserOrderTable(models.Model):
     """用户订单表"""
-    order_id = models.AutoField(verbose_name="订单ID", primary_key=True)
+    order_id = models.CharField(verbose_name="订单ID", max_length=64, primary_key=True)
     uid = models.CharField(verbose_name="用户ID", max_length=64)
     act_id = models.CharField(verbose_name="活动ID", max_length=64)
     coop_id = models.CharField(verbose_name="商户ID", max_length=64)
@@ -111,7 +110,7 @@ class MerchantMaskTable(models.Model):
 
 class AreaCodeTable(models.Model):
     """地区编码表"""
-    loc_code = models.AutoField(verbose_name="地区编码", primary_key=True)
+    loc_code = models.CharField(verbose_name="地区编码", max_length=64, primary_key=True)
     eng_name = models.CharField(verbose_name="英文", max_length=64)
     chn_name = models.CharField(verbose_name="中文", max_length=64)
 
@@ -121,7 +120,7 @@ class AreaCodeTable(models.Model):
 
 class UserInforTable(models.Model):
     """用户信息表（会员标记）"""
-    uid = models.AutoField(verbose_name="用户id", primary_key=True)
+    uid = models.CharField(verbose_name="用户id", max_length=64, primary_key=True)
     name = models.CharField(verbose_name="用户名称", max_length=16)
     level = models.CharField(verbose_name="会员等级", max_length=4)
     wechat = models.CharField(verbose_name="微信ID", max_length=32)
@@ -135,4 +134,3 @@ class UserInforTable(models.Model):
         get_latest_by = "register_time"
         ordering = ['register_time']
         verbose_name = "userInfo"
-
