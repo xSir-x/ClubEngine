@@ -4,13 +4,13 @@
 
 ## 数据库初始化
 ```
-python manage.py makemigrations dbModel
-python manage.py migrate # 注意：如果表已经存在，无法覆盖
+python3 manage.py makemigrations dbModel
+python3 manage.py migrate # 注意：如果表已经存在，无法覆盖
 ```
 
 ## 服务启动脚本
 ```
-python manage.py runserver
+python3 manage.py runserver
 ```
 
 ## 后端接口: 
