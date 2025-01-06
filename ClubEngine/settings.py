@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-8+7&#xifwa2n)qsz2p*yur(=frhd27o#n^nx=%*3+x40bhrg5%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['101.35.191.114', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['110.41.176.114', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -85,19 +85,19 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',  # django连接mysql，还可以连oracle、sqlite3、postgresql等等
         'NAME': 'yclub',  # 数据库名字
         'USER': 'root',  # 用户
-        'PASSWORD': 'vin015214',  # 密码
+        'PASSWORD': 'Vin015214',  # 密码
         'HOST': '127.0.0.1',  # 主机
         'PORT': '3306',  # 端口
-    },
-
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',  # django连接mysql，还可以连oracle、sqlite3、postgresql等等
-        'NAME': 'yclub',  # 数据库名字
-        'USER': 'root',  # 用户
-        'PASSWORD': 'Y12345678',  # 密码
-        'HOST': '47cc38820c8c49578e0ba59e1eb75132in01.internal.cn-south-1.mysql.rds.myhuaweicloud.com',  # 主机
-        'PORT': '3306',  # 端口
     }
+
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',  # django连接mysql，还可以连oracle、sqlite3、postgresql等等
+    #     'NAME': 'yclub',  # 数据库名字
+    #     'USER': 'root',  # 用户
+    #     'PASSWORD': 'Y12345678',  # 密码
+    #     'HOST': '47cc38820c8c49578e0ba59e1eb75132in01.internal.cn-south-1.mysql.rds.myhuaweicloud.com',  # 主机
+    #     'PORT': '3306',  # 端口
+    # }
 }
 
 
