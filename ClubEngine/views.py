@@ -87,11 +87,9 @@ def get_acts_bytype(request):
         assert pageId is not None, Exception("pageId 字段没有传入，请检查...")
         pageSize = request_res.get('pageSize', None)
         assert pageSize is not None, Exception("pageSize 字段没有传入，请检查...")
-        response = getActivitiesByType.execute(type=type, loc_code=loc_code, lang=lang, pageId=pageId,
+        response, size = getActivitiesByType.execute(type=type, loc_code=loc_code, lang=lang, pageId=pageId,
                                                pageSize=pageSize)
-
-
-        message = {"response": response, "total": len(response), "code": 200, "succeed": True, "msg": message}
+        message = {"response": response, "total": size, "code": 200, "succeed": True, "msg": message}
 
     except Exception as e:
         message = {"response": {}, "total": 0, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}

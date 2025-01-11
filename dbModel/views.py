@@ -6,6 +6,7 @@ from dbModel.models import ActivityInfoTable, MerchantInfoTable, UserInforTable,
     UserOrderTable
 from django.utils import timezone
 from datetime import datetime
+from django.core.cache import cache
 
 
 ## 活动板块
@@ -117,7 +118,7 @@ def get_attendence(act_id):
 
 class getActivitiesByType(View):
     @classmethod
-    def execute(cls, type, loc_code, lang, pageId=0, pageSize=7):
+    def execute(cls, type: str, loc_code: str, lang: str, timeout=300, pageId=0, pageSize=7):
         """
         获取所有活动列表: s1: 查询ActivityInfoTable获取所有的活动
         s2: 根据活动信息查询is_mark和attendence(通过act_id查询UserOrderTable中order_status=2的pic)
@@ -129,22 +130,32 @@ class getActivitiesByType(View):
         :return: List[dict{}, ...]
         """
         res = []
-        try:
-            actinfo_obj = ActivityInfoTable.objects.filter(loc_code=loc_code, type=type)
-            if actinfo_obj.exists():
-                type_acts = actinfo_obj.values()
-                temp = []
-                for i, act_item in enumerate(type_acts):
-                    if len(temp) > pageSize:
+
+        key = type + "#" + loc_code + "#" + lang
+        his_cache = cache.get(key, None)
+        if his_cache:
+            size = len(his_cache)
+            assert pageId > size, Exception("pageId 大于查询到的page数: %s..." % len(res))
+            return his_cache[pageId], size
+        else:
+            try:
+                actinfo_obj = ActivityInfoTable.objects.filter(loc_code=loc_code, type=type)
+                if actinfo_obj.exists():
+                    type_acts = actinfo_obj.values()
+                    temp = []
+                    for i, act_item in enumerate(type_acts):
+                        if len(temp) > pageSize:
+                            res.append(temp)
+                        act_item = get_activity_dets(act_item, lang)
+                        temp.append(act_item)
+                    if len(temp) > 0:
                         res.append(temp)
-                    act_item = get_activity_dets(act_item, lang)
-                    temp.append(act_item)
-                if len(temp) > 0:
-                    res.append(temp)
-                assert pageId > len(res), Exception("pageId 大于查询到的page数: %s..." % len(res))
-                return res
-        except IOError:
-            raise Exception("【getActivitiesByType】查询数据库[ActivityInfoTable]异常...")
+                    size = len(res)
+                    assert pageId > size, Exception("pageId 大于查询到的page数: %s..." % len(res))
+                    cache.set(key, res, timeout)
+                    return res, size
+            except IOError:
+                raise Exception("【getActivitiesByType】查询数据库[ActivityInfoTable]异常...")
 
 
 class getRecommandActivities(View):
@@ -310,7 +321,7 @@ class getClubCoopListType(View):
 
 
 class getClubCoopListByType(View):
-    def execute(self, type, loc_code, lang, pageId=0, pageSize=7):
+    def execute(self, type, loc_code, lang, timeout=300, pageId=0, pageSize=7):
         """
         获取合作商家信息: 根据type, loc_code, lang 过滤 MerchantInfoTable
         :param type:
@@ -321,22 +332,31 @@ class getClubCoopListByType(View):
         :return:
         """
         res = []
-        try:
-            coop_merch_obj = MerchantInfoTable.objects.get(loc_code=loc_code, type=type)
-            if coop_merch_obj.exists():
-                coop_merchs = coop_merch_obj.values()
-                temp = []
-                for i, coop_item in enumerate(coop_merchs):
-                    if len(temp) > pageSize:
+        key = "CLUBCOOP#" + type + "#" + loc_code + "#" + lang
+        his_cache = cache.get(key, [])
+        cache_size = len(his_cache)
+        if his_cache:
+            assert pageId > cache_size, Exception("pageId 大于查询到的page数: %s..." % len(res))
+            return his_cache[pageId], cache_size
+        else:
+            try:
+                coop_merch_obj = MerchantInfoTable.objects.get(loc_code=loc_code, type=type)
+                if coop_merch_obj.exists():
+                    coop_merchs = coop_merch_obj.values()
+                    temp = []
+                    for i, coop_item in enumerate(coop_merchs):
+                        if len(temp) > pageSize:
+                            res.append(temp)
+                        coop_item = filter_lang(coop_item, lang)
+                        temp.append(coop_item)
+                    if len(temp) > 0:
                         res.append(temp)
-                    coop_item = filter_lang(coop_item, lang)
-                    temp.append(coop_item)
-                if len(temp) > 0:
-                    res.append(temp)
-                assert pageId > len(res), Exception("pageId 大于查询到的page数: %s..." % len(res))
-            return res
-        except IOError:
-            raise Exception("【getClubCoopListByType】获取特定合作商家List失败...")
+                    cache_size = len(res)
+                    assert pageId > cache_size, Exception("pageId 大于查询到的page数: %s..." % len(res))
+                    cache.set(key, res, timeout)
+                return res, cache_size
+            except IOError:
+                raise Exception("【getClubCoopListByType】获取特定合作商家List失败...")
 
 
 class getOneCoopDetail(View):
