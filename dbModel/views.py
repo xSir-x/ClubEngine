@@ -415,10 +415,47 @@ class getClubContactInfo(View):
 
 
 class getMemberInfo(View):
-    def execute(self, type):
+    def execute(self, uid):
         """获取会员详细信息"""
+        res = {}
+        try:
+            check_obj = UserInforTable.objects.filter(uid=uid)
+            if not check_obj.exists():
+                res = UserInforTable.objects.values()
+            return res
+        except Exception as e:
+            raise Exception(e)
 
 
 class upgradeMembership(View):
-    def execute(self, userid, wechat, email, phone, profile, location):
-        """注册会员"""
+    def execute(self, uid, name, level, wechat, profile, email, phone_no, location, register_time):
+        """
+        注册会员:
+        :param uid:
+        :param name:
+        :param level:
+        :param wechat:
+        :param profile:
+        :param email:
+        :param location:
+        :param register_time:
+        :return: 0: 注册失败，1: 注册成功, 2: 用户已存在
+        """
+        msg = ""
+        try:
+            check_obj = UserInforTable.objects.filter(uid=uid)
+            if not check_obj.exists():
+                UserInforTable.objects.update(uid=uid,
+                                              name=name,
+                                              level=level,
+                                              wechat=wechat,
+                                              profile=profile,
+                                              email=email,
+                                              phone_no=phone_no,
+                                              location=location,
+                                              register_time=register_time)
+                return 1, "OK"
+            else:
+                return 2, "Existed..."
+        except Exception as e:
+            return 0, e

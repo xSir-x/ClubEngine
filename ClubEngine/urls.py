@@ -25,6 +25,8 @@ urlpatterns = [
     # path('get_top', views.get_top),
     # 登录接口
     path('userlogin', views.auth_user),
+    path('userRegister', views.auth_register),
+    path('searchUser', views.search_user),
     path('testAccess', views.test_access),
 
     # 页面接口

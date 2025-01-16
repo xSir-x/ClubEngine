@@ -123,10 +123,14 @@ class UserInforTable(models.Model):
     uid = models.CharField(verbose_name="用户id", max_length=64, primary_key=True)
     name = models.CharField(verbose_name="用户名称", max_length=16)
     level = models.CharField(verbose_name="会员等级", max_length=4)
+    exptime = models.DateTimeField(verbose_name="过期日期")
+    level_status = models.IntegerField(verbose_name="状态：0-已过期；1-正常", max_length=4)
     wechat = models.CharField(verbose_name="微信ID", max_length=32)
     pic = models.CharField(verbose_name="用户头像图片链接", max_length=128)
     profile = models.CharField(verbose_name="用户个人简介", max_length=256)
     email = models.CharField(verbose_name="邮箱用户", max_length=32)
+    phone_no = models.CharField(verbose_name="电话号码", max_length=32)
+    location = models.CharField(verbose_name="用户地址", max_length=256)
     register_time = models.DateTimeField(verbose_name="注册日期")
 
     class Meta:

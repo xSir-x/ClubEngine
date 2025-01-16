@@ -105,16 +105,18 @@ python3 manage.py runserver
 
 ● 用户信息表（会员标记）【UserInforTable】
 
-|字段列表	|类型	|长度	|描述|
-|-----|-----|-----|-----|
-|uid(PK)	|str	|64	|用户id|
-|name	|str	|16	|用户名称|
-|level	|？	|？	|会员等级|
-|wechat	|str	|32	|微信ID|
-|pic	|str	|128	|用户头像图片|
-|profile	|str	|256	|用户个人简介|
-|email	|str	|32	|邮箱用户|
-|register_time|time|--|注册日期|
+|字段列表	| 类型	   | 长度	    | 描述     |
+|-----|-------|--------|--------|
+|uid(PK)	| str	  | 64	    | 用户id   |
+|name	| str	  | 16	    | 用户名称   |
+|level	| str	  | 32	    | 会员等级   |
+|exptime	| time	 |  	 |过期时间|
+|level_status	| int	  | 4	| 会员状态   |
+|wechat	| str	  | 32	    | 微信ID   |
+|pic	| str	  | 128	   | 用户头像图片 |
+|profile	| str	  | 256	   | 用户个人简介 |
+|email	| str	  | 32	    | 邮箱用户   |
+|register_time| time  | --     | 注册日期   |
 
 
 

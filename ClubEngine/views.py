@@ -440,3 +440,58 @@ def test_access(request):
         message = {"response": {}, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！"}
 
     return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+@csrf_exempt
+def auth_register(request):
+    """用户注册:  0: 注册失败，1: 注册成功, 2: 用户已存在"""
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = int(request_res.get('access_token', 0))
+        if not validate_accessToken(access_token):
+            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+        userid = request_res.get('uid', None)
+        name = request_res.get('name', None)
+        level = request_res.get('level', None)
+        wechat = request_res.get('wechat', None)
+        if not wechat:
+            message = {"response": 0, "code": 300, "msg": "微信号是必填信息..."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        profile = request_res.get('profile', None)
+        email = request_res.get('email', None)
+        if not email:
+            message = {"response": 0, "code": 300, "msg": "email是必填信息..."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        phone_no = request_res.get('phone_no', None)
+        location = request_res.get('location', "")
+        register_time = timezone.now()
+
+        state, msg = upgradeMembership().execute(userid, name, level, wechat, profile, email, phone_no, location, register_time)
+
+        message = {"response": state, "code": 200, "msg": msg}
+
+    except Exception as e:
+        message = {"response": 0, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+@csrf_exempt
+def search_user(request):
+    """用户信息查询"""
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = int(request_res.get('access_token', 0))
+        if not validate_accessToken(access_token):
+            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        uid = request_res.get('uid', None)
+        response = getMemberInfo().execute(uid=uid)
+        message = {"response": response, "code": 200, "succeed": True, "msg": message}
+
+    except Exception as e:
+        message = {"response": {}, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
