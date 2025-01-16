@@ -129,7 +129,7 @@ class WXMinPay(object):
     @classmethod
     def notify(cls, request):
         """
-        调用 wxpay.callback 函数处理请求头和请求数据
+        支付结果回调处理：调用 wxpay.callback 函数处理请求头和请求数据
         :param request:
         :return:
         """

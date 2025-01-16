@@ -233,6 +233,7 @@ class Core():
             return result
 
     def _init_certificates(self):
+        print(">>", self._cert_dir)
         if self._cert_dir and os.path.exists(self._cert_dir):
             for file_name in os.listdir(self._cert_dir):
                 if not file_name.lower().endswith('.pem'):

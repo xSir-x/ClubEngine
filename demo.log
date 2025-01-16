@@ -1,0 +1,14 @@
+2025-01-16 09:47:01,145 - 18277 - DEBUG: Starting new HTTPS connection (1): api.mch.weixin.qq.com:443
+2025-01-16 09:47:01,389 - 18277 - DEBUG: https://api.mch.weixin.qq.com:443 "GET /v3/certificates HTTP/1.1" 404 238
+2025-01-16 11:14:30,377 - 33800 - DEBUG: Starting new HTTPS connection (1): api.mch.weixin.qq.com:443
+2025-01-16 11:14:30,655 - 33800 - DEBUG: https://api.mch.weixin.qq.com:443 "GET /v3/certificates HTTP/1.1" 404 238
+2025-01-16 11:16:34,862 - 34230 - DEBUG: Starting new HTTPS connection (1): api.mch.weixin.qq.com:443
+2025-01-16 11:16:35,106 - 34230 - DEBUG: https://api.mch.weixin.qq.com:443 "GET /v3/certificates HTTP/1.1" 404 238
+2025-01-16 11:36:11,998 - 37844 - DEBUG: Starting new HTTPS connection (1): api.mch.weixin.qq.com:443
+2025-01-16 11:36:12,254 - 37844 - DEBUG: https://api.mch.weixin.qq.com:443 "GET /v3/certificates HTTP/1.1" 404 238
+2025-01-16 11:37:08,854 - 38036 - DEBUG: Starting new HTTPS connection (1): api.mch.weixin.qq.com:443
+2025-01-16 11:37:09,104 - 38036 - DEBUG: https://api.mch.weixin.qq.com:443 "GET /v3/certificates HTTP/1.1" 404 238
+2025-01-16 11:37:22,498 - 38092 - DEBUG: Starting new HTTPS connection (1): api.mch.weixin.qq.com:443
+2025-01-16 11:37:22,739 - 38092 - DEBUG: https://api.mch.weixin.qq.com:443 "GET /v3/certificates HTTP/1.1" 404 238
+2025-01-16 12:14:07,543 - 44714 - DEBUG: Starting new HTTPS connection (1): api.mch.weixin.qq.com:443
+2025-01-16 12:14:07,838 - 44714 - DEBUG: https://api.mch.weixin.qq.com:443 "GET /v3/certificates HTTP/1.1" 404 238

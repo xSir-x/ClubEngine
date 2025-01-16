@@ -7,12 +7,12 @@ from string import ascii_letters, digits
 import time
 import uuid
 
-
+print(os.getcwd())
 # 微信支付商户号（直连模式）或服务商商户号（服务商模式，即sp_mchid)
 MCHID = "1704578643"
 
 # 商户证书私钥
-with open('./cert/apiclient_key.pem') as f:
+with open(os.path.join(os.getcwd(), 'wxpay/cert/apiclient_key.pem')) as f:
     PRIVATE_KEY = f.read()
 
 # 商户证书序列号
@@ -27,7 +27,7 @@ APPID = 'wxf07870791f65ca07'
 APPID_NAME = '涯程科技(深圳)有限责任公司'
 
 # 回调地址，也可以在调用接口的时候覆盖
-NOTIFY_URL = 'https://www.xxxx.com/notify'
+NOTIFY_URL = 'https://localhost:80/notifyOrder'
 
 # 微信支付平台证书缓存目录，减少证书下载调用次数，首次使用确保此目录为空目录。
 # 初始调试时可不设置，调试通过后再设置，示例值:'./cert'。
@@ -49,9 +49,8 @@ TIMEOUT = (10, 30) # 建立连接最大超时时间是10s，读取响应的最�
 
 # 微信支付平台公钥
 # 注：2024年09月后新申请的微信支付账号使用公钥模式初始化，需配置此参数。
-# with open('./pub_key.pem') as f:
-#     PUBLIC_KEY = f.read()
-PUBLIC_KEY = 'PUB_KEY_ID_0117045786432025011400326400001236'
+with open(os.path.join(os.getcwd(), 'wxpay/cert/pub_key.pem')) as f:
+    PUBLIC_KEY = f.read()
 
 # 微信支付平台公钥ID
 # 注：2024年09月后新申请的微信支付账号使用公钥模式初始化，需配置此参数。
