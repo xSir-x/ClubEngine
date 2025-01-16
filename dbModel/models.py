@@ -63,7 +63,7 @@ class MerchantInfoTable(models.Model):
 
 class UserOrderTable(models.Model):
     """用户订单表"""
-    order_id = models.CharField(verbose_name="订单ID", max_length=64, primary_key=True)
+    order_id = models.BigIntegerField(verbose_name="订单ID", primary_key=True)
     uid = models.CharField(verbose_name="用户ID", max_length=64)
     act_id = models.CharField(verbose_name="活动ID", max_length=64)
     coop_id = models.CharField(verbose_name="商户ID", max_length=64)
@@ -82,7 +82,7 @@ class UserOrderTable(models.Model):
 
 class ActsMarkTable(models.Model):
     """收藏活动表"""
-    act_id = models.CharField(verbose_name="活动id", max_length=64)
+    act_id = models.CharField(verbose_name="活动id", max_length=64, primary_key=True)
     uid = models.CharField(verbose_name="用户ID", max_length=64)
     is_mark = models.IntegerField(verbose_name="收藏状态：0-未收藏；1-收藏", max_length=4)
     mask_time = models.DateTimeField(verbose_name="收藏日期")
@@ -96,7 +96,7 @@ class ActsMarkTable(models.Model):
 
 class MerchantMaskTable(models.Model):
     """收藏商家表"""
-    coop_id = models.CharField(verbose_name="商户id", max_length=64)
+    coop_id = models.CharField(verbose_name="商户id", max_length=64, primary_key=True)
     uid = models.CharField(verbose_name="用户ID", max_length=64)
     is_mark = models.IntegerField(verbose_name="收藏商家状态：0-未收藏；1-收藏", max_length=4)
     mask_time = models.DateTimeField(verbose_name="收藏日期")

@@ -50,7 +50,7 @@ python3 manage.py runserver
 | 字段列表	          |类型	|长度	|描述|
 |----------------|-----|-----|-----|
 | coop_id(PK)	   |str	|64	|商户ID|
-| type	          |char	|64	|商户类型: |
+| type	          |str	|64	|商户类型: |
 | pic	           |str	|128	|商户图片链接|
 | loc_code	      |str	|32	|地区编码|
 | name	          |str	|16	|商家名称|
@@ -74,7 +74,7 @@ python3 manage.py runserver
 |pay_time	|time	|--	|支付时间|
 |order_time	|time	|--	|下单时间|
 |exp_time	|time	|--	|过期时间|
-|paymentid	|int	|64	|支付ID：成功支付才存在，否则为空|
+|paymentid	|str	|64	|支付ID：成功支付才存在，否则为空|
 |order_status	|int	|4	|订单状态：1-未支付 2-支付成功 3-支付失败|
 
 ● 商户收藏表：【MerchantMaskTable】

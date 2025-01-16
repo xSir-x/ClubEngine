@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 from django.shortcuts import render
 from django.views.decorators import csrf
 # from dbModel.models import orders
@@ -14,7 +13,7 @@ import json
 from util.external_api import get_openid, validate_accessToken
 from django.core.cache import cache
 from dbModel.views import *
-
+from wxpay.views import *
 
 @csrf_exempt
 def add_fav_act(request):
@@ -298,6 +297,105 @@ def get_coopdet(request):
     return HttpResponse(json.dumps(message, ensure_ascii=False))
 
 
+# TODO: 订单接口
+
+@csrf_exempt
+def minipay(request):
+    """小程序支付"""
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = int(request_res.get('access_token', 0))
+        if not validate_accessToken(access_token):
+            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+        response = WXMinPay().pay_miniprog(request=request)
+        message = {"response": response, "code": 200, "succeed": True, "msg": message}
+
+    except Exception as e:
+        message = {"response": {}, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+@csrf_exempt
+def mininotify(request):
+    """小程序支付回调"""
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = int(request_res.get('access_token', 0))
+        if not validate_accessToken(access_token):
+            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+        response = WXMinPay().notify(request=request)
+        message = {"response": response, "code": 200, "succeed": True, "msg": message}
+
+    except Exception as e:
+        message = {"response": {}, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+@csrf_exempt
+def genorder(request):
+    """小程序订单生成"""
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = int(request_res.get('access_token', 0))
+        if not validate_accessToken(access_token):
+            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+        response = WXMinPay().gen_order(request=request)
+        message = {"response": response, "code": 200, "succeed": True, "msg": message}
+
+    except Exception as e:
+        message = {"response": {}, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+@csrf_exempt
+def search_order(request):
+    """小程序订单查询"""
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = int(request_res.get('access_token', 0))
+        if not validate_accessToken(access_token):
+            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+        response = WXMinPay().search_order(request=request)
+        message = {"response": response, "code": 200, "succeed": True, "msg": message}
+
+    except Exception as e:
+        message = {"response": {}, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+@csrf_exempt
+def close_order(request):
+    """小程序订单查询"""
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = int(request_res.get('access_token', 0))
+        if not validate_accessToken(access_token):
+            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+        response = WXMinPay().close_order(request=request)
+        message = {"response": response, "code": 200, "succeed": True, "msg": message}
+
+    except Exception as e:
+        message = {"response": {}, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+# TODO: 用户登录接口
+
+@csrf_exempt
 def auth_user(request):
     try:
         js_code = int(request.GET['js_code'])
