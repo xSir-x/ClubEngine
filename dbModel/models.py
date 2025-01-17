@@ -23,7 +23,7 @@ class ActivityInfoTable(models.Model):
     tag = models.CharField(verbose_name="活动自定义表示，属于Y-Club or others", max_length=32)
     detail_en = models.CharField(verbose_name="英文活动详情描述", max_length=256)
     detail_zh = models.CharField(verbose_name="中文活动详情描述", max_length=256)
-    is_recommend = models.IntegerField(verbose_name="1-推荐 0-不推荐（默认置0）", max_length=4)
+    is_recommend = models.IntegerField(verbose_name="1-推荐 0-不推荐（默认置0）")
     price = models.FloatField(verbose_name="活动价格都以人民币存储", max_length=64)
     start_time = models.DateTimeField(verbose_name="活动开始时间")
     end_time = models.DateTimeField(verbose_name="活动结束时间")
@@ -71,7 +71,7 @@ class UserOrderTable(models.Model):
     order_time = models.DateTimeField(verbose_name="下单日期")
     exp_time = models.DateTimeField(verbose_name="过期时间: ???")
     paymentid = models.CharField(verbose_name="支付ID：成功支付才存在，否则为空", max_length=128)
-    order_status = models.IntegerField(verbose_name="订单状态：1-未支付 2-支付成功 3-支付失败", max_length=4)
+    order_status = models.IntegerField(verbose_name="订单状态：1-未支付 2-支付成功 3-支付失败")
 
     class Meta:
         db_table = "用户订单表"
@@ -84,7 +84,7 @@ class ActsMarkTable(models.Model):
     """收藏活动表"""
     act_id = models.CharField(verbose_name="活动id", max_length=64, primary_key=True)
     uid = models.CharField(verbose_name="用户ID", max_length=64)
-    is_mark = models.IntegerField(verbose_name="收藏状态：0-未收藏；1-收藏", max_length=4)
+    is_mark = models.IntegerField(verbose_name="收藏状态：0-未收藏；1-收藏")
     mask_time = models.DateTimeField(verbose_name="收藏日期")
 
     class Meta:
@@ -98,7 +98,7 @@ class MerchantMaskTable(models.Model):
     """收藏商家表"""
     coop_id = models.CharField(verbose_name="商户id", max_length=64, primary_key=True)
     uid = models.CharField(verbose_name="用户ID", max_length=64)
-    is_mark = models.IntegerField(verbose_name="收藏商家状态：0-未收藏；1-收藏", max_length=4)
+    is_mark = models.IntegerField(verbose_name="收藏商家状态：0-未收藏；1-收藏")
     mask_time = models.DateTimeField(verbose_name="收藏日期")
 
     class Meta:
@@ -124,7 +124,7 @@ class UserInforTable(models.Model):
     name = models.CharField(verbose_name="用户名称", max_length=16)
     level = models.CharField(verbose_name="会员等级", max_length=4)
     exptime = models.DateTimeField(verbose_name="过期日期")
-    level_status = models.IntegerField(verbose_name="状态：0-已过期；1-正常", max_length=4)
+    level_status = models.IntegerField(verbose_name="状态：0-已过期；1-正常")
     wechat = models.CharField(verbose_name="微信ID", max_length=32)
     pic = models.CharField(verbose_name="用户头像图片链接", max_length=128)
     profile = models.CharField(verbose_name="用户个人简介", max_length=256)

@@ -7,24 +7,11 @@ from wxpay.lib.wechatpayv3.wechatpayv3 import WeChatPay, WeChatPayType
 from wxpay.settings import *
 from dbModel.models import *
 
-# 使用WeChatPay类的构造函数创建一个名为wxpay的实例。
-wxpay = WeChatPay(
-    # 微信支付类型为NATIVE。
-    wechatpay_type=WeChatPayType.NATIVE,
-    mchid=MCHID,  # 商户号。
-    private_key=PRIVATE_KEY,  # 商户私钥。
-    cert_serial_no=CERT_SERIAL_NO,  # 证书序列号
-    apiv3_key=APIV3_KEY,  # APIv3密钥
-    appid=APPID,  # 应用ID
-    notify_url=NOTIFY_URL,  # 回调通知地址。
-    cert_dir=CERT_DIR,  # 证书目录。
-    partner_mode=PARTNER_MODE,  # 合作模式
-    proxy=PROXY,  # 代理
-    timeout=TIMEOUT  # 超时时间
-)
 
 # 微信支付平台公钥模式初始化，2024年09月之后申请的账号参考使用此模式。
 # 平台证书模式向公钥模式切换期间也请使用此方式初始化。
+print("PUBLIC_KEY:", PUBLIC_KEY)
+print("PUBLIC_KEY_ID:", PUBLIC_KEY_ID)
 wxpay = WeChatPay(
             wechatpay_type=WeChatPayType.NATIVE,
             mchid=MCHID,
@@ -70,9 +57,9 @@ class WXMinPay(object):
         """
         request_res = json.loads(request.body)
         order_id = request_res.get("order_id", None)
-        amount = format(float(request_res.get('amount', 0)), ".2f")
+        amount = int((request_res.get('amount', 0))) #format(float(request_res.get('amount', 0)), ".2f")
         description = request_res.get("description", 'Y-Club WXminPay')
-        payer = {'openid': request_res.get("uid", None)}
+        payer = {'openid': request_res.get("openid", None)}
         act_id = request_res.get("act_id", None)
 
         # 金额验证
@@ -114,7 +101,8 @@ class WXMinPay(object):
                             'package': 'prepay_id=%s' % prepay_id,      # 拼接的prepay_id参数
                             'signType': signtype,       # 签名方式
                             'paySign': sign             # 签名
-            }}
+                        }
+            }
 
             return HttpResponse(json.dumps(response, ensure_ascii=False))
         else:
@@ -234,3 +222,6 @@ class WXMinPay(object):
             out_trade_no=order_id
         )
         print('code: %s, message: %s' % (code, message))
+
+if __name__ == '__main__':
+    pass
