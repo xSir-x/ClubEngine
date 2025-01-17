@@ -120,3 +120,4 @@
 2025-01-17 12:59:23,324 - 10050 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
 2025-01-17 13:06:06,732 - 10518 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/settings.py changed, reloading.
 2025-01-17 14:31:15,619 - 11739 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/models.py changed, reloading.
+2025-01-17 14:33:28,598 - 27280 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/migrations/__init__.py changed, reloading.
