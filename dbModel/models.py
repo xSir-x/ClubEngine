@@ -63,7 +63,7 @@ class MerchantInfoTable(models.Model):
 
 class UserOrderTable(models.Model):
     """用户订单表"""
-    order_id = models.BigIntegerField(verbose_name="订单ID", primary_key=True)
+    order_id = models.CharField(verbose_name="订单ID", max_length=32, primary_key=True)
     uid = models.CharField(verbose_name="用户ID", max_length=64)
     act_id = models.CharField(verbose_name="活动ID", max_length=64)
     coop_id = models.CharField(verbose_name="商户ID", max_length=64)
