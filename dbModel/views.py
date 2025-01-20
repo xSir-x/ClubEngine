@@ -7,7 +7,7 @@ from dbModel.models import ActivityInfoTable, MerchantInfoTable, UserInforTable,
 from django.utils import timezone
 from datetime import datetime
 from django.core.cache import cache
-
+from util.external_api import store_in_redis, retrieve_from_redis
 
 ## 活动板块
 class addFavActivity(View):
@@ -132,7 +132,8 @@ class getActivitiesByType(View):
         res = []
 
         key = type + "#" + loc_code + "#" + lang
-        his_cache = cache.get(key, None)
+        # his_cache = cache.get(key, None)
+        his_cache = retrieve_from_redis(key)
         if his_cache:
             size = len(his_cache)
             assert pageId > size, Exception("pageId 大于查询到的page数: %s..." % len(res))
@@ -152,7 +153,8 @@ class getActivitiesByType(View):
                         res.append(temp)
                     size = len(res)
                     assert pageId > size, Exception("pageId 大于查询到的page数: %s..." % len(res))
-                    cache.set(key, res, timeout)
+                    # cache.set(key, res, timeout)
+                    store_in_redis(key, res, timeout)
                     return res, size
             except IOError:
                 raise Exception("【getActivitiesByType】查询数据库[ActivityInfoTable]异常...")
@@ -333,7 +335,8 @@ class getClubCoopListByType(View):
         """
         res = []
         key = "CLUBCOOP#" + type + "#" + loc_code + "#" + lang
-        his_cache = cache.get(key, [])
+        # his_cache = cache.get(key, [])
+        his_cache = retrieve_from_redis(key)
         cache_size = len(his_cache)
         if his_cache:
             assert pageId > cache_size, Exception("pageId 大于查询到的page数: %s..." % len(res))
@@ -353,7 +356,8 @@ class getClubCoopListByType(View):
                         res.append(temp)
                     cache_size = len(res)
                     assert pageId > cache_size, Exception("pageId 大于查询到的page数: %s..." % len(res))
-                    cache.set(key, res, timeout)
+                    # cache.set(key, res, timeout)
+                    store_in_redis(key, res, timeout)
                 return res, cache_size
             except IOError:
                 raise Exception("【getClubCoopListByType】获取特定合作商家List失败...")

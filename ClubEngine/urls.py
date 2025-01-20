@@ -47,5 +47,4 @@ urlpatterns = [
     path('notifyOrder', views.mininotify),
     path('genOrder', views.genorder),
     path('serchOrder', views.search_order),
-    path('closeOrder', views.close_order),
 ]

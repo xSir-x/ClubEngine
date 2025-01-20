@@ -121,3 +121,285 @@
 2025-01-17 13:06:06,732 - 10518 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/settings.py changed, reloading.
 2025-01-17 14:31:15,619 - 11739 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/models.py changed, reloading.
 2025-01-17 14:33:28,598 - 27280 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/migrations/__init__.py changed, reloading.
+2025-01-19 08:52:59,236 - 27838 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/models.py changed, reloading.
+2025-01-20 02:44:51,003 - 80893 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.
+2025-01-20 02:48:58,693 - 81550 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/util/external_api.py changed, reloading.
+2025-01-20 02:49:56,929 - 82493 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/util/external_api.py changed, reloading.
+2025-01-20 02:51:31,630 - 82705 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/util/external_api.py changed, reloading.
+2025-01-20 02:52:28,910 - 83072 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/util/external_api.py changed, reloading.
+2025-01-20 02:56:01,326 - 83198 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/util/external_api.py changed, reloading.
+2025-01-20 03:06:19,906 - 83841 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 03:49:12,561 - 85698 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 04:04:20,919 - 93429 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 04:04:32,232 - 96114 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 04:05:54,326 - 96151 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 04:07:13,343 - 96408 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 04:13:54,801 - 96656 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 04:17:29,495 - 97864 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/models.py changed, reloading.
+2025-01-20 04:17:51,990 - 98530 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/models.py changed, reloading.
+2025-01-20 04:21:58,458 - 98607 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 06:31:04,010 - 99365 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/settings.py changed, reloading.
+2025-01-20 06:31:35,010 - 23109 - DEBUG: Starting new HTTPS connection (1): api.weixin.qq.com:443
+2025-01-20 06:31:35,214 - 23109 - DEBUG: https://api.weixin.qq.com:443 "GET /sns/jscode2session?appid=wxf07870791f65ca07&secret=b583d5d85d03874c0db4922f49b06827&js_code=0d1Bu1000rfGzT177D000Zbxkk2Bu10P&grant_type=authorization_code HTTP/1.1" 200 74
+2025-01-20 06:32:11,871 - 23109 - DEBUG: Starting new HTTPS connection (1): api.weixin.qq.com:443
+2025-01-20 06:32:12,048 - 23109 - DEBUG: https://api.weixin.qq.com:443 "GET /sns/jscode2session?appid=wxf07870791f65ca07&secret=b583d5d85d03874c0db4922f49b06827&js_code=0d1Bu1000rfGzT177D000Zbxkk2Bu10P&grant_type=authorization_code HTTP/1.1" 200 74
+2025-01-20 06:33:56,310 - 23109 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/settings.py changed, reloading.
+2025-01-20 06:34:44,270 - 23605 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/util/external_api.py changed, reloading.
+2025-01-20 06:35:15,594 - 23762 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.
+2025-01-20 06:37:16,139 - 24049 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/util/external_api.py changed, reloading.
+2025-01-20 06:40:56,405 - 24897 - DEBUG: Starting new HTTPS connection (1): api.weixin.qq.com:443
+2025-01-20 06:40:56,644 - 24897 - DEBUG: https://api.weixin.qq.com:443 "GET /sns/jscode2session?appid=wxf07870791f65ca07&secret=authorization_code&js_code=0d1Bu1000rfGzT177D000Zbxkk2Bu10P&grant_type=authorization_code HTTP/1.1" 200 79
+2025-01-20 06:42:20,883 - 25183 - DEBUG: Starting new HTTPS connection (1): api.weixin.qq.com:443
+2025-01-20 06:42:21,090 - 25183 - DEBUG: https://api.weixin.qq.com:443 "GET /sns/jscode2session?appid=wxf07870791f65ca07&secret=b583d5d85d03874c0db4922f49b06827&js_code=0d1Bu1000rfGzT177D000Zbxkk2Bu10P&grant_type=authorization_code HTTP/1.1" 200 74
+2025-01-20 06:54:52,079 - 27566 - DEBUG: Starting new HTTPS connection (1): api.weixin.qq.com:443
+2025-01-20 06:54:52,342 - 27566 - DEBUG: https://api.weixin.qq.com:443 "GET /sns/jscode2session?appid=wxf07870791f65ca07&secret=b583d5d85d03874c0db4922f49b06827&js_code=0a1I0A1w3Iusd43qHu3w3oHQKz1I0A1L&grant_type=authorization_code HTTP/1.1" 200 82
+2025-01-20 06:57:52,077 - 27566 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.
+2025-01-20 07:01:03,786 - 28148 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.
+2025-01-20 07:01:38,966 - 28726 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.
+2025-01-20 07:01:51,203 - 28834 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.
+2025-01-20 07:02:38,199 - 28881 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.
+2025-01-20 07:04:35,399 - 29032 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.
+2025-01-20 07:05:55,318 - 29610 - DEBUG: Starting new HTTPS connection (1): api.weixin.qq.com:443
+2025-01-20 07:05:55,626 - 29610 - DEBUG: https://api.weixin.qq.com:443 "GET /sns/jscode2session?appid=wxf07870791f65ca07&secret=b583d5d85d03874c0db4922f49b06827&js_code=0b1SOE100WvdzT1BjN000fFUW82SOE1D&grant_type=authorization_code HTTP/1.1" 200 82
+2025-01-20 07:09:03,289 - 29610 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/settings.py changed, reloading.
+2025-01-20 07:09:27,438 - 30330 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/settings.py changed, reloading.
+2025-01-20 07:10:16,293 - 30406 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.
+2025-01-20 07:10:36,808 - 30561 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.
+2025-01-20 07:11:42,035 - 30836 - DEBUG: Starting new HTTPS connection (1): api.weixin.qq.com:443
+2025-01-20 07:11:42,306 - 30836 - DEBUG: https://api.weixin.qq.com:443 "GET /sns/jscode2session?appid=wxf07870791f65ca07&secret=b583d5d85d03874c0db4922f49b06827&js_code=0b1SOE100WvdzT1BjN000fFUW82SOE1D&grant_type=authorization_code HTTP/1.1" 200 76
+2025-01-20 07:11:47,654 - 30836 - DEBUG: Starting new HTTPS connection (1): api.weixin.qq.com:443
+2025-01-20 07:11:47,860 - 30836 - DEBUG: https://api.weixin.qq.com:443 "GET /sns/jscode2session?appid=wxf07870791f65ca07&secret=b583d5d85d03874c0db4922f49b06827&js_code=0b1SOE100WvdzT1BjN000fFUW82SOE1D&grant_type=authorization_code HTTP/1.1" 200 76
+2025-01-20 07:12:00,982 - 30836 - DEBUG: Starting new HTTPS connection (1): api.weixin.qq.com:443
+2025-01-20 07:12:01,256 - 30836 - DEBUG: https://api.weixin.qq.com:443 "GET /sns/jscode2session?appid=wxf07870791f65ca07&secret=b583d5d85d03874c0db4922f49b06827&js_code=0c1d3k1w37eId43ivB3w3Ms4oI0d3k10&grant_type=authorization_code HTTP/1.1" 200 82
+2025-01-20 07:12:54,814 - 30836 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/settings.py changed, reloading.
+2025-01-20 07:13:16,543 - 31086 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/settings.py changed, reloading.
+2025-01-20 07:13:37,011 - 31208 - DEBUG: Starting new HTTPS connection (1): api.weixin.qq.com:443
+2025-01-20 07:13:37,221 - 31208 - DEBUG: https://api.weixin.qq.com:443 "GET /sns/jscode2session?appid=wxf07870791f65ca07&secret=b583d5d85d03874c0db4922f49b06827&js_code=0a1L8k1w3R5Id43EOK0w3ip6xp1L8k1U&grant_type=authorization_code HTTP/1.1" 200 82
+2025-01-20 07:45:26,064 - 54111 - DEBUG: Starting new HTTPS connection (1): api.weixin.qq.com:443
+2025-01-20 07:45:26,368 - 54111 - DEBUG: https://api.weixin.qq.com:443 "GET /sns/jscode2session?appid=wxf07870791f65ca07&secret=b583d5d85d03874c0db4922f49b06827&js_code=0f1oXA000IIhAT1w8Y000R2toN1oXA0i&grant_type=authorization_code HTTP/1.1" 200 82
+2025-01-20 07:47:08,979 - 54111 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/settings.py changed, reloading.
+2025-01-20 07:47:34,058 - 54530 - DEBUG: Starting new HTTPS connection (1): api.weixin.qq.com:443
+2025-01-20 07:47:34,324 - 54530 - DEBUG: https://api.weixin.qq.com:443 "GET /sns/jscode2session?appid=wxf07870791f65ca07&secret=b583d5d85d03874c0db4922f49b06827&js_code=0f10h9100JfDyT1H8g100bfa7000h91f&grant_type=authorization_code HTTP/1.1" 200 82
+2025-01-20 07:47:53,551 - 54530 - ERROR: Internal Server Error: /userlogin
+Traceback (most recent call last):
+  File "/Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py", line 417, in auth_user
+    conn.incr('page_view')
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/redis/commands/core.py", line 1953, in incrby
+    return self.execute_command("INCRBY", name, amount)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/redis/client.py", line 533, in execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/redis/connection.py", line 1086, in get_connection
+    connection.connect()
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/redis/connection.py", line 276, in connect
+    self.on_connect()
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/redis/connection.py", line 342, in on_connect
+    auth_response = self.read_response()
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/redis/connection.py", line 500, in read_response
+    response = self._parser.read_response(disable_decoding=disable_decoding)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/redis/_parsers/resp2.py", line 15, in read_response
+    result = self._read_response(disable_decoding=disable_decoding)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/redis/_parsers/resp2.py", line 38, in _read_response
+    raise error
+redis.exceptions.AuthenticationError: AUTH <password> called without any password configured for the default user. Are you sure your configuration is correct?
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+  File "/Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py", line 435, in auth_user
+    "msg": "本次下发用户token为: " + access_token}
+TypeError: unsupported operand type(s) for +: 'AuthenticationError' and 'type'
+2025-01-20 07:48:13,795 - 54661 - DEBUG: Starting new HTTPS connection (1): api.weixin.qq.com:443
+2025-01-20 07:48:14,044 - 54661 - DEBUG: https://api.weixin.qq.com:443 "GET /sns/jscode2session?appid=wxf07870791f65ca07&secret=b583d5d85d03874c0db4922f49b06827&js_code=0c1W9O0w3jMjf43YFb1w3TOzLp4W9O0z&grant_type=authorization_code HTTP/1.1" 200 82
+2025-01-20 07:48:50,218 - 54661 - ERROR: Internal Server Error: /userlogin
+Traceback (most recent call last):
+  File "/Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py", line 417, in auth_user
+    res = conn.get(access_token)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/redis/commands/core.py", line 1829, in get
+    return self.execute_command("GET", name)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/redis/client.py", line 533, in execute_command
+    conn = self.connection or pool.get_connection(command_name, **options)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/redis/connection.py", line 1086, in get_connection
+    connection.connect()
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/redis/connection.py", line 276, in connect
+    self.on_connect()
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/redis/connection.py", line 342, in on_connect
+    auth_response = self.read_response()
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/redis/connection.py", line 500, in read_response
+    response = self._parser.read_response(disable_decoding=disable_decoding)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/redis/_parsers/resp2.py", line 15, in read_response
+    result = self._read_response(disable_decoding=disable_decoding)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/redis/_parsers/resp2.py", line 38, in _read_response
+    raise error
+redis.exceptions.AuthenticationError: AUTH <password> called without any password configured for the default user. Are you sure your configuration is correct?
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+  File "/Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py", line 434, in auth_user
+    "msg": "本次下发用户token为: " + access_token}
+TypeError: unsupported operand type(s) for +: 'AuthenticationError' and 'type'
+2025-01-20 07:51:27,987 - 55279 - DEBUG: Starting new HTTPS connection (1): api.weixin.qq.com:443
+2025-01-20 07:51:28,252 - 55279 - DEBUG: https://api.weixin.qq.com:443 "GET /sns/jscode2session?appid=wxf07870791f65ca07&secret=b583d5d85d03874c0db4922f49b06827&js_code=0c1dIUFa1QrYTI0Us6Ia1K87eg3dIUFA&grant_type=authorization_code HTTP/1.1" 200 82
+2025-01-20 07:52:50,563 - 55581 - DEBUG: Starting new HTTPS connection (1): api.weixin.qq.com:443
+2025-01-20 07:52:50,805 - 55581 - DEBUG: https://api.weixin.qq.com:443 "GET /sns/jscode2session?appid=wxf07870791f65ca07&secret=b583d5d85d03874c0db4922f49b06827&js_code=0a1ZbMll2MnmTe4Hwfnl2AS6bX0ZbMl5&grant_type=authorization_code HTTP/1.1" 200 82
+2025-01-20 07:57:45,067 - 56553 - DEBUG: Starting new HTTPS connection (1): api.weixin.qq.com:443
+2025-01-20 07:57:45,338 - 56553 - DEBUG: https://api.weixin.qq.com:443 "GET /sns/jscode2session?appid=wxf07870791f65ca07&secret=b583d5d85d03874c0db4922f49b06827&js_code=0b1VAZZv3Bs9f43VSN0w3Yl4LE2VAZZL&grant_type=authorization_code HTTP/1.1" 200 82
+2025-01-20 07:59:18,382 - 56553 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/util/external_api.py changed, reloading.
+2025-01-20 08:02:41,479 - 56871 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/settings.py changed, reloading.
+2025-01-20 08:06:43,111 - 57517 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-20 08:18:50,458 - 58264 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/settings.py changed, reloading.
+2025-01-20 08:41:03,506 - 63196 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/wechatpayv3/utils.py changed, reloading.
+2025-01-20 09:09:41,319 - 69294 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.
+2025-01-20 09:34:52,034 - 73852 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.
+2025-01-20 11:15:10,444 - 92558 - ERROR: Internal Server Error: /genOrder
+Traceback (most recent call last):
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+  File "/Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py", line 355, in genorder
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 199, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 257, in iterencode
+    return _iterencode(o, 0)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type HttpResponse is not JSON serializable
+2025-01-20 11:16:05,248 - 92733 - ERROR: Internal Server Error: /genOrder
+Traceback (most recent call last):
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+  File "/Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py", line 355, in genorder
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 199, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 257, in iterencode
+    return _iterencode(o, 0)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type HttpResponse is not JSON serializable
+2025-01-20 11:19:01,475 - 92733 - ERROR: Internal Server Error: /genOrder
+Traceback (most recent call last):
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+  File "/Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py", line 355, in genorder
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 199, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 257, in iterencode
+    return _iterencode(o, 0)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type HttpResponse is not JSON serializable
+2025-01-20 11:19:39,150 - 92733 - ERROR: Internal Server Error: /genOrder
+Traceback (most recent call last):
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+  File "/Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py", line 355, in genorder
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 199, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 257, in iterencode
+    return _iterencode(o, 0)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type HttpResponse is not JSON serializable
+2025-01-20 11:21:08,759 - 93402 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 11:22:13,620 - 93672 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 11:49:47,945 - 93878 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 11:52:56,674 - 99292 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 13:20:53,492 - 15399 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 13:22:58,697 - 16105 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/models.py changed, reloading.
+2025-01-20 13:32:32,527 - 16385 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 13:34:34,176 - 18177 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 13:37:30,305 - 18574 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 13:38:25,119 - 19153 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 13:45:01,746 - 20544 - ERROR: Internal Server Error: /genOrder
+Traceback (most recent call last):
+  File "/Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py", line 177, in gen_order
+    order_time = res_det["order_time"]
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/db/models/query.py", line 418, in __getitem__
+    raise TypeError(
+TypeError: QuerySet indices must be integers or slices, not str.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+  File "/Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py", line 356, in genorder
+    return HttpResponse(json.dumps(response, ensure_ascii=False))
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 199, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 257, in iterencode
+    return _iterencode(o, 0)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type traceback is not JSON serializable
+2025-01-20 13:49:14,736 - 21294 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 13:50:47,074 - 21386 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 13:53:50,360 - 22174 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/models.py changed, reloading.
+2025-01-20 14:04:11,174 - 24099 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 14:06:43,492 - 24261 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 14:19:02,854 - 26638 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 14:19:42,698 - 26985 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-20 14:22:06,562 - 27499 - DEBUG: Request url: https://api.mch.weixin.qq.com/v3/pay/transactions/jsapi
+2025-01-20 14:22:06,563 - 27499 - DEBUG: Request type: POST
+2025-01-20 14:22:06,564 - 27499 - DEBUG: Request headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'User-Agent': 'wechatpay v3 api python sdk(https://github.com/minibear2021/wechatpayv3)', 'Authorization': 'WECHATPAY2-SHA256-RSA2048 mchid="1704578643",nonce_str="412F5A68034446D1BCFB54C1E5DE73BC",signature="aWYbtzvg0Sixx8vuEH75PorWcWYJE7LiAP/SWQfiCiDJj39pgDT+860tUgSPASORq6SjwSDZxdsILXLpyQ/pJJnYepaBbWTqVnqua88xwxKoX/E8+NwJ+JXZ0baSXM5xAZMRTiginJGDPIr6S4vTKRMvKWWg4PecgeIILF2DrOKkkxNcGPN8KRiqpw94GMXrwBV2KB+/y8M7fF2vhvO7sA0EV5cYBCBUMLgbhzW0OLPWZ3IdUx7G3KoW9JWHJ2l5foYjAuhNW79utIicomMZH+2ykciVJn+uS+2PzYwCjvkDbx0d+4HRtCSuBAC7GA3euGstT4BFw1R1agD+Xg664g==",timestamp="1737382926",serial_no="5DA0AED191E6B1FE6B165CA286D3F31B56CBE7D5"'}
+2025-01-20 14:22:06,564 - 27499 - DEBUG: Request params: {'notify_url': 'https://110.41.176.114:80/notifyOrder', 'description': 'Y-Club WXminPay', 'out_trade_no': '1737381808-4990', 'amount': {'total': 1}, 'payer': {'openid': ''}, 'appid': 'wxf07870791f65ca07', 'mchid': '1704578643'}
+2025-01-20 14:22:06,575 - 27499 - DEBUG: Starting new HTTPS connection (1): api.mch.weixin.qq.com:443
+2025-01-20 14:22:06,955 - 27499 - DEBUG: https://api.mch.weixin.qq.com:443 "POST /v3/pay/transactions/jsapi HTTP/1.1" 400 61
+2025-01-20 14:22:06,956 - 27499 - DEBUG: Response status code: 400
+2025-01-20 14:22:06,956 - 27499 - DEBUG: Response headers: {'Server': 'nginx', 'Date': 'Mon, 20 Jan 2025 14:22:07 GMT', 'Content-Type': 'application/json; charset=utf-8', 'Content-Length': '61', 'Connection': 'keep-alive', 'Keep-Alive': 'timeout=8', 'Cache-Control': 'no-cache, must-revalidate', 'X-Content-Type-Options': 'nosniff', 'Request-ID': '088EB8B9BC0610D90618E8C5C05520D3910428C4FC05-268501013', 'Content-Language': 'zh-CN', 'Wechatpay-Nonce': '35ff52788ed5c1d770c65f3812b38ca7', 'Wechatpay-Signature': 'GNMzCrMmIpXZtghjbUm8RSULgwsbZqX5FzgAXUmkvGIKqbxdBaNWeoBdwXosVJyBdjxI+AbiXg+mbC8MNtc8xwnMzh6hmu9siDayOIC/NJbhDnas6NBUz8oYkM7d0VMD3cvi/KCAJ4tC/PVnY1Gh2iLucpecGu5Qg11tSucyCrPzS71TRlz4/pLBRnMSMTxCSLBspQ8+uERe6K/bODpX2QgO77svpeiI4xlk6pBOt9TTyRyedejwPWQbWAKxSPmJfrQNtfNetDzotrxtk9d/xkyrIVqZge3pNmIOReZfxW1+z4mG0NE0ElBMqUr1SFf8Zbb7LheRUEfkvBBgsoL6iA==', 'Wechatpay-Timestamp': '1737382926', 'Wechatpay-Serial': 'PUB_KEY_ID_0117045786432025011400326400001236', 'Wechatpay-Signature-Type': 'WECHATPAY2-SHA256-RSA2048'}
+2025-01-20 14:22:06,956 - 27499 - DEBUG: Response content: {"code":"PARAM_ERROR","message":"JSAPI支付必须传openid"}
+2025-01-20 14:22:43,046 - 27654 - DEBUG: Request url: https://api.mch.weixin.qq.com/v3/pay/transactions/jsapi
+2025-01-20 14:22:43,047 - 27654 - DEBUG: Request type: POST
+2025-01-20 14:22:43,047 - 27654 - DEBUG: Request headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'User-Agent': 'wechatpay v3 api python sdk(https://github.com/minibear2021/wechatpayv3)', 'Authorization': 'WECHATPAY2-SHA256-RSA2048 mchid="1704578643",nonce_str="7C2A2F1481D841ADBDB7F25E2D505563",signature="ewr6M3uBykLJowj3huN47kgSo9VShi5eC+RVFKE2SUDsJjFkVv/NlvHRqJUe9qadeVj2dRy03hTaWrUSLxY9qOV0iuIEIxfep95x6r0ptFqsae7wr+gUuLpVu6RgvUlUSXzoJsEJNEE/JB/dN1XxKQfzRHRVgCCZ+llDc2zmogmTPK8eAewkpDmgT5Dnb0zjhrnzIG/rECTVctFX96ePcfuno/XXtlg6rr+Lygmghl1i5a/4+f82oomTMCTn6Qkaw9UojayQbvr+O6qelIl2Pd1XSen96JND6x1iXeF8fWnIBza+qzYR2cpWCfInL73nJT1PgyuLzP8LPzMMUJKDZQ==",timestamp="1737382963",serial_no="5DA0AED191E6B1FE6B165CA286D3F31B56CBE7D5"'}
+2025-01-20 14:22:43,047 - 27654 - DEBUG: Request params: {'notify_url': 'https://110.41.176.114:80/notifyOrder', 'description': 'Y-Club WXminPay', 'out_trade_no': '1737381808-4990', 'amount': {'total': 1}, 'payer': {'openid': ''}, 'appid': 'wxf07870791f65ca07', 'mchid': '1704578643'}
+2025-01-20 14:22:43,065 - 27654 - DEBUG: Starting new HTTPS connection (1): api.mch.weixin.qq.com:443
+2025-01-20 14:22:43,415 - 27654 - DEBUG: https://api.mch.weixin.qq.com:443 "POST /v3/pay/transactions/jsapi HTTP/1.1" 400 61
+2025-01-20 14:22:43,417 - 27654 - DEBUG: Response status code: 400
+2025-01-20 14:22:43,417 - 27654 - DEBUG: Response headers: {'Server': 'nginx', 'Date': 'Mon, 20 Jan 2025 14:22:43 GMT', 'Content-Type': 'application/json; charset=utf-8', 'Content-Length': '61', 'Connection': 'keep-alive', 'Keep-Alive': 'timeout=8', 'Cache-Control': 'no-cache, must-revalidate', 'X-Content-Type-Options': 'nosniff', 'Request-ID': '08B3B8B9BC0610D00218C7BA8C5820F1EB082890A604-268501013', 'Content-Language': 'zh-CN', 'Wechatpay-Nonce': 'e65ed6153ec53a8e0d6f8f8abc5d25c0', 'Wechatpay-Signature': 'MqXY8FciP2DjF0mMSYRJqxU93/VJsxXmurHfV/YqNafKLaxNE8NSbxozHk2Edxg9tos96mHN0SSLPCIRbbIMV1kM4T3jnaaGabUKA5aMHUE5motG009D/3A5UQt9hzbi7hJ9QzYkzgSx7MH6ujYZ5o5FuvU9V8G7kMnl/B30JBDJT8QM3Uc1r3VFlNfbd5twlP9vzwI1SQuotPLqBXx/dvohOu2gSnTInygsT0hoQAcuujc3dxZvhofDd61d8wuUlSVU6XmxGYD1+kyUpoOItS8+2eBZQbyDQVshdpzfm45KTvnRrD5IdgbGlwiOdiXA0TQH/RFbJXca2v6g+bRv6w==', 'Wechatpay-Timestamp': '1737382963', 'Wechatpay-Serial': 'PUB_KEY_ID_0117045786432025011400326400001236', 'Wechatpay-Signature-Type': 'WECHATPAY2-SHA256-RSA2048'}
+2025-01-20 14:22:43,417 - 27654 - DEBUG: Response content: {"code":"PARAM_ERROR","message":"JSAPI支付必须传openid"}
+2025-01-20 14:24:11,680 - 27654 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.

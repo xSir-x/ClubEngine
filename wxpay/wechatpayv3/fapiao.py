@@ -2,7 +2,7 @@
 import os.path
 
 from .type import RequestType
-from .utils import sm3
+from wxpay.wechatpayv3.utils import SM3
 
 # https://pay.weixin.qq.com/wiki/doc/apiv3/Offline/open/chapter4_8_1.shtml
 

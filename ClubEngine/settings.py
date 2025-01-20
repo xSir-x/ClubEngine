@@ -27,7 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['110.41.176.114', 'localhost', '127.0.0.1', '192.168.31.24']
 
-
+# 设置端口
+DEFAULT_PORT = '80'
 # Application definition
 
 INSTALLED_APPS = [
@@ -152,10 +153,24 @@ REST_FRAMEWORK = {
 }
 # 本地缓存
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
-        'LOCATION': '127.0.0.1:11211',  # Memcached 服务器地址和端口
-        'VERSION': 1,
+    # 'default': {
+    #     'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
+    #     'LOCATION': '127.0.0.1:11211',  # Memcached 服务器地址和端口
+    #     'VERSION': 1,
+    # }
+
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",  # 安装redis的主机的 IP 和 端口
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {
+                "max_connections": 1000,
+                "encoding": 'utf-8'
+            },
+            # "PASSWORD": "qwe123"  # redis密码
+            "AUTH": "qwe123"  # redis密码
+            }
     }
 }
 

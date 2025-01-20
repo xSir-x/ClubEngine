@@ -24,6 +24,8 @@ APIV3_KEY = 'y9865074351clubapp9074351865ubap'
 # APPID，应用ID或服务商模式下的sp_appid
 APPID = 'wxf07870791f65ca07'
 
+APP_SECRET = 'authorization_code'
+
 APPID_NAME = '涯程科技(深圳)有限责任公司'
 
 # 回调地址，也可以在调用接口的时候覆盖

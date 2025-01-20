@@ -10,7 +10,7 @@ python3 manage.py migrate # 注意：如果表已经存在，无法覆盖
 
 ## 服务启动脚本
 ```
-python3 manage.py runserver
+nohup python3 manage.py runserver 0.0.0.0:80 &
 ```
 
 ## 后端接口: 

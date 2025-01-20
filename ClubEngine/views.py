@@ -10,10 +10,11 @@ from django.contrib.auth.models import User
 import time
 import hashlib
 import json
-from util.external_api import get_openid, validate_accessToken
+from util.external_api import get_openid, validate_accessToken, store_in_redis, retrieve_from_redis
 from django.core.cache import cache
 from dbModel.views import *
 from wxpay.views import *
+from django_redis import get_redis_connection
 
 @csrf_exempt
 def add_fav_act(request):
@@ -23,7 +24,7 @@ def add_fav_act(request):
     message = {}
     try:
         request_res = json.loads(request.body)
-        access_token = int(request_res.get('access_token', 0))
+        access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
             message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
@@ -49,7 +50,7 @@ def get_all_type(request):
     message = {}
     try:
         request_res = json.loads(request.body)
-        access_token = int(request_res.get('access_token', 0))
+        access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
             message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
@@ -68,11 +69,10 @@ def get_acts_bytype(request):
     """
     根据类型获取活动列表
     """
-    from django.core.cache import cache
     message = {}
     try:
         request_res = json.loads(request.body)
-        access_token = int(request_res.get('access_token', 0))
+        access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
             message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
@@ -103,7 +103,7 @@ def get_recomm_acts(request):
     message = {}
     try:
         request_res = json.loads(request.body)
-        access_token = int(request_res.get('access_token', 0))
+        access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
             message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
@@ -127,7 +127,7 @@ def get_single_act_det(request):
     message = {}
     try:
         request_res = json.loads(request.body)
-        access_token = int(request_res.get('access_token', 0))
+        access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
             message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
@@ -152,7 +152,7 @@ def get_my_acts_bytype(request):
     message = {}
     try:
         request_res = json.loads(request.body)
-        access_token = int(request_res.get('access_token', 0))
+        access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
             message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
@@ -179,7 +179,7 @@ def get_my_act(request):
     message = {}
     try:
         request_res = json.loads(request.body)
-        access_token = int(request_res.get('access_token', 0))
+        access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
             message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
@@ -204,7 +204,7 @@ def add_coopfav(request):
     message = {}
     try:
         request_res = json.loads(request.body)
-        access_token = int(request_res.get('access_token', "11"))
+        access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
             message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
@@ -230,7 +230,7 @@ def get_cooplist_type(request):
     message = {}
     try:
         request_res = json.loads(request.body)
-        access_token = int(request_res.get('access_token', 0))
+        access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
             message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
@@ -252,7 +252,7 @@ def get_coopdet_bytype(request):
     message = {}
     try:
         request_res = json.loads(request.body)
-        access_token = int(request_res.get('access_token', 0))
+        access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
             message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
@@ -282,7 +282,7 @@ def get_coopdet(request):
     message = {}
     try:
         request_res = json.loads(request.body)
-        access_token = int(request_res.get('access_token', 0))
+        access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
             message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
@@ -302,57 +302,58 @@ def get_coopdet(request):
 @csrf_exempt
 def minipay(request):
     """小程序支付"""
-    message = {}
+    response = {}
     try:
         request_res = json.loads(request.body)
-        access_token = int(request_res.get('access_token', 0))
+        access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            message = {"response": {},
+                       "code": 300,
+                       "succeed": False,
+                       "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
 
         response = WXMinPay().pay_miniprog(request=request)
-        message = {"response": response, "code": 200, "succeed": True, "msg": message}
 
     except Exception as e:
-        message = {"response": {}, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
-    return HttpResponse(json.dumps(message, ensure_ascii=False))
+        response = {"response": {},
+                    "code": 300,
+                    "succeed": False,
+                    "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(response, ensure_ascii=False))
 
 @csrf_exempt
 def mininotify(request):
     """小程序支付回调"""
-    message = {}
+    response = {}
     try:
         request_res = json.loads(request.body)
-        access_token = int(request_res.get('access_token', 0))
+        access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
-            return HttpResponse(json.dumps(message, ensure_ascii=False))
+            response = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(response, ensure_ascii=False))
 
         response = WXMinPay().notify(request=request)
-        message = {"response": response, "code": 200, "succeed": True, "msg": message}
-
     except Exception as e:
-        message = {"response": {}, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
-    return HttpResponse(json.dumps(message, ensure_ascii=False))
+        response = {"response": {}, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(response, ensure_ascii=False))
 
 
 @csrf_exempt
 def genorder(request):
     """小程序订单生成"""
-    message = {}
+    response = {}
     try:
         request_res = json.loads(request.body)
-        access_token = int(request_res.get('access_token', 0))
+        access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            message = {"response": {}, "code": 200, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
 
         response = WXMinPay().gen_order(request=request)
-        message = {"response": response, "code": 200, "succeed": True, "msg": message}
-
     except Exception as e:
-        message = {"response": {}, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
-    return HttpResponse(json.dumps(message, ensure_ascii=False))
+        response = {"response": {}, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(response, ensure_ascii=False))
 
 
 @csrf_exempt
@@ -361,7 +362,7 @@ def search_order(request):
     message = {}
     try:
         request_res = json.loads(request.body)
-        access_token = int(request_res.get('access_token', 0))
+        access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
             message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
@@ -374,52 +375,51 @@ def search_order(request):
     return HttpResponse(json.dumps(message, ensure_ascii=False))
 
 
-@csrf_exempt
-def close_order(request):
-    """小程序订单查询"""
-    message = {}
-    try:
-        request_res = json.loads(request.body)
-        access_token = int(request_res.get('access_token', 0))
-        if not validate_accessToken(access_token):
-            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
-            return HttpResponse(json.dumps(message, ensure_ascii=False))
-
-        response = WXMinPay().close_order(request=request)
-        message = {"response": response, "code": 200, "succeed": True, "msg": message}
-
-    except Exception as e:
-        message = {"response": {}, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
-    return HttpResponse(json.dumps(message, ensure_ascii=False))
-
-
-
 # TODO: 用户登录接口
 @csrf_exempt
 def auth_user(request):
     try:
-        js_code = int(request.GET['js_code'])
+        request_res = json.loads(request.body)
+        js_code = request_res.get("js_code", None)
+        if not js_code:
+            message = {"response": {}, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，JS_CODE为空，请检查！"}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        # js_code = int(request.GET['js_code'])
         # 请求腾讯api得到openid
         openid = get_openid(js_code)
         # 下发本次登陆token，后续请求验证
         timestamp_milliseconds = str(int(time.time() * 1000))
         byte_str = (openid[0] + timestamp_milliseconds + openid[1:])
         access_token = byte_str
-        print('access_token:', access_token)
-        # 缓存access_token
-        # 设置缓存
-        try:
-            cache.delete(access_token)
-        except Exception as e:
-            print(e)
 
-        cache.set(access_token, 1, timeout=5)  # timeout 以秒为单位
-        message = {"response": {"access_token": access_token, "uid": openid}, "succeed": True,
-                   "msg": "本次下发用户token为: " + access_token}
+        # 缓存access_token
+        try:
+            res = retrieve_from_redis(access_token)
+            if not res:
+                store_in_redis(access_token, access_token)
+        except Exception as e:
+            raise Exception("Redis缓存操作失败...:%s" % e)
+
+        # 设置缓存
+        # try:
+        #     cached_result = cache.get(access_token)
+        #     if cached_result:
+        #         cache.delete(access_token)
+        # except Exception as e:
+        #     message = {"response": {}, "succeed": False, "msg": "access_token 清空失败：%s！" % e}
+        #     return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+        message = {
+                    "code": 200,
+                    "result": {"access_token": access_token, "openid": openid},
+                    "succeed": True,
+                    "msg": "本次下发用户token为: " + access_token}
 
     except Exception as e:
-        print(e)
-        message = {"response": {}, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！"}
+        message = {"code": 300,
+                   "result": {},
+                   "succeed": False,
+                   "msg": "您的请求提交不正确或提交格式错误，请检查: %s！"% e}
 
     return HttpResponse(json.dumps(message, ensure_ascii=False))
 
@@ -428,7 +428,8 @@ def auth_user(request):
 def test_access(request):
     message = {}
     try:
-        access_token = int(request.GET['access_token'])
+        request_res = json.loads(request.body)
+        access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
             message = {"response": {}, "succeed": False, "msg": "invalidate access token"}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
@@ -448,7 +449,7 @@ def auth_register(request):
     message = {}
     try:
         request_res = json.loads(request.body)
-        access_token = int(request_res.get('access_token', 0))
+        access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
             message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
@@ -484,7 +485,7 @@ def search_user(request):
     message = {}
     try:
         request_res = json.loads(request.body)
-        access_token = int(request_res.get('access_token', 0))
+        access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
             message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))

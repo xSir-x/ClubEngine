@@ -1,16 +1,6 @@
 from django.db import models
 
 
-# class orders(models.Model):
-#     orderId = models.IntegerField()
-#     orderTime = models.IntegerField()
-#     skuId = models.IntegerField()
-#     userId = models.IntegerField()
-#     status = models.IntegerField()
-#     price = models.FloatField(max_length=15)
-#     pay = models.FloatField(max_length=15)
-
-
 class ActivityInfoTable(models.Model):
     """活动信息表"""
     act_id = models.CharField(verbose_name="活动id", max_length=64, primary_key=True)
@@ -63,13 +53,13 @@ class MerchantInfoTable(models.Model):
 
 class UserOrderTable(models.Model):
     """用户订单表"""
-    order_id = models.CharField(verbose_name="订单ID", max_length=32, primary_key=True)
+    order_id = models.CharField(verbose_name="订单ID：32个字符内，只能是数字、大小写字母_-|*且在同一个商户号下唯一。", max_length=32, primary_key=True)
     uid = models.CharField(verbose_name="用户ID", max_length=64)
     act_id = models.CharField(verbose_name="活动ID", max_length=64)
     coop_id = models.CharField(verbose_name="商户ID", max_length=64)
-    pay_time = models.DateTimeField(verbose_name="支付日期")
-    order_time = models.DateTimeField(verbose_name="下单日期")
-    exp_time = models.DateTimeField(verbose_name="过期时间: ???")
+    pay_time = models.DateTimeField(verbose_name="支付日期", null=True, blank=True)
+    order_time = models.DateTimeField(verbose_name="下单日期", null=True, blank=True)
+    exp_time = models.IntegerField(verbose_name="过期时间")
     paymentid = models.CharField(verbose_name="支付ID：成功支付才存在，否则为空", max_length=128)
     order_status = models.IntegerField(verbose_name="订单状态：1-未支付 2-支付成功 3-支付失败")
 
@@ -122,7 +112,7 @@ class UserInforTable(models.Model):
     """用户信息表（会员标记）"""
     uid = models.CharField(verbose_name="用户id", max_length=64, primary_key=True)
     name = models.CharField(verbose_name="用户名称", max_length=16)
-    level = models.CharField(verbose_name="会员等级", max_length=4)
+    level = models.IntegerField(verbose_name="会员等级")
     exptime = models.DateTimeField(verbose_name="过期日期")
     level_status = models.IntegerField(verbose_name="状态：0-已过期；1-正常")
     wechat = models.CharField(verbose_name="微信ID", max_length=32)
