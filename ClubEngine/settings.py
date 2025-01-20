@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['110.41.176.114', 'localhost', '127.0.0.1', '192.168.31.24']
 
 # 设置端口
-DEFAULT_PORT = '80'
+DEFAULT_PORT = 80
 # Application definition
 
 INSTALLED_APPS = [

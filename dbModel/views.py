@@ -50,11 +50,11 @@ class getAllType(View):
         :param loc_code:
         :return: [{"act_id": act_id, "type": type}, ...]
         """
-        res = {}
+        res = []
         try:
             get_acts_obj = ActivityInfoTable.objects.filter(loc_code=loc_code)
             if get_acts_obj.exists():
-                res = get_acts_obj.values("type")
+                res = [item for item in get_acts_obj.values("type")]
             return res
         except IOError:
             raise Exception("【getAllType】查询数据库【ActivityInfoTable】[param: %s]异常..." % loc_code)
@@ -131,10 +131,11 @@ class getActivitiesByType(View):
         """
         res = []
 
-        key = type + "#" + loc_code + "#" + lang
+        key = type + "#" + str(loc_code) + "#" + lang
         # his_cache = cache.get(key, None)
         his_cache = retrieve_from_redis(key)
         if his_cache:
+            his_cache = eval(his_cache)
             size = len(his_cache)
             assert pageId > size, Exception("pageId 大于查询到的page数: %s..." % len(res))
             return his_cache[pageId], size
@@ -154,7 +155,7 @@ class getActivitiesByType(View):
                     size = len(res)
                     assert pageId > size, Exception("pageId 大于查询到的page数: %s..." % len(res))
                     # cache.set(key, res, timeout)
-                    store_in_redis(key, res, timeout)
+                    store_in_redis(key, str(res), timeout)
                     return res, size
             except IOError:
                 raise Exception("【getActivitiesByType】查询数据库[ActivityInfoTable]异常...")
@@ -339,6 +340,7 @@ class getClubCoopListByType(View):
         his_cache = retrieve_from_redis(key)
         cache_size = len(his_cache)
         if his_cache:
+            his_cache = eval(his_cache)
             assert pageId > cache_size, Exception("pageId 大于查询到的page数: %s..." % len(res))
             return his_cache[pageId], cache_size
         else:
@@ -357,7 +359,7 @@ class getClubCoopListByType(View):
                     cache_size = len(res)
                     assert pageId > cache_size, Exception("pageId 大于查询到的page数: %s..." % len(res))
                     # cache.set(key, res, timeout)
-                    store_in_redis(key, res, timeout)
+                    store_in_redis(key, str(res), timeout)
                 return res, cache_size
             except IOError:
                 raise Exception("【getClubCoopListByType】获取特定合作商家List失败...")

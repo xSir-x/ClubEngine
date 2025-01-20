@@ -10,7 +10,6 @@ from dbModel.models import *
 
 # 微信支付平台公钥模式初始化，2024年09月之后申请的账号参考使用此模式。
 # 平台证书模式向公钥模式切换期间也请使用此方式初始化。
-print("PUBLIC_KEY:", PUBLIC_KEY)
 print("PUBLIC_KEY_ID:", PUBLIC_KEY_ID)
 wxpay = WeChatPay(
     wechatpay_type=WeChatPayType.NATIVE,
@@ -159,7 +158,6 @@ class WXMinPay(object):
             response = {'code': 200, 'succeed': True, 'message': '支付回调成功...'}
             return response
         else:
-
             response = {'code': 300, 'succeed': False, 'message': '支付回调失败...'}
             return response
 
@@ -235,7 +233,7 @@ class WXMinPay(object):
             response = {'code': 200, 'succeed': True, 'msg': '订单查询成功', 'response': order_infos}
             return response
         except Exception as e:
-            response = {'code': 300, 'succeed': False, 'msg': '订单查询失败'}
+            response = {'code': 300, 'succeed': False, 'msg': '订单查询失败: %s.' % e}
             return response
 
 
