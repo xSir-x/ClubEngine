@@ -269,7 +269,6 @@ def get_coopdet_bytype(request):
         assert pageSize is not None, Exception("pageSize 字段没有传入，请检查...")
         pages, total_size = getClubCoopListByType(). \
             execute(type=type, loc_code=loc_code, lang=lang, pageId=pageId, pageSize=pageSize)
-        assert pageId < total_size, Exception("pageId 大于查询到的page数: %s..." % total_size)
         spec_page = pages[pageId] if pageId <= total_size else []
         message = {"response": spec_page, "total": total_size, "code": 200, "succeed": True, "msg": message}
 

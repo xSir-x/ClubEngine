@@ -80,23 +80,23 @@ DATABASES = {
     #     'NAME': BASE_DIR / 'db.sqlite3',
     # },
 
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',  # django连接mysql，还可以连oracle、sqlite3、postgresql等等
-        'NAME': 'yclub',  # 数据库名字
-        'USER': 'root',  # 用户
-        'PASSWORD': 'Vin015214',  # 密码Vin015214
-        'HOST': '127.0.0.1',  # 主机
-        'PORT': '3306',  # 端口
-    }
-
     # 'default': {
     #     'ENGINE': 'django.db.backends.mysql',  # django连接mysql，还可以连oracle、sqlite3、postgresql等等
     #     'NAME': 'yclub',  # 数据库名字
     #     'USER': 'root',  # 用户
-    #     'PASSWORD': '!Y12345678',  # 密码
-    #     'HOST': '47cc38820c8c49578e0ba59e1eb75132in01.internal.cn-south-1.mysql.rds.myhuaweicloud.com',  # 主机
+    #     'PASSWORD': 'Vin015214',  # 密码Vin015214
+    #     'HOST': '127.0.0.1',  # 主机
     #     'PORT': '3306',  # 端口
     # }
+
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',  # django连接mysql，还可以连oracle、sqlite3、postgresql等等
+        'NAME': 'yclub',  # 数据库名字
+        'USER': 'root',  # 用户
+        'PASSWORD': '!Y12345678',  # 密码
+        'HOST': '47cc38820c8c49578e0ba59e1eb75132in01.internal.cn-south-1.mysql.rds.myhuaweicloud.com',  # 主机
+        'PORT': '3306',  # 端口
+    }
 }
 
 # Password validation

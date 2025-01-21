@@ -126,8 +126,11 @@ def get_attendence(act_id):
         for _item in att_uids:
             uid = _item.get("uid", None)
             assert uid != None, Exception("uid 字段在数据库不存在，请检查...")
-            _pic = UserInforTable.objects.filter(uid=uid, order_status=2).values("pic")
-            attendence.append(_pic)
+            _pic_obj = UserInforTable.objects.filter(uid=uid, order_status=2)
+            if _pic_obj.exists():
+                for item in _pic_obj.values("pic"):
+                    pic = list(item)[-1]
+                    attendence.append(pic)
     return attendence
 
 
@@ -188,8 +191,7 @@ class getRecommandActivities(View):
         """
         res = []
         try:
-            recomm_act_obj = ActivityInfoTable.objects.\
-                filter(loc_code=loc_code, is_recommend=1)
+            recomm_act_obj = ActivityInfoTable.objects.filter(loc_code=loc_code, is_recommend=1)
             if recomm_act_obj.exists():
                 recomm_acts = recomm_act_obj.values()
                 for i, act_item in enumerate(recomm_acts):
@@ -384,7 +386,6 @@ class getClubCoopListByType(View):
                     if len(temp) > 0:
                         res.append(temp)
                     cache_size = len(res)
-                    assert pageId > cache_size, Exception("pageId 大于查询到的page数: %s..." % len(res))
                     # cache.set(key, res, timeout)
                     store_in_redis(key, str(res), timeout)
                 return res, cache_size
