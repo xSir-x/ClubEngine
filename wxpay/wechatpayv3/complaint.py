@@ -46,7 +46,7 @@ def complaint_history_query(self, complaint_id, limit=100, offset=0):
     if limit not in range(1, 301):
         limit = 100
     path = '/v3/merchant-service/complaints-v2/%s/negotiation-historys?limit=%s&offset=%s' % (
-    complaint_id, limit, offset)
+        complaint_id, limit, offset)
     return self._core.request(path)
 
 

@@ -637,3 +637,23 @@ TypeError: Object of type Exception is not JSON serializable
 2025-01-21 07:28:03,687 - 4631 - DEBUG: Response status code: 400
 2025-01-21 07:28:03,687 - 4631 - DEBUG: Response headers: {'Server': 'nginx', 'Date': 'Tue, 21 Jan 2025 07:28:03 GMT', 'Content-Type': 'application/json; charset=utf-8', 'Content-Length': '50', 'Connection': 'keep-alive', 'Keep-Alive': 'timeout=8', 'Cache-Control': 'no-cache, must-revalidate', 'X-Content-Type-Options': 'nosniff', 'Request-ID': '088399BDBC06108F0518CD828EAA01209AD60D288AE602-268501090', 'Content-Language': 'zh-CN', 'Wechatpay-Nonce': '821f4a2b25d2d983c201ad76a80209b3', 'Wechatpay-Signature': 'RgpgboGje/+qJNf/+sM3Jae08xq2WAYaVhW9ftNJo/GfPzU0s8dGy2cJYJ/x7tgP+tF4f1s8CFPYgm3R3Hx4w0IFVwmRRH834ig4CzMwdfHjsloE4KREvO+5LPzShvq2ZHWsHkuSGOSBc6gyXJvzsWgeD89CH4ldWMcFW/TxZXjaMaal1iDroQj4r3KD6GDWD8PS0qaL9yUPTcmkO0j317eLTAGzOuG1spawJkI7RIta1UdMKoIEG1u/7+lfw51PgAjcN5SqVPVdJI/htMmgMaZo+7fjNdNeU1QyCxCDLcJSzqlpVsyV/kHwpld8Eo9tv8Dw6K9uM82qfBUPQFnUCQ==', 'Wechatpay-Timestamp': '1737444483', 'Wechatpay-Serial': 'PUB_KEY_ID_0117045786432025011400326400001236', 'Wechatpay-Signature-Type': 'WECHATPAY2-SHA256-RSA2048'}
 2025-01-21 07:28:03,687 - 4631 - DEBUG: Response content: {"code":"PARAM_ERROR","message":"无效的openid"}
+2025-01-21 07:53:43,575 - 4631 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/models.py changed, reloading.
+2025-01-21 07:58:09,269 - 9651 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-21 07:58:47,462 - 10482 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-21 08:15:38,972 - 12713 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-21 08:18:58,459 - 13696 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-21 08:22:57,270 - 14323 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-21 08:26:55,734 - 15666 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.
+2025-01-21 08:30:32,290 - 16205 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/migrations/0001_initial.py changed, reloading.
+2025-01-21 08:31:20,618 - 16548 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/settings.py changed, reloading.
+2025-01-21 11:27:55,579 - 48688 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/settings.py changed, reloading.
+2025-01-21 11:34:46,152 - 49831 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-21 11:44:48,602 - 50110 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-21 11:49:18,342 - 51877 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.
+2025-01-21 11:51:57,099 - 52695 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-21 11:52:56,828 - 53169 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.
+2025-01-21 11:56:03,105 - 53742 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-21 12:01:07,149 - 54325 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.
+2025-01-21 12:01:42,702 - 54918 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.
+2025-01-21 12:06:38,250 - 55683 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/wechatpayv3/complaint.py changed, reloading.
+2025-01-21 12:16:07,424 - 56063 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.

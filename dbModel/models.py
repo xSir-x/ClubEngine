@@ -5,7 +5,8 @@ class ActivityInfoTable(models.Model):
     """活动信息表"""
     act_id = models.CharField(verbose_name="活动id", max_length=64, primary_key=True)
     coop_id = models.CharField(verbose_name="商户ID", max_length=64)
-    type = models.CharField(verbose_name="活动类型: ongoing/past/new(入参可all)", max_length=64)
+    type_en = models.CharField(verbose_name="英文活动类型名称", max_length=64)
+    type_zh = models.CharField(verbose_name="中文活动类型名称", max_length=64)
     title_en = models.CharField(verbose_name="英文活动标题", max_length=32)
     title_zh = models.CharField(verbose_name="中文活动标题", max_length=32)
     pic = models.CharField(verbose_name="活动图片链接：注意图片大小/像素等", max_length=128)
@@ -31,7 +32,8 @@ class ActivityInfoTable(models.Model):
 class MerchantInfoTable(models.Model):
     """商家信息表"""
     coop_id = models.CharField(verbose_name="商户ID", max_length=64, primary_key=True)
-    type = models.CharField(verbose_name="商户类型: ", max_length=64)
+    type_en = models.CharField(verbose_name="商户类型: ", max_length=64)
+    type_zh = models.CharField(verbose_name="商户类型: ", max_length=64)
     pic = models.CharField(verbose_name="商户图片链接", max_length=128)
     loc_code = models.CharField(verbose_name="地区编码", max_length=32)
     name = models.CharField(verbose_name="商家名称", max_length=16)

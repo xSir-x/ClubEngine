@@ -15,7 +15,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('act_id', models.CharField(max_length=64, primary_key=True, serialize=False, verbose_name='活动id')),
                 ('coop_id', models.CharField(max_length=64, verbose_name='商户ID')),
-                ('type', models.CharField(max_length=64, verbose_name='活动类型: ongoing/past/new(入参可all)')),
+                ('type_en', models.CharField(max_length=64, verbose_name='活动类型: ongoing/past/new(入参可all)')),
+                ('type_zh', models.CharField(max_length=64, verbose_name='活动类型: ongoing/past/new(入参可all)')),
                 ('title_en', models.CharField(max_length=32, verbose_name='英文活动标题')),
                 ('title_zh', models.CharField(max_length=32, verbose_name='中文活动标题')),
                 ('pic', models.CharField(max_length=128, verbose_name='活动图片链接：注意图片大小/像素等')),
@@ -68,7 +69,8 @@ class Migration(migrations.Migration):
             name='MerchantInfoTable',
             fields=[
                 ('coop_id', models.CharField(max_length=64, primary_key=True, serialize=False, verbose_name='商户ID')),
-                ('type', models.CharField(max_length=64, verbose_name='商户类型: ')),
+                ('type_en', models.CharField(max_length=64, verbose_name='商户类型: ')),
+                ('type_zh', models.CharField(max_length=64, verbose_name='商户类型: ')),
                 ('pic', models.CharField(max_length=128, verbose_name='商户图片链接')),
                 ('loc_code', models.CharField(max_length=32, verbose_name='地区编码')),
                 ('name', models.CharField(max_length=16, verbose_name='商家名称')),

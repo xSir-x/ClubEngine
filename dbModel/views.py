@@ -14,9 +14,9 @@ from util.external_api import store_in_redis, retrieve_from_redis
 ## 活动板块
 class addFavActivity(View):
     @classmethod
-    def execute(cls, need_fav, act_id, uid):
+    def execute(cls, need_fav: bool, act_id: str, uid: str):
         """
-        收藏活动操作:
+        收藏活动操作: 收藏成功返回1，否则返回0
         :param need_fav: bool
         :param act_id:
         :param uid:
@@ -47,23 +47,33 @@ class addFavActivity(View):
 
 class getAllType(View):
     @classmethod
-    def execute(cls, loc_code):
+    def execute(cls, loc_code: str, lang: str):
         """
         获取所有活动类型: 根据loc_code 查询该地区所有活动的type
         :param loc_code:
-        :return: [{"act_id": act_id, "type": type}, ...]
+        :param lang: 语言类型
+        :return:
+            [{"type": "活动类型1"}, {"type": "活动类型2"}, ...]
         """
         res = []
         try:
-            get_acts_obj = ActivityInfoTable.objects.filter(loc_code=loc_code)
-            if get_acts_obj.exists():
-                res = [item for item in get_acts_obj.values("type")]
+            acts_obj = ActivityInfoTable.objects.\
+                filter(loc_code=loc_code)
+            if acts_obj.exists():
+                act_types = acts_obj.values("type_en") \
+                    if lang == "en" else acts_obj.values("type_zh")
+                dummp = []
+                for item in act_types:
+                    _type = list(item)[-1]
+                    if _type not in dummp:
+                        res.append(item)
+                    dummp.append(_type)
             return res
-        except IOError:
-            raise Exception("【getAllType】查询数据库【ActivityInfoTable】[param: %s]异常..." % loc_code)
+        except Exception as e:
+            raise Exception("【getAllType】查询数据库【ActivityInfoTable】[err: %s]异常..." % e)
 
 
-def filter_lang(item_info, lang):
+def filter_lang(item_info, lang: str):
     """
     根据语言进行过滤
     :param item_info:
@@ -72,19 +82,23 @@ def filter_lang(item_info, lang):
     """
     if lang:
         if lang == "zh":
-            if "detail_en" in item_info:
+            if "detail_zh" in item_info:
                 item_info.pop("detail_en")
-            if "title_en" in item_info:
+            if "title_zh" in item_info:
                 item_info.pop("title_en")
+            if "type_zh" in item_info:
+                item_info.pop("type_en")
         elif lang == "en":
             if "detail_en" in item_info:
                 item_info.pop("detail_zh")
             if "title_en" in item_info:
                 item_info.pop("title_zh")
+            if "type_en" in item_info:
+                item_info.pop("type_zh")
     return item_info
 
 
-def get_activity_dets(act_det, lang):
+def get_activity_dets(act_det, lang: str):
     """
     多表查询获取单个活动的所有信息: 包含活动信息表的所有信息、is_mark(活动是否被收藏)、attendence(被哪些收藏，收藏者的pic)
     :param act_det: 字典格式
@@ -92,14 +106,12 @@ def get_activity_dets(act_det, lang):
     :return:
     """
     act_det = filter_lang(act_det, lang)
-
     # 查询表【ActsMarkTable】获取is_mark字段
     act_id = act_det.get("act_id", None)
     assert act_id != None, Exception("缺少act_id字段...")
     actmark_obj = ActsMarkTable.objects.filter(act_id=act_id)
     is_mark = actmark_obj.values("is_mark")[0]["is_mark"] if actmark_obj.exists() else 0
     act_det.update({"is_mark": is_mark})
-
     # 查询订单表【UserOrderTable】获取"pic"字段追加到 attendence
     act_det.update({"attendence": get_attendence(act_id)})
     return act_det
@@ -133,9 +145,8 @@ class getActivitiesByType(View):
         :return: List[dict{}, ...]
         """
         res = []
-
+        size = 0
         key = type + "#" + str(loc_code) + "#" + lang
-        # his_cache = cache.get(key, None)
         his_cache = retrieve_from_redis(key)
         if his_cache:
             his_cache = eval(his_cache)
@@ -144,7 +155,8 @@ class getActivitiesByType(View):
             return his_cache[pageId], size
         else:
             try:
-                actinfo_obj = ActivityInfoTable.objects.filter(loc_code=loc_code, type=type)
+                actinfo_obj = ActivityInfoTable.objects.filter(loc_code=loc_code, type_en=type) \
+                    if lang == "en" else ActivityInfoTable.objects.filter(loc_code=loc_code, type_zh=type)
                 if actinfo_obj.exists():
                     type_acts = actinfo_obj.values()
                     temp = []
@@ -159,14 +171,14 @@ class getActivitiesByType(View):
                     assert pageId > size, Exception("pageId 大于查询到的page数: %s..." % len(res))
                     # cache.set(key, res, timeout)
                     store_in_redis(key, str(res), timeout)
-                    return res, size
-            except IOError:
-                raise Exception("【getActivitiesByType】查询数据库[ActivityInfoTable]异常...")
+                return res, size
+            except Exception as e:
+                raise Exception("【getActivitiesByType】查询数据库[ActivityInfoTable]异常...: %s." % e)
 
 
 class getRecommandActivities(View):
     @classmethod
-    def execute(cls, loc_code, lang=None):
+    def execute(cls, loc_code: str, lang: str):
         """
         获取活动推荐列表:  s1: 根据loc_code&is_recommand=1两个字段查询ActivityInfoTable获取所有的活动
         s2: 根据活动信息查询is_mark和attendence(通过act_id查询UserOrderTable中order_status=2的pic)
@@ -176,7 +188,8 @@ class getRecommandActivities(View):
         """
         res = []
         try:
-            recomm_act_obj = ActivityInfoTable.objects.filter(loc_code=loc_code, is_recommend=1)
+            recomm_act_obj = ActivityInfoTable.objects.\
+                filter(loc_code=loc_code, is_recommend=1)
             if recomm_act_obj.exists():
                 recomm_acts = recomm_act_obj.values()
                 for i, act_item in enumerate(recomm_acts):
@@ -188,7 +201,7 @@ class getRecommandActivities(View):
 
 
 class getSingleActivityDetail(View):
-    def execute(self, act_id, type, lang=None):
+    def execute(self, act_id, type: str, lang: str):
         """
         获取单个活动细节: s1: 根据act_id&type两个字段查询ActivityInfoTable某个的活动
         s2: 根据活动信息查询is_mark和attendence(通过act_id查询UserOrderTable中order_status=2的pic)
@@ -200,7 +213,8 @@ class getSingleActivityDetail(View):
         """
         try:
             act_det = {}
-            act_obj = ActivityInfoTable.objects.filter(act_id=act_id, type=type)
+            act_obj = ActivityInfoTable.objects.filter(act_id=act_id, type_en=type) \
+                if lang == "en" else ActivityInfoTable.objects.filter(act_id=act_id, type_zh=type)
             if act_obj.exists():
                 act_info = act_obj.values()[0]
                 act_det = get_activity_dets(act_info, lang)
@@ -214,20 +228,23 @@ class getMyActivitiesBytype(View):
         """
         获取我的活动列表: 根据uid&type两个字段查询ActivityInfoTable某个的活动
         :param uid:
-        :param type: ongoing/past/new/all
+        :param type:
         :param lang: zh or en
         :return: List[dict{},]
         """
         res = []
         try:
-            assert type in ["ongoing", "past", "new", "all"], Exception("type字段取值范围存在问题..")
             acts_obj = UserOrderTable.objects.filter(uid=uid)
             if acts_obj.exists():
                 my_acts = acts_obj.values("act_id", "order_id", "order_status")
                 for item in my_acts:
-                    item_obj = ActivityInfoTable.objects.filter(act_id=item.get("act_id", None), type=type) \
-                        if type.upper() != "ALL" else \
-                        ActivityInfoTable.objects.filter(act_id=item.get("act_id", None))
+                    item_obj = None
+                    if type.upper() == "ALL":
+                        item_obj = ActivityInfoTable.objects.filter(act_id=item.get("act_id", None))
+                    elif lang == "en":
+                        item_obj = ActivityInfoTable.objects.filter(act_id=item.get("act_id", None), type_en=type)
+                    elif lang == "zh":
+                        item_obj = ActivityInfoTable.objects.filter(act_id=item.get("act_id", None), type_zh=type)
                     assert item.get("act_id", None) != None, Exception("act_id 字段在数据库不存在，请检查...")
                     if not item_obj.exists():
                         continue
@@ -306,7 +323,7 @@ class addCoopFav(View):
 
 
 class getClubCoopListType(View):
-    def execute(self, loc_code):
+    def execute(self, loc_code, lang):
         """
         获取合作商家类型：
         Roc update： 根据字段[loc_code]读取MerchantInfoTable中对应的type字段，返回地区下的所有type ， 数据返回类型list of type
@@ -319,9 +336,13 @@ class getClubCoopListType(View):
         try:
             merch_obj = MerchantInfoTable.objects.filter(loc_code=loc_code)
             if merch_obj.exists():
-                merch_infos = merch_obj.values("type")
-                for item in merch_infos:
-                    res.append(item)
+                merch_types = merch_obj.values("type_en") if lang == "en" else merch_obj.values("type_zh")
+                dummp = []
+                for item in merch_types:
+                    _type = list(item)[-1]
+                    if _type not in dummp:
+                        res.append(item)
+                    dummp.append(_type)
             return res
         except IOError:
             raise Exception("【getClubCoopListType】获取合作商家失败...")
@@ -342,14 +363,16 @@ class getClubCoopListByType(View):
         key = "CLUBCOOP#" + type + "#" + loc_code + "#" + lang
         # his_cache = cache.get(key, [])
         his_cache = retrieve_from_redis(key)
-        cache_size = len(his_cache)
+        cache_size = len(his_cache) if his_cache else 0
         if his_cache:
             his_cache = eval(his_cache)
             assert pageId > cache_size, Exception("pageId 大于查询到的page数: %s..." % len(res))
             return his_cache[pageId], cache_size
         else:
             try:
-                coop_merch_obj = MerchantInfoTable.objects.get(loc_code=loc_code, type=type)
+                coop_merch_obj = MerchantInfoTable.objects.filter(loc_code=loc_code, type_en=type) \
+                    if lang == "en" else \
+                    MerchantInfoTable.objects.filter(loc_code=loc_code, type_zh=type)
                 if coop_merch_obj.exists():
                     coop_merchs = coop_merch_obj.values()
                     temp = []

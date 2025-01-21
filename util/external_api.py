@@ -57,13 +57,17 @@ class DateTimeEncoder(json.JSONEncoder):
             return obj.strftime('%Y-%m-%dT%H:%M:%S%z')  # ISO 8601 format
         return super().default(obj)
 
+
 import time
 from datetime import datetime
+
+
 def to_timestamp(date_str):
     # date_str = "2022-02-28"
     date_obj = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
     timestamp = time.mktime(date_obj.timetuple())
     print("timestamp:", timestamp)
     return timestamp
+
 
 to_timestamp("2024-12-23 00:00:00")

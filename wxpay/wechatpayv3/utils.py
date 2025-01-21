@@ -29,7 +29,7 @@ def build_authorization(path,
     sign_str = '%s\n%s\n%s\n%s\n%s\n' % (method, path, timeStamp, nonce_str, body)
     signature = rsa_sign(private_key=private_key, sign_str=sign_str)
     authorization = 'WECHATPAY2-SHA256-RSA2048 mchid="%s",nonce_str="%s",signature="%s",timestamp="%s",serial_no="%s"' % (
-    mchid, nonce_str, signature, timeStamp, serial_no)
+        mchid, nonce_str, signature, timeStamp, serial_no)
     return authorization
 
 

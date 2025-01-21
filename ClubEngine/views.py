@@ -56,8 +56,9 @@ def get_all_type(request):
             message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
         loc_code = request_res.get('loc_code', None)
+        lang = request_res.get('lang', None)
         assert loc_code is not None, Exception("loc_code 字段没有传入，请检查...")
-        response = getAllType.execute(loc_code=loc_code)
+        response = getAllType.execute(loc_code=loc_code, lang=lang)
         message = {"response": response, "code": 200, "succeed": True, "msg": message}
 
     except Exception as e:
@@ -78,7 +79,6 @@ def get_acts_bytype(request):
             message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
         type = request_res.get('type', None)
-        assert type is not None, Exception("type 字段没有传入，请检查...")
         loc_code = request_res.get('loc_code', None)
         assert loc_code is not None, Exception("loc_code 字段没有传入，请检查...")
         lang = request_res.get('lang', None)
@@ -215,8 +215,8 @@ def add_coopfav(request):
         assert uid is not None, Exception("uid 字段没有传入，请检查...")
         coop_id = request_res.get('coop_id', None)
         assert coop_id is not None, Exception("coop_id 字段没有传入，请检查...")
-        response = addCoopFav().execute(need_fav=need_fav, uid=uid, coop_id=coop_id)
-        message = {"response": response, "code": 200, "succeed": True, "msg": message}
+        state, msg = addCoopFav().execute(need_fav=need_fav, uid=uid, coop_id=coop_id)
+        message = {"response": state, "code": 200, "succeed": True, "msg": msg}
 
     except Exception as e:
         message = {"response": {}, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
@@ -235,9 +235,10 @@ def get_cooplist_type(request):
         if not validate_accessToken(access_token):
             message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
-        loc_code = request_res.get('loc_code')
+        lang = request_res.get('lang', None)
+        loc_code = request_res.get('loc_code', None)
         assert loc_code is not None, Exception("loc_code 字段没有传入，请检查...")
-        response = getClubCoopListType().execute(loc_code=loc_code)
+        response = getClubCoopListType().execute(loc_code=loc_code, lang=lang)
         message = {"response": response, "code": 200, "succeed": True, "msg": message}
 
     except Exception as e:
@@ -266,9 +267,11 @@ def get_coopdet_bytype(request):
         assert pageId is not None, Exception("pageId 字段没有传入，请检查...")
         pageSize = request_res.get('pageSize', None)
         assert pageSize is not None, Exception("pageSize 字段没有传入，请检查...")
-        response = getClubCoopListByType().execute(type=type, loc_code=loc_code, lang=lang, pageId=pageId,
-                                                   pageSize=pageSize)
-        message = {"response": response, "code": 200, "succeed": True, "msg": message}
+        pages, total_size = getClubCoopListByType(). \
+            execute(type=type, loc_code=loc_code, lang=lang, pageId=pageId, pageSize=pageSize)
+        assert pageId < total_size, Exception("pageId 大于查询到的page数: %s..." % total_size)
+        spec_page = pages[pageId] if pageId <= total_size else []
+        message = {"response": spec_page, "total": total_size, "code": 200, "succeed": True, "msg": message}
 
     except Exception as e:
         message = {"response": {}, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}

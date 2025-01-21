@@ -409,7 +409,7 @@ def marketing_favor_stock_list(self,
     """
     if stock_creator_mchid:
         path = '/v3/marketing/favor/stocks?offset=%s&limit=%s&stock_creator_mchid=%s' % (
-        offset, limit, stock_creator_mchid)
+            offset, limit, stock_creator_mchid)
     else:
         raise Exception('stock_creator_mchid is not assigned.')
     if create_start_time:
@@ -699,7 +699,7 @@ def marketing_busifavor_user_coupon(self,
     """
     if openid:
         path = '/v3/marketing/busifavor/users/%s/coupons?appid=%s&offset=%s&limit=%s' % (
-        openid, self._appid, offset, limit)
+            openid, self._appid, offset, limit)
     else:
         raise Exception('openid is not assigned.')
     if stock_id:

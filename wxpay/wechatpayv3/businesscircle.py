@@ -118,7 +118,7 @@ def business_point_status(self, openid, brandid, appid=None, sub_mchid=None):
         raise Exception('openid and/or brandid is not assigned.')
     else:
         path = 'https://api.mch.weixin.qq.com/v3/businesscircle/users/%s/points/commit_status?brandid=%s&appid=%s' % (
-        openid, brandid, appid or self._appid)
+            openid, brandid, appid or self._appid)
     if sub_mchid:
         path += '%s&sub_mchid=%s' % (path, sub_mchid)
     return self._core.request(path)
