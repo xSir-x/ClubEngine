@@ -3,7 +3,8 @@
 from .type import RequestType
 
 
-def transfer_batch(self, out_batch_no, batch_name, batch_remark, total_amount, total_num, transfer_detail_list=[], appid=None, transfer_scene_id=None, notify_url=None):
+def transfer_batch(self, out_batch_no, batch_name, batch_remark, total_amount, total_num, transfer_detail_list=[],
+                   appid=None, transfer_scene_id=None, notify_url=None):
     """发起商家转账
     :param out_batch_no: 商户系统内部的商家批次单号，要求此参数只能由数字、大小写字母组成，在商户系统内部唯一，示例值：'plfk2020042013'
     :param batch_name: 该笔批量转账的名称，示例值：'2019年1月深圳分部报销单'
@@ -146,7 +147,7 @@ def transfer_query_bill_receipt(self, out_batch_no):
     return self._core.request(path)
 
 
-def transfer_detail_receipt(self, accept_type, out_detail_no, out_batch_no=None,):
+def transfer_detail_receipt(self, accept_type, out_detail_no, out_batch_no=None, ):
     """转账明细电子回单受理
     :param accept_type: 受理类型
     :param out_detail_no: 商家明细单号，示例值：x23zy545Bd5436

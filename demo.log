@@ -409,3 +409,231 @@ TypeError: Object of type traceback is not JSON serializable
 2025-01-20 14:43:58,320 - 31733 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
 2025-01-20 14:44:41,262 - 31756 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
 2025-01-20 14:45:51,723 - 31895 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-20 14:56:47,492 - 32686 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/settings.py changed, reloading.
+2025-01-20 15:30:38,438 - 40561 - ERROR: Internal Server Error: /get_recomm_acts
+Traceback (most recent call last):
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+  File "/Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py", line 119, in get_recomm_acts
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 199, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 257, in iterencode
+    return _iterencode(o, 0)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type datetime is not JSON serializable
+2025-01-21 02:18:22,343 - 46452 - ERROR: Internal Server Error: /get_recomm_acts
+Traceback (most recent call last):
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+  File "/Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py", line 119, in get_recomm_acts
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 199, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 257, in iterencode
+    return _iterencode(o, 0)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type datetime is not JSON serializable
+2025-01-21 02:26:43,345 - 47077 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/models.py changed, reloading.
+2025-01-21 02:31:53,266 - 48935 - ERROR: Internal Server Error: /get_recomm_acts
+Traceback (most recent call last):
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+  File "/Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py", line 119, in get_recomm_acts
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 199, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 257, in iterencode
+    return _iterencode(o, 0)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type datetime is not JSON serializable
+2025-01-21 02:34:47,115 - 48935 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-21 02:36:36,685 - 49544 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/util/external_api.py changed, reloading.
+2025-01-21 02:36:48,078 - 49887 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/util/external_api.py changed, reloading.
+2025-01-21 02:37:16,443 - 49928 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/util/external_api.py changed, reloading.
+2025-01-21 02:37:44,622 - 50027 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-21 02:41:53,100 - 50308 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.
+2025-01-21 02:46:49,300 - 51003 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/settings.py changed, reloading.
+2025-01-21 03:04:29,062 - 51871 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.
+2025-01-21 03:08:18,530 - 55172 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-21 03:09:25,749 - 55888 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/models.py changed, reloading.
+2025-01-21 03:10:40,634 - 56290 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/settings.py changed, reloading.
+2025-01-21 03:13:05,761 - 56670 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-21 03:13:23,774 - 56808 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-21 03:13:38,842 - 56873 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-21 03:16:41,453 - 57135 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-21 03:21:28,481 - 58140 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/models.py changed, reloading.
+2025-01-21 03:23:44,016 - 58391 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/models.py changed, reloading.
+2025-01-21 03:26:36,339 - 59263 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/models.py changed, reloading.
+2025-01-21 03:31:51,136 - 60151 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/views.py changed, reloading.
+2025-01-21 03:39:33,701 - 60689 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/migrations/0001_initial.py changed, reloading.
+2025-01-21 03:45:34,127 - 62754 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/models.py changed, reloading.
+2025-01-21 03:46:03,472 - 62938 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/settings.py changed, reloading.
+2025-01-21 05:01:36,234 - 63043 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/urls.py changed, reloading.
+2025-01-21 05:12:07,359 - 76682 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.
+2025-01-21 05:14:59,087 - 78567 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/urls.py changed, reloading.
+2025-01-21 05:16:15,006 - 79102 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/urls.py changed, reloading.
+2025-01-21 05:20:37,812 - 79359 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-21 05:21:05,094 - 80195 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-21 05:22:59,050 - 80284 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.
+2025-01-21 05:24:04,643 - 80621 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-21 05:25:52,734 - 80832 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.
+2025-01-21 05:29:21,387 - 81156 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-21 05:36:09,324 - 81782 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-21 05:37:41,336 - 83019 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-21 05:39:11,807 - 83303 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/settings.py changed, reloading.
+2025-01-21 05:40:00,894 - 83589 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-21 05:42:49,128 - 83737 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-21 05:44:53,884 - 84247 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-21 05:48:05,390 - 84889 - ERROR: Internal Server Error: /modifyMembership
+Traceback (most recent call last):
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+  File "/Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py", line 320, in modify_membership
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 199, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 257, in iterencode
+    return _iterencode(o, 0)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type Exception is not JSON serializable
+2025-01-21 05:52:17,404 - 84889 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-21 05:57:33,589 - 86536 - ERROR: Internal Server Error: /modifyMembership
+Traceback (most recent call last):
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+  File "/Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py", line 327, in modify_membership
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 199, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 257, in iterencode
+    return _iterencode(o, 0)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type Exception is not JSON serializable
+2025-01-21 05:57:53,502 - 86536 - ERROR: Internal Server Error: /modifyMembership
+Traceback (most recent call last):
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 56, in wrapper_view
+    return view_func(*args, **kwargs)
+  File "/Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py", line 327, in modify_membership
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 199, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 257, in iterencode
+    return _iterencode(o, 0)
+  File "/Users/vincenschan/anaconda3/envs/Y-Club-py3.10/lib/python3.10/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type Exception is not JSON serializable
+2025-01-21 06:01:38,109 - 87700 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/settings.py changed, reloading.
+2025-01-21 06:16:25,065 - 87819 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/wxpay/wechatpayv3/marketing.py changed, reloading.
+2025-01-21 06:21:04,753 - 90633 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/settings.py changed, reloading.
+2025-01-21 06:32:53,219 - 91843 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/util/external_api.py changed, reloading.
+2025-01-21 06:33:06,125 - 93984 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/util/external_api.py changed, reloading.
+2025-01-21 06:34:53,340 - 94037 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/util/external_api.py changed, reloading.
+2025-01-21 07:22:11,126 - 94397 - DEBUG: Request url: https://api.mch.weixin.qq.com/v3/pay/transactions/jsapi
+2025-01-21 07:22:11,129 - 94397 - DEBUG: Request type: POST
+2025-01-21 07:22:11,129 - 94397 - DEBUG: Request headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'User-Agent': 'wechatpay v3 api python sdk(https://github.com/minibear2021/wechatpayv3)', 'Authorization': 'WECHATPAY2-SHA256-RSA2048 mchid="1704578643",nonce_str="3FD389D8D2524D77AF80B34C0111BA4E",signature="NLYBDKoBxv3ISTwna+fE8eMNkG3cGVFel1MDtv0/g+RfD1uk7GqvCJz1DsIPZ5BYn8RRbE1ZnZnU5u8ZA2Vc3/ZBZsbDgtf95ZaFc1nnBLPvtpWi6YDsPFR/12DJfAlxIYNFz66C6DRUI1tceQ9aLruqUXzWd+oVnTrx/911ymGcgLno0t/kY9Wphe5wib9wlTxjpEtvD+U1yk9VvY3jzpohZhTqvXTg59SLXThwu0PFmGa4Rt+9DBd2t7b4gF00X4MKOhiFzbmtWqIN978+B+r71Hs+UTQKnG4BVaQo7kTB1wjzBL8LieA2RS90N5y78wKHrhpZYZUleyah2ZIeRA==",timestamp="1737444131",serial_no="5DA0AED191E6B1FE6B165CA286D3F31B56CBE7D5"'}
+2025-01-21 07:22:11,129 - 94397 - DEBUG: Request params: {'notify_url': 'https://110.41.176.114:80/notifyOrder', 'description': 'Y-Club WXminPay', 'out_trade_no': '1737381808-4990', 'amount': {'total': 1}, 'payer': {'openid': 'o1737444118761MXX064eQVh2Ut3vzTpe8ku1SSAE'}, 'appid': 'wxf07870791f65ca07', 'mchid': '1704578643'}
+2025-01-21 07:22:11,147 - 94397 - DEBUG: Starting new HTTPS connection (1): api.mch.weixin.qq.com:443
+2025-01-21 07:22:11,524 - 94397 - DEBUG: https://api.mch.weixin.qq.com:443 "POST /v3/pay/transactions/jsapi HTTP/1.1" 400 50
+2025-01-21 07:22:11,524 - 94397 - DEBUG: Response status code: 400
+2025-01-21 07:22:11,525 - 94397 - DEBUG: Response headers: {'Server': 'nginx', 'Date': 'Tue, 21 Jan 2025 07:22:11 GMT', 'Content-Type': 'application/json; charset=utf-8', 'Content-Length': '50', 'Connection': 'keep-alive', 'Keep-Alive': 'timeout=8', 'Cache-Control': 'no-cache, must-revalidate', 'X-Content-Type-Options': 'nosniff', 'Request-ID': '08A396BDBC0610A70318D1D28C5820BDA10128CEA804-268501090', 'Content-Language': 'zh-CN', 'Wechatpay-Nonce': '7168e4c22fabeebd2b12ff4789a22885', 'Wechatpay-Signature': 'nk7syshJ3RsMv3/A4HkgmGUpuyBPvR7DgVQn01grmQTUzMv5lQonWiI348UNqH4Czwbq75DQ3hLovu0yYBlXp2yK4SXkavcuzd+CJ4PymRFwbbHf6gjxLjfd2xL9LDRjYacII8uYX1X9bsG2cOS6vWW02uLvihrA/nEeHQagjKihmzgfPCSsqCRpOwiDLL3AeIBDUmhphj6Iu4U76DeTCGErClsjpBhW3/tJCoumM26Ih89Ti6m5aTTxtDkg+xDeVaUhXpmLLmNQ6xi7UXhR5zJ6E3ydh/ahTIDXoOL4NzzhqEwEgyeI6VnehLHxeSXHcEXhhaWSYbPcad9S2oV8PQ==', 'Wechatpay-Timestamp': '1737444131', 'Wechatpay-Serial': 'PUB_KEY_ID_0117045786432025011400326400001236', 'Wechatpay-Signature-Type': 'WECHATPAY2-SHA256-RSA2048'}
+2025-01-21 07:22:11,525 - 94397 - DEBUG: Response content: {"code":"PARAM_ERROR","message":"无效的openid"}
+2025-01-21 07:23:00,638 - 94397 - DEBUG: Request url: https://api.mch.weixin.qq.com/v3/pay/transactions/jsapi
+2025-01-21 07:23:00,638 - 94397 - DEBUG: Request type: POST
+2025-01-21 07:23:00,638 - 94397 - DEBUG: Request headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'User-Agent': 'wechatpay v3 api python sdk(https://github.com/minibear2021/wechatpayv3)', 'Authorization': 'WECHATPAY2-SHA256-RSA2048 mchid="1704578643",nonce_str="3C94894D82324569811C0134F8247342",signature="sj6pgK8nzWXAgeJf3xgslckf6kbw9CnMUKRu3mTOCJorxj9wp4x6jDYOgFntJWCTaq5skxSydodh+C5nUA+LRIVNbTI/f0pTnSmzds8DxD5woczHM6LzYY2UnCLCw2atrqqnIiUch2yJCh0CqvdQBI23l5M2D+Ykz+gCTn3d55P/BUsfI3LkP3C0ccnvsPKl8D3F22SpHkkAJrEEABT8Zq2smwzcmuJKaHZml2cQ/veJiXBLgje9i/9VPdzFGsw8jWrPcCTJM/4n2XD7+/xYCYO6+nsAyg3ttfJA6PkpKJjk4Bfgydr/l9ejPsT//06aG1xXduPtOKNTvQrWMnUkwQ==",timestamp="1737444180",serial_no="5DA0AED191E6B1FE6B165CA286D3F31B56CBE7D5"'}
+2025-01-21 07:23:00,638 - 94397 - DEBUG: Request params: {'notify_url': 'https://110.41.176.114:80/notifyOrder', 'description': 'Y-Club WXminPay', 'out_trade_no': '1737381808-4990', 'amount': {'total': 1}, 'payer': {'openid': 'o1737444118761MXX064eQVh2Ut3vzTpe8ku1SSAE'}, 'appid': 'wxf07870791f65ca07', 'mchid': '1704578643'}
+2025-01-21 07:23:00,640 - 94397 - DEBUG: Starting new HTTPS connection (1): api.mch.weixin.qq.com:443
+2025-01-21 07:23:01,084 - 94397 - DEBUG: https://api.mch.weixin.qq.com:443 "POST /v3/pay/transactions/jsapi HTTP/1.1" 400 50
+2025-01-21 07:23:01,085 - 94397 - DEBUG: Response status code: 400
+2025-01-21 07:23:01,085 - 94397 - DEBUG: Response headers: {'Server': 'nginx', 'Date': 'Tue, 21 Jan 2025 07:23:01 GMT', 'Content-Type': 'application/json; charset=utf-8', 'Content-Length': '50', 'Connection': 'keep-alive', 'Keep-Alive': 'timeout=8', 'Cache-Control': 'no-cache, must-revalidate', 'X-Content-Type-Options': 'nosniff', 'Request-ID': '08D596BDBC06100618C9A8EEA30620B8EE2028BD2E-268501090', 'Content-Language': 'zh-CN', 'Wechatpay-Nonce': '7a4c4413e5a42b80abe99824b3e62fda', 'Wechatpay-Signature': 'svlqUD4GeyeiXbxPnm9AeZY1uJCy+9pNv+OJ9Ca+P6g/Y6a8htLJx2iFaCb4zbnGoMOvxRx89mlcdo52gJNp3+BCCemG1j0OmGrkD5hG7CU9LUPEINttjlCySiNZChi6Ez+/4JGw5diupVTgBgnF+vjy9cm84gkIDSY4plODXkkdqX7HzT/Zbw0etkaB2SG5aN5zF5IfnKCLGM7VxWD3Tc/wDzdC4qj1KdUGXCAx0th3sh3KwMsXqdWql3gZYsjvrwSBi09OtAFCm/8IQTTGHL48OGhZ/nGsxHf59z/qNOUONN9nhrHRXLYWU/CTmbrQT8zxWYciRhPjuP+AtiJcNg==', 'Wechatpay-Timestamp': '1737444181', 'Wechatpay-Serial': 'PUB_KEY_ID_0117045786432025011400326400001236', 'Wechatpay-Signature-Type': 'WECHATPAY2-SHA256-RSA2048'}
+2025-01-21 07:23:01,085 - 94397 - DEBUG: Response content: {"code":"PARAM_ERROR","message":"无效的openid"}
+2025-01-21 07:25:15,782 - 4043 - DEBUG: Starting new HTTPS connection (1): api.weixin.qq.com:443
+2025-01-21 07:25:16,050 - 4043 - DEBUG: https://api.weixin.qq.com:443 "GET /sns/jscode2session?appid=wxf07870791f65ca07&secret=b583d5d85d03874c0db4922f49b06827&js_code=0c1wFGkl2l3OUe4z1kll2EXiEF4wFGkM&grant_type=authorization_code HTTP/1.1" 200 76
+2025-01-21 07:25:27,275 - 4043 - DEBUG: Starting new HTTPS connection (1): api.weixin.qq.com:443
+2025-01-21 07:25:27,538 - 4043 - DEBUG: https://api.weixin.qq.com:443 "GET /sns/jscode2session?appid=wxf07870791f65ca07&secret=b583d5d85d03874c0db4922f49b06827&js_code=0e1IYell2vR8Ue4NGunl2ylWfd4IYelq&grant_type=authorization_code HTTP/1.1" 200 82
+2025-01-21 07:25:46,242 - 4043 - DEBUG: Request url: https://api.mch.weixin.qq.com/v3/pay/transactions/jsapi
+2025-01-21 07:25:46,242 - 4043 - DEBUG: Request type: POST
+2025-01-21 07:25:46,243 - 4043 - DEBUG: Request headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'User-Agent': 'wechatpay v3 api python sdk(https://github.com/minibear2021/wechatpayv3)', 'Authorization': 'WECHATPAY2-SHA256-RSA2048 mchid="1704578643",nonce_str="D77C7D0B12614C94881EAF3DAB1F32D7",signature="invzc2kT8qE1xsnOVhkX0PDsSORULcc+9R8jB3V/efx6WD+eMEefO694Nwtf8OMA/OCG/toyFBCoQO64iljb3MGshF9wepZJggjTINH6PnZ8e1b+L+RfILXthndkGJ3TQwS+pRis1JwZOk2/DkywKVoJ1P7L5j9mOvpOWek6004iIeMTNcpmniOueiz/WuOFaeOMotkhxY8oojoY3k9uEMno12IGyfKXZtvbsFI8DaokIHS0tH/BUGfZftIhS6QTPJBzzBrjMPgkVJhrZkP5A6AtVVLRr6JtFtoJjtFXQ5IPy73KbCQtGzW5wGnrmQKncmbTiOX99dPh2jORio/oBw==",timestamp="1737444346",serial_no="5DA0AED191E6B1FE6B165CA286D3F31B56CBE7D5"'}
+2025-01-21 07:25:46,243 - 4043 - DEBUG: Request params: {'notify_url': 'https://110.41.176.114:80/notifyOrder', 'description': 'Y-Club WXminPay', 'out_trade_no': '1737381808-4990', 'amount': {'total': 1}, 'payer': {'openid': 'o1737444327539MXX064eQVh2Ut3vzTpe8ku1SSAE'}, 'appid': 'wxf07870791f65ca07', 'mchid': '1704578643'}
+2025-01-21 07:25:46,246 - 4043 - DEBUG: Starting new HTTPS connection (1): api.mch.weixin.qq.com:443
+2025-01-21 07:25:46,561 - 4043 - DEBUG: https://api.mch.weixin.qq.com:443 "POST /v3/pay/transactions/jsapi HTTP/1.1" 400 50
+2025-01-21 07:25:46,562 - 4043 - DEBUG: Response status code: 400
+2025-01-21 07:25:46,563 - 4043 - DEBUG: Response headers: {'Server': 'nginx', 'Date': 'Tue, 21 Jan 2025 07:25:46 GMT', 'Content-Type': 'application/json; charset=utf-8', 'Content-Length': '50', 'Connection': 'keep-alive', 'Keep-Alive': 'timeout=8', 'Cache-Control': 'no-cache, must-revalidate', 'X-Content-Type-Options': 'nosniff', 'Request-ID': '08FA97BDBC0610F50318C4958EAA01208FB50D28878B06-268501090', 'Content-Language': 'zh-CN', 'Wechatpay-Nonce': '91d200ae88a8ae421900eff479acda73', 'Wechatpay-Signature': 'C0rNYp3Kt0qiAWDeCZ+uzD0Wb8d7hakrWaxQqXmPou7CtRwwVlM9auYshbTbiJVqvYzxMLVbGSLtvD+vC8OTKAf4k8mG2a1F3JvvHM49Qa0OcjTSnVT17PXujKqgoXSHXlx2S0BMny6m8cgQpI7hSzqxbvV3+mo4069bs5sv6FwFEJElr0PQfYNMucFvpJbH+xrNO0TA3KYKSSEK4T26+IV+ozKadFT50Q3u9TuNx0/niH2SfBCdn4sYg4oWEQFKtmQruqm0jjr1Y1USQkmJII8ra+GWdecMG4lSpW+G2t120zWBVPqiG5oym3clVKecQK3EUuHPryx3jxDUNaIo9Q==', 'Wechatpay-Timestamp': '1737444346', 'Wechatpay-Serial': 'PUB_KEY_ID_0117045786432025011400326400001236', 'Wechatpay-Signature-Type': 'WECHATPAY2-SHA256-RSA2048'}
+2025-01-21 07:25:46,563 - 4043 - DEBUG: Response content: {"code":"PARAM_ERROR","message":"无效的openid"}
+2025-01-21 07:26:15,061 - 4043 - DEBUG: Request url: https://api.mch.weixin.qq.com/v3/pay/transactions/jsapi
+2025-01-21 07:26:15,062 - 4043 - DEBUG: Request type: POST
+2025-01-21 07:26:15,066 - 4043 - DEBUG: Request headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'User-Agent': 'wechatpay v3 api python sdk(https://github.com/minibear2021/wechatpayv3)', 'Authorization': 'WECHATPAY2-SHA256-RSA2048 mchid="1704578643",nonce_str="600A6385320D4F439F903BB8C9ADEAB2",signature="bZKSDvQFej8gS8LaeNLY7ow++83RDBLrxk6ZMKX5nZAo3hsUZdbopl3jbmZYQ2ZSetw/lkok6nONRYFpl7BvccYAPMnI1Y0WWXiZXXAlcgujyb6UkQyhRVMl5s34qtVyTbXxKzmB0hXIzUdGt4qqpO7niCN57RVBAD1R/mXofgHp1BuNk9XDCu39XeGlr/8S3U/i8jl+lcEhVCQ9a4wUBPThhGTiOGVapI+IAkRyYUj0fikTmcHfeL4/yAScsdRwAHrYiHAqxD/8V6b2mUdZGbiaZdlduK3/3Ww3o96MLcS8yeUTreOGnNTYd5eqdmXmhoVv4+ddhvvMPbibb/ik2w==",timestamp="1737444375",serial_no="5DA0AED191E6B1FE6B165CA286D3F31B56CBE7D5"'}
+2025-01-21 07:26:15,067 - 4043 - DEBUG: Request params: {'notify_url': 'https://110.41.176.114:80/notifyOrder', 'description': 'Y-Club WXminPay', 'out_trade_no': '1737381808-4990', 'amount': {'total': 1}, 'payer': {'openid': 'o1737444327539MXX064eQVh2Ut3vzTpe8ku1SSAE'}, 'appid': 'wxf07870791f65ca07', 'mchid': '1704578643'}
+2025-01-21 07:26:15,077 - 4043 - DEBUG: Starting new HTTPS connection (1): api.mch.weixin.qq.com:443
+2025-01-21 07:26:15,416 - 4043 - DEBUG: https://api.mch.weixin.qq.com:443 "POST /v3/pay/transactions/jsapi HTTP/1.1" 400 50
+2025-01-21 07:26:15,417 - 4043 - DEBUG: Response status code: 400
+2025-01-21 07:26:15,417 - 4043 - DEBUG: Response headers: {'Server': 'nginx', 'Date': 'Tue, 21 Jan 2025 07:26:15 GMT', 'Content-Type': 'application/json; charset=utf-8', 'Content-Length': '50', 'Connection': 'keep-alive', 'Keep-Alive': 'timeout=8', 'Cache-Control': 'no-cache, must-revalidate', 'X-Content-Type-Options': 'nosniff', 'Request-ID': '089798BDBC0610D6021890D28C5820EBDE0328989903-268501090', 'Content-Language': 'zh-CN', 'Wechatpay-Nonce': '982240215f06672e7ad8e0e08a9a9268', 'Wechatpay-Signature': 'fsa/PyU6aJvgsmmYMmB3lUeNKbFq6ZhjF0hne7aNerN+jHsW1lYGB+rfXaEaVcThEwj2m9C/2K3E+MeWw3GQwI3SOENhFiNUE5DkSGDSR/aSdjPFEqo1RTicMkkhOtMdEYubWR5VlgJopr+fR67e/ehafgKdrCqS6bAJo1MpzgBkhcrUPyq8v0GLRKZKZXGyvwqg5z0twetExn5a6ElLPXkyI6Cc6PwZc/+PcDulApynwBkQ5PiLeRiHgFMz9Px3YEdd9ARkHSAokqDo+7LUEpNBrUoPtOtyNM9uCJe3+3nXduDRxBSuDaOr2MxQAHcFo4UqiKDw4te0cfZWnY+r8A==', 'Wechatpay-Timestamp': '1737444375', 'Wechatpay-Serial': 'PUB_KEY_ID_0117045786432025011400326400001236', 'Wechatpay-Signature-Type': 'WECHATPAY2-SHA256-RSA2048'}
+2025-01-21 07:26:15,418 - 4043 - DEBUG: Response content: {"code":"PARAM_ERROR","message":"无效的openid"}
+2025-01-21 07:27:11,217 - 4466 - DEBUG: Request url: https://api.mch.weixin.qq.com/v3/pay/transactions/jsapi
+2025-01-21 07:27:11,218 - 4466 - DEBUG: Request type: POST
+2025-01-21 07:27:11,218 - 4466 - DEBUG: Request headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'User-Agent': 'wechatpay v3 api python sdk(https://github.com/minibear2021/wechatpayv3)', 'Authorization': 'WECHATPAY2-SHA256-RSA2048 mchid="1704578643",nonce_str="BB0C0DAB914D4A5D95C204AB73EF66BA",signature="I/8Fr8poyr2abWnF8MqyaulLlyTys/tSKz2c57y6rsR2jdKQgWjB4IEwzKFtTmNXrpnoqNiUMpOoslaZHcvqW3MEyQKM5axpJF0nmYeK5Xf9rMhba9UdpDTL8tbBTiE1BG5m4DRfgGSqtLMXQkmwOVqT4IDoO33WugKoX/EyKdkwGLQjKFwClM1NOjdiK/2VzbknIJSyXWDCiiw8Oi2ZRRW4AkXbcTnclOdP6K8XowksV73yRWwATt8SEp8KwuBIhhn0CKG4rO4woxUOGcQ8oGWDmOg011vOle/M6ht8mIAuMGRwhV9rd2NNsYhcCC497kM7Zcs9VupIHKfEWsivAw==",timestamp="1737444431",serial_no="5DA0AED191E6B1FE6B165CA286D3F31B56CBE7D5"'}
+2025-01-21 07:27:11,218 - 4466 - DEBUG: Request params: {'notify_url': 'https://110.41.176.114:80/notifyOrder', 'description': 'Y-Club WXminPay', 'out_trade_no': '1737381808-4990', 'amount': {'total': 1}, 'payer': {'openid': 'o1737444327539MXX064eQVh2Ut3vzTpe8ku1SSAE'}, 'appid': 'wxf07870791f65ca07', 'mchid': '1704578643'}
+2025-01-21 07:27:11,227 - 4466 - DEBUG: Starting new HTTPS connection (1): api.mch.weixin.qq.com:443
+2025-01-21 07:27:11,505 - 4466 - DEBUG: https://api.mch.weixin.qq.com:443 "POST /v3/pay/transactions/jsapi HTTP/1.1" 400 50
+2025-01-21 07:27:11,506 - 4466 - DEBUG: Response status code: 400
+2025-01-21 07:27:11,506 - 4466 - DEBUG: Response headers: {'Server': 'nginx', 'Date': 'Tue, 21 Jan 2025 07:27:11 GMT', 'Content-Type': 'application/json; charset=utf-8', 'Content-Length': '50', 'Connection': 'keep-alive', 'Keep-Alive': 'timeout=8', 'Cache-Control': 'no-cache, must-revalidate', 'X-Content-Type-Options': 'nosniff', 'Request-ID': '08CF98BDBC0610CB0318AAAEEFA90120B1C01128CDFA02-268501090', 'Content-Language': 'zh-CN', 'Wechatpay-Nonce': 'a1b1aaefaea60f2c3df3191a378c4d9b', 'Wechatpay-Signature': 'UwY+/5KKPdQYRbVEFtbfula4mWGSzWxPCgz+J2/k+QgWuNLZ1iTYAyVqGiWVFQOWHrMIKwjUtgZ2MKvabndgiIcLMo1PweLIRnnDrUtGPA98QjzQg6ofIxWC390jq7uSCVZs1eoy/8Ks2KJYtTouHo3HaAg1tMh+KMglnvgesu/2lXOuIpkTTtgLriWWl2JVBim7N9AYZgTJSQBMgi9ApbhpBic/gr/keePL9OQ9L1JP4ZydjtsjT0TOEmpRT8CKUInocUuIakOt0FmQD08ovKqmvHduvevs1CxY+Q4/dxAdDyGZZkLutIDUpz6zb20FGzT2hzLQVuvuIwSAxnGAcg==', 'Wechatpay-Timestamp': '1737444431', 'Wechatpay-Serial': 'PUB_KEY_ID_0117045786432025011400326400001236', 'Wechatpay-Signature-Type': 'WECHATPAY2-SHA256-RSA2048'}
+2025-01-21 07:27:11,506 - 4466 - DEBUG: Response content: {"code":"PARAM_ERROR","message":"无效的openid"}
+2025-01-21 07:27:35,966 - 4533 - DEBUG: Request url: https://api.mch.weixin.qq.com/v3/pay/transactions/jsapi
+2025-01-21 07:27:35,968 - 4533 - DEBUG: Request type: POST
+2025-01-21 07:27:35,969 - 4533 - DEBUG: Request headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'User-Agent': 'wechatpay v3 api python sdk(https://github.com/minibear2021/wechatpayv3)', 'Authorization': 'WECHATPAY2-SHA256-RSA2048 mchid="1704578643",nonce_str="0520D3FC0B3B4674B3843EFE9E2DDBC7",signature="Bujgy5t6reqLBWnZJ/5xNdDISMk+zSPzG+/FkwV/n6FRvcyHFGecJD6xRt/60RjW1CxLDVBghWqhrL5Y/jHOM27N/QzmUEKftUeLwh2Ny7aiK5QWnkJqLxeIB0KvJ6QBhmJIm5mNVjnYTlI4yHZnzC2j/BEIdanNrSvTZc30v9c8H/VWFC57NlB5waVJdn1W2zd24OR5npm7AXWDsER01AHQyX+yZR2zmrgA4aECIFiNfIPiVtMdKmoW0lT2pc0WxGB0wWU8oa7rq6A2+ISZpSBvm69tr7XRTda6nRGPzeXBGWne4qOIzGM5x3nW0N06eNs2C3HV9qiJ2BfLBTN6bA==",timestamp="1737444455",serial_no="5DA0AED191E6B1FE6B165CA286D3F31B56CBE7D5"'}
+2025-01-21 07:27:35,969 - 4533 - DEBUG: Request params: {'notify_url': 'https://110.41.176.114:80/notifyOrder', 'description': 'Y-Club WXminPay', 'out_trade_no': '1737381808-4990', 'amount': {'total': 1}, 'payer': {'openid': 'o1737444327539MXX064eQVh2Ut3vzTpe8ku1SSAE'}, 'appid': 'wxf07870791f65ca07', 'mchid': '1704578643'}
+2025-01-21 07:27:36,000 - 4533 - DEBUG: Starting new HTTPS connection (1): api.mch.weixin.qq.com:443
+2025-01-21 07:27:36,313 - 4533 - DEBUG: https://api.mch.weixin.qq.com:443 "POST /v3/pay/transactions/jsapi HTTP/1.1" 400 50
+2025-01-21 07:27:36,314 - 4533 - DEBUG: Response status code: 400
+2025-01-21 07:27:36,314 - 4533 - DEBUG: Response headers: {'Server': 'nginx', 'Date': 'Tue, 21 Jan 2025 07:27:36 GMT', 'Content-Type': 'application/json; charset=utf-8', 'Content-Length': '50', 'Connection': 'keep-alive', 'Keep-Alive': 'timeout=8', 'Cache-Control': 'no-cache, must-revalidate', 'X-Content-Type-Options': 'nosniff', 'Request-ID': '08E898BDBC0610840218AAB6C05520DCFA022883DF03-268501090', 'Content-Language': 'zh-CN', 'Wechatpay-Nonce': '02dc7679d4851ce79ecc27e1ae07dc12', 'Wechatpay-Signature': 'WDwR3D5w9TwFPxmhEY7QJBPLcKNTh+t8ZmmRCDCZqmUV1iJ/HrSK6RJaM0WoXYNGMCEz9gs4nuEollcB7Drzhi6PYxAZTtCqzyugIm9p4mSuiLdc8ffjgDFCuumRZ14kIkaToEctJVLxJt8P+EJDU/+UzJ4P+7SYbft7+mhpwahBEyUzq5dk/3i5fqgW8/5J1llKHXcipT5MHw9SCjTxceGDB9gRbJq/dQL76htTlwhr46E4jSu1ZeSMndy28DUqBzVsgt0pYjTOWiQdooOtwrINsruX/QzmOuyA+rtSyRwiqMtpoZ8GmA7ngrzePtXaHV2/D0zm1ymq4KPlMTl7CA==', 'Wechatpay-Timestamp': '1737444456', 'Wechatpay-Serial': 'PUB_KEY_ID_0117045786432025011400326400001236', 'Wechatpay-Signature-Type': 'WECHATPAY2-SHA256-RSA2048'}
+2025-01-21 07:27:36,314 - 4533 - DEBUG: Response content: {"code":"PARAM_ERROR","message":"无效的openid"}
+2025-01-21 07:28:03,377 - 4631 - DEBUG: Request url: https://api.mch.weixin.qq.com/v3/pay/transactions/jsapi
+2025-01-21 07:28:03,377 - 4631 - DEBUG: Request type: POST
+2025-01-21 07:28:03,378 - 4631 - DEBUG: Request headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'User-Agent': 'wechatpay v3 api python sdk(https://github.com/minibear2021/wechatpayv3)', 'Authorization': 'WECHATPAY2-SHA256-RSA2048 mchid="1704578643",nonce_str="10490E1652B84D9C902FC3D729FB1E89",signature="vqzdwQ/aLHZtkfIBDZjJp+7tQo5TeBGJcmqeyySQRTt7dIFjp6d9OJvvOQDs1cT4e8LySKaJXjvhC0LtnRMPveNSBEDXF8BxoTHZghQz4SoI1OmHM+5UNlVa0/V+j+C3ACzvJ/xgO24glxpJhmdBezcLdi/fdPAUt4nbrCtnzp+I15AAWFDXGSNML9bc7RKYn9NzK9OD0Kw9FUpbXVKdhutMq9AspaVmimiJfo+F2xeuxq1GzV2u160dSaD5tXtERR3m7ICx/zLtip5H2nG8rWF4XDr2rF/7lU4xH0crv/V+YCu997OBcImvl9zwk7EP5y3M6X8iQKQu6hM6pE100A==",timestamp="1737444483",serial_no="5DA0AED191E6B1FE6B165CA286D3F31B56CBE7D5"'}
+2025-01-21 07:28:03,378 - 4631 - DEBUG: Request params: {'notify_url': 'https://110.41.176.114:80/notifyOrder', 'description': 'Y-Club WXminPay', 'out_trade_no': '1737381808-4990', 'amount': {'total': 1}, 'payer': {'openid': 'o1737444327539MXX064eQVh2Ut3vzTpe8ku1SSAE'}, 'appid': 'wxf07870791f65ca07', 'mchid': '1704578643'}
+2025-01-21 07:28:03,387 - 4631 - DEBUG: Starting new HTTPS connection (1): api.mch.weixin.qq.com:443
+2025-01-21 07:28:03,686 - 4631 - DEBUG: https://api.mch.weixin.qq.com:443 "POST /v3/pay/transactions/jsapi HTTP/1.1" 400 50
+2025-01-21 07:28:03,687 - 4631 - DEBUG: Response status code: 400
+2025-01-21 07:28:03,687 - 4631 - DEBUG: Response headers: {'Server': 'nginx', 'Date': 'Tue, 21 Jan 2025 07:28:03 GMT', 'Content-Type': 'application/json; charset=utf-8', 'Content-Length': '50', 'Connection': 'keep-alive', 'Keep-Alive': 'timeout=8', 'Cache-Control': 'no-cache, must-revalidate', 'X-Content-Type-Options': 'nosniff', 'Request-ID': '088399BDBC06108F0518CD828EAA01209AD60D288AE602-268501090', 'Content-Language': 'zh-CN', 'Wechatpay-Nonce': '821f4a2b25d2d983c201ad76a80209b3', 'Wechatpay-Signature': 'RgpgboGje/+qJNf/+sM3Jae08xq2WAYaVhW9ftNJo/GfPzU0s8dGy2cJYJ/x7tgP+tF4f1s8CFPYgm3R3Hx4w0IFVwmRRH834ig4CzMwdfHjsloE4KREvO+5LPzShvq2ZHWsHkuSGOSBc6gyXJvzsWgeD89CH4ldWMcFW/TxZXjaMaal1iDroQj4r3KD6GDWD8PS0qaL9yUPTcmkO0j317eLTAGzOuG1spawJkI7RIta1UdMKoIEG1u/7+lfw51PgAjcN5SqVPVdJI/htMmgMaZo+7fjNdNeU1QyCxCDLcJSzqlpVsyV/kHwpld8Eo9tv8Dw6K9uM82qfBUPQFnUCQ==', 'Wechatpay-Timestamp': '1737444483', 'Wechatpay-Serial': 'PUB_KEY_ID_0117045786432025011400326400001236', 'Wechatpay-Signature-Type': 'WECHATPAY2-SHA256-RSA2048'}
+2025-01-21 07:28:03,687 - 4631 - DEBUG: Response content: {"code":"PARAM_ERROR","message":"无效的openid"}

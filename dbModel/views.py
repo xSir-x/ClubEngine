@@ -4,10 +4,12 @@ from django.shortcuts import render
 from django.views import View
 from dbModel.models import ActivityInfoTable, MerchantInfoTable, UserInforTable, MerchantMaskTable, ActsMarkTable, \
     UserOrderTable
-from django.utils import timezone
+# from django.utils import timezone
+import time
 from datetime import datetime
 from django.core.cache import cache
 from util.external_api import store_in_redis, retrieve_from_redis
+
 
 ## 活动板块
 class addFavActivity(View):
@@ -22,20 +24,21 @@ class addFavActivity(View):
         """
         message = "ok!"
         try:
+            mask_time = str(int(time.time()))
             fav_act_obj = ActsMarkTable.objects.filter(uid=uid, act_id=act_id)
             if fav_act_obj.exists():
                 is_mark = fav_act_obj.values("is_mark")[0]["is_mark"]
                 if need_fav:
                     if is_mark != 1:
-                        ActsMarkTable.objects.filter(uid=uid, act_id=act_id).update(is_mark=1, mask_time=timezone.now())
+                        ActsMarkTable.objects.filter(uid=uid, act_id=act_id).update(is_mark=1, mask_time=mask_time)
                 else:
                     if is_mark != 0:
-                        ActsMarkTable.objects.filter(uid=uid, act_id=act_id).update(is_mark=0, mask_time=timezone.now())
+                        ActsMarkTable.objects.filter(uid=uid, act_id=act_id).update(is_mark=0, mask_time=mask_time)
             else:
                 if need_fav:
-                    ActsMarkTable.objects.create(uid=uid, act_id=act_id, is_mark=1, mask_time=timezone.now())
+                    ActsMarkTable.objects.create(uid=uid, act_id=act_id, is_mark=1, mask_time=mask_time)
                 else:
-                    ActsMarkTable.objects.filter(uid=uid, act_id=act_id).update(is_mark=0, mask_time=timezone.now())
+                    ActsMarkTable.objects.filter(uid=uid, act_id=act_id).update(is_mark=0, mask_time=mask_time)
             return 1, message
         except IOError:
             message = "【addFavActivity】数据库【ActsMarkTable】操作收藏活动失败..."
@@ -278,23 +281,24 @@ class addCoopFav(View):
         """
         message = "ok!"
         try:
+            mask_time = str(int(time.time()))
             fav_act_obj = MerchantMaskTable.objects.filter(uid=uid, coop_id=coop_id)
             if fav_act_obj.exists():
                 is_mark = fav_act_obj.values("is_mark")[0]["is_mark"]
                 if need_fav:
                     if is_mark != 1:
                         MerchantMaskTable.objects.filter(uid=uid, coop_id=coop_id).update(is_mark=1,
-                                                                                          mask_time=timezone.now())
+                                                                                          mask_time=mask_time)
                 else:
                     if is_mark != 0:
                         MerchantMaskTable.objects.filter(uid=uid, coop_id=coop_id).update(is_mark=0,
-                                                                                          mask_time=timezone.now())
+                                                                                          mask_time=mask_time)
             else:
                 if need_fav:
-                    MerchantMaskTable.objects.create(uid=uid, coop_id=coop_id, is_mark=1, mask_time=timezone.now())
+                    MerchantMaskTable.objects.create(uid=uid, coop_id=coop_id, is_mark=1, mask_time=mask_time)
                 else:
                     MerchantMaskTable.objects.filter(uid=uid, coop_id=coop_id).update(is_mark=0,
-                                                                                      mask_time=timezone.now())
+                                                                                      mask_time=mask_time)
             return 1, message
         except IOError:
             print("【addCoopFav】收藏商家异常...")
@@ -404,7 +408,8 @@ class getOneCoopDetail(View):
             raise Exception("【getOneCoopDetail】获取合作商家失败...")
 
 
-## 会员板块
+## TODO：会员板块
+
 class getClubInfo(View):
     def execute(self, type):
         """获取商会信息"""
@@ -433,7 +438,7 @@ class getMemberInfo(View):
             raise Exception(e)
 
 
-class upgradeMembership(View):
+class registerMembership(View):
     def execute(self, uid, name, level, wechat, profile, email, phone_no, location, register_time):
         """
         注册会员:
@@ -463,5 +468,33 @@ class upgradeMembership(View):
                 return 1, "OK"
             else:
                 return 2, "Existed..."
+        except Exception as e:
+            return 0, e
+
+
+class modifyMembership(View):
+    def execute(self, uid, name=None, wechat=None, pic=None, profile=None, email=None, phone_no=None, location=None):
+        """会员信息修改"""
+        msg = ""
+        try:
+            check_obj = UserInforTable.objects.filter(uid=uid)
+            if not check_obj.exists():
+                msg = "异常用户，用户数据库无此人信息..."
+                return 0, msg
+            if name:
+                UserInforTable.objects.filter(uid=uid).update(name=name)
+            elif wechat:
+                UserInforTable.objects.filter(uid=uid).update(wechat=wechat)
+            elif pic:
+                UserInforTable.objects.filter(uid=uid).update(pic=pic)
+            elif profile:
+                UserInforTable.objects.filter(uid=uid).update(profile=profile)
+            elif email:
+                UserInforTable.objects.filter(uid=uid).update(email=email)
+            elif phone_no:
+                UserInforTable.objects.filter(uid=uid).update(phone_no=phone_no)
+            elif location:
+                UserInforTable.objects.filter(uid=uid).update(location=location)
+            return 1, "OK"
         except Exception as e:
             return 0, e

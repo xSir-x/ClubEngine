@@ -31,7 +31,8 @@ def parking_service_find(self, plate_number, plate_color, openid, sub_mchid=None
     return self._core.request(path)
 
 
-def parking_enter(self, out_parking_no, plate_number, plate_color, start_time, parking_name, free_duration, notify_url=None, sub_mchid=None):
+def parking_enter(self, out_parking_no, plate_number, plate_color, start_time, parking_name, free_duration,
+                  notify_url=None, sub_mchid=None):
     """创建停车入场
     :param out_parking_no: 商户入场id，商户侧入场标识id，在同一个商户号下唯一，示例值:'1231243'
     :param plate_number: 车牌号，示例值:'粤B888888'
@@ -81,7 +82,8 @@ def parking_enter(self, out_parking_no, plate_number, plate_color, start_time, p
 
 def parking_order(self, description, out_trade_no, total, parking_id, plate_number, plate_color, start_time,
                   end_time, parking_name, charging_duration, device_id, trade_scene='PARKING', profit_sharing='N',
-                  currency='CNY', attach=None, goods_tag=None, notify_url=None, appid=None, sub_appid=None, sub_mchid=None):
+                  currency='CNY', attach=None, goods_tag=None, notify_url=None, appid=None, sub_appid=None,
+                  sub_mchid=None):
     """停车扣费受理
     :param description: 服务描述，商户自定义字段，用于交易账单中对扣费服务的描述。示例值:'停车场扣费'
     :param out_trade_no: 商户订单号，商户系统内部订单号，只能是数字、大小写字母，且在同一个商户号下唯一，示例值:'20150806125346'

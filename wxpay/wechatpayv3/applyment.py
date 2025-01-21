@@ -3,7 +3,8 @@
 from .type import RequestType
 
 
-def applyment_submit(self, business_code, contact_info, subject_info, business_info, settlement_info, bank_account_info, addition_info=None):
+def applyment_submit(self, business_code, contact_info, subject_info, business_info, settlement_info, bank_account_info,
+                     addition_info=None):
     """提交申请单
     https://pay.weixin.qq.com/wiki/doc/apiv3_partner/apis/chapter10_1_1.shtml
     :param business_code: 业务申请编号，示例值:'APPLYMENT_00000000001'
@@ -95,7 +96,8 @@ def applyment_query(self, business_code=None, applyment_id=None):
     return self._core.request(path)
 
 
-def applyment_settlement_modify(self, sub_mchid, account_type, account_bank, bank_address_code, account_number, bank_name=None, bank_branch_id=None):
+def applyment_settlement_modify(self, sub_mchid, account_type, account_bank, bank_address_code, account_number,
+                                bank_name=None, bank_branch_id=None):
     """修改结算账号
     https://pay.weixin.qq.com/docs/partner/apis/modify-settlement/sub-merchants/modify-settlement.html
     :param sub_mchid: 特约商户号，示例值:'1511101111'

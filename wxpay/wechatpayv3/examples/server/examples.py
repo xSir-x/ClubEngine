@@ -36,7 +36,8 @@ NOTIFY_URL = 'https://www.xxxx.com/notify'
 CERT_DIR = None
 
 # 日志记录器，记录web请求和回调细节
-logging.basicConfig(filename=os.path.join(os.getcwd(), 'demo.log'), level=logging.DEBUG, filemode='a', format='%(asctime)s - %(process)s - %(levelname)s: %(message)s')
+logging.basicConfig(filename=os.path.join(os.getcwd(), 'demo.log'), level=logging.DEBUG, filemode='a',
+                    format='%(asctime)s - %(process)s - %(levelname)s: %(message)s')
 LOGGER = logging.getLogger("demo")
 
 # 接入模式:False=直连商户模式，True=服务商模式
@@ -46,7 +47,7 @@ PARTNER_MODE = False
 PROXY = None
 
 # 请求超时时间配置
-TIMEOUT = (10, 30) # 建立连接最大超时时间是10s，读取响应的最大超时时间是30s
+TIMEOUT = (10, 30)  # 建立连接最大超时时间是10s，读取响应的最大超时时间是30s
 
 # 微信支付平台公钥
 # 注：2024年09月后新申请的微信支付账号使用公钥模式初始化，需配置此参数。
@@ -223,6 +224,7 @@ def pay_app():
     else:
         return jsonify({'code': -1, 'result': {'reason': result.get('code')}})
 
+
 @app.route('/pay_codepay')
 def pay_codepay():
     # 以付款码支付为例，终端条码枪扫描用户付款码将解码后的auth_code放入payer传递给微信支付服务器扣款。
@@ -230,7 +232,7 @@ def pay_codepay():
     description = 'demo-description'
     amount = 1
     payer = {'auth_code': '130061098828009406'}
-    scene_info={'store_info' : {'id' : '0001'}}
+    scene_info = {'store_info': {'id': '0001'}}
     code, message = wxpay.pay(
         description=description,
         out_trade_no=out_trade_no,
@@ -251,6 +253,7 @@ def pay_codepay():
             return jsonify({'code': -1, 'result': {'reason': trade_state_desc}})
     else:
         return jsonify({'code': -1, 'result': {'reason': result.get('code')}})
+
 
 @app.route('/notify', methods=['POST'])
 def notify():

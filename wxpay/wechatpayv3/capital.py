@@ -53,7 +53,8 @@ def capital_branches(self, bank_alias_code, city_code, offset=0, limit=100):
     :param offset: 本次请求最大查询条数，示例值：100
     """
     if bank_alias_code and city_code:
-        path = '/v3/capital/capitallhh/banks/%s/branches?city_code=%s&offset=%s&limit=%s' % (bank_alias_code, city_code, offset, limit)
+        path = '/v3/capital/capitallhh/banks/%s/branches?city_code=%s&offset=%s&limit=%s' % (
+        bank_alias_code, city_code, offset, limit)
     else:
         raise Exception('bank_alias_code or city_code is not assigned.')
     return self._core.request(path)

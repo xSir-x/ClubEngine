@@ -13,7 +13,8 @@ from .utils import (aes_decrypt, build_authorization, hmac_sign, load_public_key
 
 
 class Core():
-    def __init__(self, mchid, cert_serial_no, private_key, apiv3_key, cert_dir=None, logger=None, proxy=None, timeout=None, public_key=None, public_key_id=None):
+    def __init__(self, mchid, cert_serial_no, private_key, apiv3_key, cert_dir=None, logger=None, proxy=None,
+                 timeout=None, public_key=None, public_key_id=None):
         self._proxy = proxy
         self._mchid = mchid
         self._cert_serial_no = cert_serial_no
@@ -27,7 +28,7 @@ class Core():
         self._public_key = load_public_key(public_key)
         self._public_key_id = public_key_id
         if (public_key is None) != (public_key_id is None):
-            raise Exception('public_key_id or public_key is not assigned.')            
+            raise Exception('public_key_id or public_key is not assigned.')
         if not public_key:
             self._init_certificates()
 
@@ -49,7 +50,8 @@ class Core():
                 nonce = encrypt_certificate.get('nonce')
                 associated_data = encrypt_certificate.get('associated_data')
                 ciphertext = encrypt_certificate.get('ciphertext')
-            if not (serial_no and effective_time and expire_time and algorithm and nonce and associated_data and ciphertext):
+            if not (
+                    serial_no and effective_time and expire_time and algorithm and nonce and associated_data and ciphertext):
                 continue
             cert_str = aes_decrypt(
                 nonce=nonce,
@@ -81,19 +83,19 @@ class Core():
         timestamp_mark = 'Wechatpay-Timestamp'
         nonce_mark = 'Wechatpay-Nonce'
         serial_mark = 'Wechatpay-Serial'
-        signature_type_mark = 'Wechatpay-Signature-Type'        
-        if headers.get('HTTP_WECHATPAY_SIGNATURE'): # 兼容django
+        signature_type_mark = 'Wechatpay-Signature-Type'
+        if headers.get('HTTP_WECHATPAY_SIGNATURE'):  # 兼容django
             signature_mark = 'HTTP_WECHATPAY_SIGNATURE'
             timestamp_mark = 'HTTP_WECHATPAY_TIMESTAMP'
             nonce_mark = 'HTTP_WECHATPAY_NONCE'
             serial_mark = 'HTTP_WECHATPAY_SERIAL'
             signature_type_mark = 'HTTP_WECHATPAY_SIGNATURE_TYPE'
-        if headers.get('wechatpay-signature'): # 兼容fastapi
+        if headers.get('wechatpay-signature'):  # 兼容fastapi
             signature_mark = 'wechatpay-signature'
             timestamp_mark = 'wechatpay-timestamp'
             nonce_mark = 'wechatpay-nonce'
             serial_mark = 'wechatpay-serial'
-            signature_type_mark = 'wechatpay-signature-type'            
+            signature_type_mark = 'wechatpay-signature-type'
         signature = headers.get(signature_mark, '')
         timestamp = headers.get(timestamp_mark, '')
         nonce = headers.get(nonce_mark, '')
@@ -124,7 +126,8 @@ class Core():
             return False
         return True
 
-    def request(self, path, method=RequestType.GET, data=None, skip_verify=False, sign_data=None, files=None, cipher_data=False, headers={}):
+    def request(self, path, method=RequestType.GET, data=None, skip_verify=False, sign_data=None, files=None,
+                cipher_data=False, headers={}):
         if files:
             headers.update({'Content-Type': 'multipart/form-data'})
         else:
@@ -132,7 +135,8 @@ class Core():
         headers.update({'Accept': 'application/json'})
         headers.update({'User-Agent': 'wechatpay v3 api python sdk(https://github.com/minibear2021/wechatpayv3)'})
         if cipher_data:
-            wechatpay_serial = self._public_key_id if self._public_key_id else hex(self._last_certificate().serial_number)[2:].upper()
+            wechatpay_serial = self._public_key_id if self._public_key_id else hex(
+                self._last_certificate().serial_number)[2:].upper()
             headers.update({'Wechatpay-Serial': wechatpay_serial})
         authorization = build_authorization(
             path,
@@ -148,15 +152,21 @@ class Core():
             self._logger.debug('Request headers: %s' % headers)
             self._logger.debug('Request params: %s' % data)
         if method == RequestType.GET:
-            response = requests.get(url=self._gate_way + path, headers=headers, proxies=self._proxy, timeout=self._timeout)
+            response = requests.get(url=self._gate_way + path, headers=headers, proxies=self._proxy,
+                                    timeout=self._timeout)
         elif method == RequestType.POST:
-            response = requests.post(url=self._gate_way + path, json=None if files else data, data=data if files else None, headers=headers, files=files, proxies=self._proxy, timeout=self._timeout)
+            response = requests.post(url=self._gate_way + path, json=None if files else data,
+                                     data=data if files else None, headers=headers, files=files, proxies=self._proxy,
+                                     timeout=self._timeout)
         elif method == RequestType.PATCH:
-            response = requests.patch(url=self._gate_way + path, json=data, headers=headers, proxies=self._proxy, timeout=self._timeout)
+            response = requests.patch(url=self._gate_way + path, json=data, headers=headers, proxies=self._proxy,
+                                      timeout=self._timeout)
         elif method == RequestType.PUT:
-            response = requests.put(url=self._gate_way + path, json=data, headers=headers, proxies=self._proxy, timeout=self._timeout)
+            response = requests.put(url=self._gate_way + path, json=data, headers=headers, proxies=self._proxy,
+                                    timeout=self._timeout)
         elif method == RequestType.DELETE:
-            response = requests.delete(url=self._gate_way + path, headers=headers, proxies=self._proxy, timeout=self._timeout)
+            response = requests.delete(url=self._gate_way + path, headers=headers, proxies=self._proxy,
+                                       timeout=self._timeout)
         else:
             raise Exception('wechatpayv3 does no support this request type.')
         if self._logger:
@@ -166,7 +176,8 @@ class Core():
         if response.status_code in range(200, 300) and not skip_verify:
             if not self._verify_signature(response.headers, response.text):
                 raise Exception('failed to verify the signature')
-        return response.status_code, response.text if 'application/json' in response.headers.get('Content-Type') else response.content
+        return response.status_code, response.text if 'application/json' in response.headers.get(
+            'Content-Type') else response.content
 
     def sign(self, data, sign_type=SignType.RSA_SHA256):
         if sign_type == SignType.RSA_SHA256:

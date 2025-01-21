@@ -45,7 +45,8 @@ def complaint_history_query(self, complaint_id, limit=100, offset=0):
         raise Exception('complaint_id is not assigned.')
     if limit not in range(1, 301):
         limit = 100
-    path = '/v3/merchant-service/complaints-v2/%s/negotiation-historys?limit=%s&offset=%s' % (complaint_id, limit, offset)
+    path = '/v3/merchant-service/complaints-v2/%s/negotiation-historys?limit=%s&offset=%s' % (
+    complaint_id, limit, offset)
     return self._core.request(path)
 
 
@@ -91,7 +92,8 @@ def complaint_notification_delete(self):
     return self._core.request(path, method=RequestType.DELETE)
 
 
-def complaint_response(self, complaint_id, response_content, response_images=None, jump_url=None, jump_url_text=None, mini_program_jump_info=None):
+def complaint_response(self, complaint_id, response_content, response_images=None, jump_url=None, jump_url_text=None,
+                       mini_program_jump_info=None):
     """提交投诉回复
     :param complaint_id: 投诉单对应的投诉单号。示例值:'200201820200101080076610000'
     :param response_content: 回复内容，具体的投诉处理方案，限制200个字符以内。示例值:'已与用户沟通解决'
@@ -148,7 +150,8 @@ def complaint_image_download(self, media_url):
     return self._core.request(path, skip_verify=True)
 
 
-def complaint_update_refund(self, complaint_id, action, launch_refund_day=None, reject_reason=None, reject_media_list={}, remark=None):
+def complaint_update_refund(self, complaint_id, action, launch_refund_day=None, reject_reason=None,
+                            reject_media_list={}, remark=None):
     """更新退款审批结果
     :param compaint_id: 投诉单对应的投诉单号。示例值:'200201820200101080076610000'
     :param action: 审批动作，同意 或 拒绝，REJECT：拒绝，拒绝退款；APPROVE：同意，同意退款；示例值：'APPROVE'

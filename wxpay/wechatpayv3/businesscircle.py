@@ -3,7 +3,8 @@
 from .type import RequestType
 
 
-def points_notify(self, transaction_id, openid, earn_points, increased_points, points_update_time, no_points_remarks=None, total_points=None, appid=None, sub_mchid=None):
+def points_notify(self, transaction_id, openid, earn_points, increased_points, points_update_time,
+                  no_points_remarks=None, total_points=None, appid=None, sub_mchid=None):
     """智慧商圈积分同步
     :param transaction_id: 微信订单号，示例值:'1217752501201407033233368018'
     :param openid: 用户标识，示例值:'oWmnN4xxxxxxxxxxe92NHIGf1xd8'
@@ -116,7 +117,8 @@ def business_point_status(self, openid, brandid, appid=None, sub_mchid=None):
     if not (openid and brandid):
         raise Exception('openid and/or brandid is not assigned.')
     else:
-        path = 'https://api.mch.weixin.qq.com/v3/businesscircle/users/%s/points/commit_status?brandid=%s&appid=%s' % (openid, brandid, appid or self._appid)
+        path = 'https://api.mch.weixin.qq.com/v3/businesscircle/users/%s/points/commit_status?brandid=%s&appid=%s' % (
+        openid, brandid, appid or self._appid)
     if sub_mchid:
         path += '%s&sub_mchid=%s' % (path, sub_mchid)
     return self._core.request(path)

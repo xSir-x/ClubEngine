@@ -20,7 +20,6 @@ from django.templatetags.static import static
 logger = logging.getLogger(__name__)
 
 
-
 def get_sha256(str):
     m = sha256(str.encode('utf-8'))
     return m.hexdigest()

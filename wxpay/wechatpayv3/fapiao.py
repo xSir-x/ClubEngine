@@ -4,6 +4,7 @@ import os.path
 from .type import RequestType
 from wxpay.wechatpayv3.utils import SM3
 
+
 # https://pay.weixin.qq.com/wiki/doc/apiv3/Offline/open/chapter4_8_1.shtml
 
 
@@ -270,7 +271,8 @@ def fapiao_download_file(self, url, openid, invoice_code, invoice_no, fapiao_id,
     if not (url and openid and invoice_code and invoice_no and fapiao_id):
         raise Exception('url, openid, invoice_code, invocide_no or fapiao_id is not assigned.')
     else:
-        path = '%s&mchid=%s&openid=%s&invoice_code=%s&invoice_no=%s&fapiao_id=%s' % (url, self._mchid, openid, invoice_code, invoice_no, fapiao_id)
+        path = '%s&mchid=%s&openid=%s&invoice_code=%s&invoice_no=%s&fapiao_id=%s' % (
+        url, self._mchid, openid, invoice_code, invoice_no, fapiao_id)
     if self._partner_mode:
         if sub_mchid:
             path = '%s&sub_mchid=%s' % (path, sub_mchid)

@@ -186,7 +186,8 @@ def marketing_paygift_merchant_add(self, activity_id, add_request_no, merchant_i
     return self._core.request(path, method=RequestType.POST, data=params)
 
 
-def marketing_paygift_activity_list(self, offset=0, limit=20, activity_name=None, activity_status=None, award_type=None):
+def marketing_paygift_activity_list(self, offset=0, limit=20, activity_name=None, activity_status=None,
+                                    award_type=None):
     """获取支付有礼活动列表
     :param offset:分页页码，页面从0开始。示例值:1
     :param limit: 分页大小，限制分页最大数据条目。示例值:20
@@ -407,7 +408,8 @@ def marketing_favor_stock_list(self,
     :param status: 批次状态，枚举值:'unactivated':未激活，'audit':审核中，'running':运行中，'stoped':已停止，'paused':暂停发放。示例值:'paused'
     """
     if stock_creator_mchid:
-        path = '/v3/marketing/favor/stocks?offset=%s&limit=%s&stock_creator_mchid=%s' % (offset, limit, stock_creator_mchid)
+        path = '/v3/marketing/favor/stocks?offset=%s&limit=%s&stock_creator_mchid=%s' % (
+        offset, limit, stock_creator_mchid)
     else:
         raise Exception('stock_creator_mchid is not assigned.')
     if create_start_time:
@@ -696,7 +698,8 @@ def marketing_busifavor_user_coupon(self,
     :param limit: 分页大小。示例值:20
     """
     if openid:
-        path = '/v3/marketing/busifavor/users/%s/coupons?appid=%s&offset=%s&limit=%s' % (openid, self._appid, offset, limit)
+        path = '/v3/marketing/busifavor/users/%s/coupons?appid=%s&offset=%s&limit=%s' % (
+        openid, self._appid, offset, limit)
     else:
         raise Exception('openid is not assigned.')
     if stock_id:
@@ -1064,7 +1067,8 @@ def bank_package_file(self, package_id, bank_type, filepath):
     if not package_id or bank_type:
         raise Exception('package_id or bank_type is not assigned.')
     params = {}
-    params.update({'meta': '{"bank_type":"%s", "filename":"%s", "sha256":"%s"}' % (bank_type, filename, sha256(content))})
+    params.update(
+        {'meta': '{"bank_type":"%s", "filename":"%s", "sha256":"%s"}' % (bank_type, filename, sha256(content))})
     files = [('file', (filename, content, mimes[filetype]))]
     path = '/v3/marketing/bank/packages/%s/tasks' % package_id
     return self._core.request(path, method=RequestType.POST, data=params, sign_data=params.get('meta'), files=files)

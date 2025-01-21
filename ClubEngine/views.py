@@ -9,12 +9,13 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 import time
 import hashlib
-import json
 from util.external_api import get_openid, validate_accessToken, store_in_redis, retrieve_from_redis
 from django.core.cache import cache
 from dbModel.views import *
 from wxpay.views import *
 from django_redis import get_redis_connection
+import json
+
 
 @csrf_exempt
 def add_fav_act(request):
@@ -87,7 +88,7 @@ def get_acts_bytype(request):
         pageSize = request_res.get('pageSize', None)
         assert pageSize is not None, Exception("pageSize 字段没有传入，请检查...")
         response, size = getActivitiesByType.execute(type=type, loc_code=loc_code, lang=lang, pageId=pageId,
-                                               pageSize=pageSize)
+                                                     pageSize=pageSize)
         message = {"response": response, "total": size, "code": 200, "succeed": True, "msg": message}
 
     except Exception as e:
@@ -297,6 +298,35 @@ def get_coopdet(request):
     return HttpResponse(json.dumps(message, ensure_ascii=False))
 
 
+@csrf_exempt
+def modify_membership(request):
+    """
+    修改会员信息
+    """
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = request_res.get('access_token', None)
+        if not validate_accessToken(access_token):
+            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        uid = request_res.get('uid', None)
+        name = request_res.get('name', None)
+        wechat = request_res.get('wechat', None)
+        pic = request_res.get('pic', None)
+        email = request_res.get('email', None)
+        profile = request_res.get('profile', None)
+        phone_no = request_res.get('phone_no', None)
+        location = request_res.get('location', None)
+        state, msg = modifyMembership().execute(uid=uid, name=name, wechat=wechat, pic=pic, email=email,
+                                                profile=profile, phone_no=phone_no, location=location)
+        message = {"response": state, "code": 200, "succeed": True, "msg": msg}
+
+    except Exception as e:
+        message = {"response": {}, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
 # TODO: 订单接口
 
 @csrf_exempt
@@ -321,6 +351,7 @@ def minipay(request):
                     "succeed": False,
                     "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
     return HttpResponse(json.dumps(response, ensure_ascii=False))
+
 
 @csrf_exempt
 def mininotify(request):
@@ -410,16 +441,16 @@ def auth_user(request):
         #     return HttpResponse(json.dumps(message, ensure_ascii=False))
 
         message = {
-                    "code": 200,
-                    "result": {"access_token": access_token, "openid": openid},
-                    "succeed": True,
-                    "msg": "本次下发用户token为: " + access_token}
+            "code": 200,
+            "result": {"access_token": access_token, "openid": openid},
+            "succeed": True,
+            "msg": "本次下发用户token为: " + access_token}
 
     except Exception as e:
         message = {"code": 300,
                    "result": {},
                    "succeed": False,
-                   "msg": "您的请求提交不正确或提交格式错误，请检查: %s！"% e}
+                   "msg": "您的请求提交不正确或提交格式错误，请检查: %s！" % e}
 
     return HttpResponse(json.dumps(message, ensure_ascii=False))
 
@@ -470,7 +501,8 @@ def auth_register(request):
         location = request_res.get('location', "")
         register_time = timezone.now()
 
-        state, msg = upgradeMembership().execute(userid, name, level, wechat, profile, email, phone_no, location, register_time)
+        state, msg = registerMembership().execute(userid, name, level, wechat, profile, email, phone_no, location,
+                                                  register_time)
 
         message = {"response": state, "code": 200, "msg": msg}
 

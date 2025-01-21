@@ -3,7 +3,8 @@
 from .type import RequestType
 
 
-def apply4subject_submit(self, business_code, contact_info, subject_info, identification_info, channel_id=None, addition_info=None, ubo_info_list=[]):
+def apply4subject_submit(self, business_code, contact_info, subject_info, identification_info, channel_id=None,
+                         addition_info=None, ubo_info_list=[]):
     """（商户开户意愿）提交申请单
     :param business_code: 业务申请编号，示例值:'APPLYMENT_00000000001'
     :param contact_info: 联系人信息，示例值:{'name':'张三','id_card_number':'320311770706001','mobile':'13900000000'}

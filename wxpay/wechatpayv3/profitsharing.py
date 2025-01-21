@@ -331,7 +331,7 @@ def brand_profitsharing_order_query(self, transaction_id, out_order_no, sub_mchi
 
 
 def brand_profitsharing_return(self, sub_mchid, out_return_no, return_mchid, amount,
-                               description, order_id=None, out_order_no=None,):
+                               description, order_id=None, out_order_no=None, ):
     """请求连锁品牌分账回退
     :param sub_mchid: 子商户的商户号，由微信支付生成并下发。示例值:'1900000109'
     :param out_return_no: 商户回退单号，商户在自己后台生成的一个新的回退单号，在商户后台唯一，示例值:'R20190516001'

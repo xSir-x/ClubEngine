@@ -24,8 +24,10 @@ def payscore_direct_complete(self, out_order_no, openid, service_id, service_int
     :param appid: 应用ID，可不填，默认传入初始化时的appid，示例值:'wx1234567890abcdef'
     """
     params = {}
-    if not (out_order_no and openid and service_id and service_introduction and post_payments and time_range and total_amount):
-        raise Exception('ut_order_no or openid or service_id or service_introduction or post_payments or time_range or total_amount is not assigned.')
+    if not (
+            out_order_no and openid and service_id and service_introduction and post_payments and time_range and total_amount):
+        raise Exception(
+            'ut_order_no or openid or service_id or service_introduction or post_payments or time_range or total_amount is not assigned.')
     params.update({'appid': appid or self._appid})
     params.update({'out_order_no': out_order_no})
     params.update({'openid': openid})
@@ -218,7 +220,8 @@ def payscore_cancel(self, out_order_no, service_id, reason, appid=None):
     return self._core.request(path, method=RequestType.POST, data=params)
 
 
-def payscore_modify(self, out_order_no, service_id, post_payments, total_amount, reason, post_discounts=None, appid=None):
+def payscore_modify(self, out_order_no, service_id, post_payments, total_amount, reason, post_discounts=None,
+                    appid=None):
     """修改订单金额
     :param out_order_no: 商户服务订单号，商户系统内部服务订单号（不是交易单号），要求此参数只能由数字、大小写字母_-|*组成，且在同一个商户号下唯一。示例值:'1234323JKHDFE1243252'
     :param service_id: 服务ID，该服务ID有本接口对应产品的权限。示例值:'500001'

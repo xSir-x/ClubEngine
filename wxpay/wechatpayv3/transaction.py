@@ -396,7 +396,8 @@ def combine_close(self, combine_out_trade_no, sub_orders, combine_appid=None):
     return self._core.request(path, method=RequestType.POST, data=params)
 
 
-def abnormal_refund(self, refund_id, out_refund_no, type, bank_type=None, bank_account=None, real_name=None, sub_mchid=None):
+def abnormal_refund(self, refund_id, out_refund_no, type, bank_type=None, bank_account=None, real_name=None,
+                    sub_mchid=None):
     """发起异常退款
     :param refund_id: 微信退款单号，退款单的主键，唯一定义此资源的标识。
     :param out_refund_no: 商户退款单号，商户系统内部的退款单号，商户系统内部唯一，只能是数字、大小写字母_-|*@ ，同一退款单号多次请求只退一笔。
@@ -429,6 +430,7 @@ def abnormal_refund(self, refund_id, out_refund_no, type, bank_type=None, bank_a
         params.update({'real_name': self._core.encrypt(real_name)})
         cipher_data = True
     return self._core.request(path, method=RequestType.POST, data=params, cipher_data=cipher_data)
+
 
 def codepay_reverse(self, out_trade_no, appid=None, mchid=None, sub_appid=None, sub_mchid=None):
     """撤销付款码支付订单

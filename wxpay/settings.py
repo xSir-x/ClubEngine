@@ -38,7 +38,8 @@ NOTIFY_URL = 'https://110.41.176.114:80/notifyOrder'
 CERT_DIR = None
 
 # 日志记录器，记录web请求和回调细节
-logging.basicConfig(filename=os.path.join(os.getcwd(), 'demo.log'), level=logging.DEBUG, filemode='a', format='%(asctime)s - %(process)s - %(levelname)s: %(message)s')
+logging.basicConfig(filename=os.path.join(os.getcwd(), 'demo.log'), level=logging.DEBUG, filemode='a',
+                    format='%(asctime)s - %(process)s - %(levelname)s: %(message)s')
 LOGGER = logging.getLogger("demo")
 
 # 接入模式:False=直连商户模式，True=服务商模式
@@ -48,7 +49,7 @@ PARTNER_MODE = False
 PROXY = None
 
 # 请求超时时间配置
-TIMEOUT = (10, 30) # 建立连接最大超时时间是10s，读取响应的最大超时时间是30s
+TIMEOUT = (10, 30)  # 建立连接最大超时时间是10s，读取响应的最大超时时间是30s
 
 # 微信支付平台公钥
 # 注：2024年09月后新申请的微信支付账号使用公钥模式初始化，需配置此参数。

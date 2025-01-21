@@ -2,8 +2,8 @@
 import datetime
 import random
 from django.views.generic import View
+import time
 from django.utils import timezone
-
 from wxpay.wechatpayv3 import WeChatPay, WeChatPayType
 from wxpay.settings import *
 from dbModel.models import *
@@ -93,7 +93,7 @@ class WXMinPay(object):
         result = json.loads(message)
         if code in range(200, 300):
             prepay_id = result.get('prepay_id')
-            timestamp = timezone.now()  # str(int(time.time()))   # 当前时间戳
+            timestamp = time.time()  # 当前时间戳
             noncestr = str(uuid.uuid4()).replace('-', '')  # 生成一个随机字符串
             package = 'prepay_id=' + prepay_id  # 拼接prepay_id参数
             sign = wxpay.sign(data=[APPID, timestamp, noncestr, package])
@@ -109,17 +109,17 @@ class WXMinPay(object):
                             'package': 'prepay_id=%s' % prepay_id,  # 拼接的prepay_id参数
                             'signType': signtype,  # 签名方式
                             'paySign': sign  # 签名
-                            }
+                        }
                         }
 
             return response
         else:
             order_status = 3
-            pay_time = timezone.now()
+            pay_time = time.time()
             UserOrderTable.objects.filter(order_id=order_id).update(order_status=order_status,
                                                                     pay_time=pay_time)
 
-            response = {'code': 300, 'succeed': False, 'msg': "支付请求发起失败..."}
+            response = {'code': 300, 'succeed': False, 'msg': "支付请求发起失败: %s" % result["message"]}
             return response
 
     @classmethod
@@ -149,7 +149,7 @@ class WXMinPay(object):
             # 在这里可以写我们的业务处理，必须要返回一个SUCCESS的回复，否则微信会视为没有调用成功，从而一直调用当前请求。
 
             order_status = 2
-            pay_time = timezone.now()  # str(int(time.time()))
+            pay_time = time.time()
             paymentid = transaction_id
 
             UserOrderTable.objects.filter(order_id=order_id).update(order_status=order_status,
@@ -178,19 +178,21 @@ class WXMinPay(object):
             if res_obj.exists():
                 res_det = res_obj.values("order_time", "exp_time")
                 delta_min = 0
-                exp_time = 0   # 订单过期时间10分钟
+                exp_time = 0  # 订单过期时间10分钟
                 for det_item in res_det:
                     order_time = det_item["order_time"]
                     exp_time = det_item["exp_time"]
-                    delta_min = (timezone.now() - order_time).total_seconds() / 60
+                    delta_min = (int(time.time()) - int(order_time)) / 60
                 if delta_min < exp_time:
                     response = {'code': 200, 'succeed': True, 'msg': '订单已经存在...'}
                     return response
                 else:
                     UserOrderTable.objects.filter(uid=uid, act_id=act_id, coop_id=coop_id).delete()
 
-            order_time = timezone.now()  # str(int(time.time()))
-            exp_time = 10  # 过期时间怎么样设置: timezone.now()
+            # order_time = timezone.now()
+            order_time = str(int(time.time()))
+            t_time = time.localtime(float(order_time))
+            exp_time = 10  # 默认过期时间10min:   timezone.now()
             order_status = 1  # 订单状态：1-未支付 2-支付成功 3-支付失败
             date = datetime.datetime.now().strftime("%Y-%m-%d")
             order_id = f'{str(int(time.time()))}-{random.randint(1000, 9999)}'
