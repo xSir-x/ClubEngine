@@ -113,7 +113,7 @@ def get_recomm_acts(request):
         lang = request_res.get('lang', None)
         assert lang is not None, Exception("lang 字段没有传入，请检查...")
         response = getRecommandActivities.execute(loc_code=loc_code, lang=lang)
-        message = {"response": response, "code": 200, "succeed": True, "msg": message}
+        message = {"response": response, "code": 200, "succeed": True, "msg": "OK!"}
 
     except Exception as e:
         message = {"response": {}, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}

@@ -661,3 +661,5 @@ TypeError: Object of type Exception is not JSON serializable
 2025-01-21 12:24:28,295 - 58316 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
 2025-01-21 12:32:12,310 - 60516 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
 2025-01-21 12:40:24,092 - 61032 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-21 12:46:50,728 - 62536 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-21 12:48:32,424 - 63868 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/views.py changed, reloading.

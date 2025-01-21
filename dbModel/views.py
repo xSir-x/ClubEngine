@@ -126,7 +126,7 @@ def get_attendence(act_id):
         for _item in att_uids:
             uid = _item.get("uid", None)
             assert uid != None, Exception("uid 字段在数据库不存在，请检查...")
-            _pic_obj = UserInforTable.objects.filter(uid=uid, order_status=2)
+            _pic_obj = UserInforTable.objects.filter(uid=uid)
             if _pic_obj.exists():
                 for item in _pic_obj.values("pic"):
                     pic = list(item)[-1]
