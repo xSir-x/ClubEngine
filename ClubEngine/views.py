@@ -27,14 +27,16 @@ def add_fav_act(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            message =  {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
         act_id = request_res.get('act_id', None)
-        assert act_id is not None, Exception("act_id 字段没有传入，请检查...")
         uid = request_res.get('uid', None)
-        assert uid is not None, Exception("uid 字段没有传入，请检查...")
         need_fav = request_res.get('need_fav', True)
-        assert need_fav is not None, Exception("need_fav 字段没有传入，请检查...")
+
+        if act_id is None or uid is None or need_fav is None:
+            message = {"code": 201, "msg": "缺少必填信息..."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
         state, message = addFavActivity.execute(need_fav=need_fav, act_id=act_id, uid=uid)
         message = {"response": state, "code": 200, "succeed": False, "msg": message}
 
@@ -53,11 +55,15 @@ def get_all_type(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            message = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
         loc_code = request_res.get('loc_code', None)
         lang = request_res.get('lang', None)
-        assert loc_code is not None, Exception("loc_code 字段没有传入，请检查...")
+
+        if loc_code is None or lang is None:
+            message = {"code": 201, "msg": "缺少必填信息..."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
         response = getAllType.execute(loc_code=loc_code, lang=lang)
         message = {"response": response, "code": 200, "succeed": True, "msg": message}
 
@@ -76,20 +82,21 @@ def get_acts_bytype(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            message = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
         type = request_res.get('type', None)
         loc_code = request_res.get('loc_code', None)
-        assert loc_code is not None, Exception("loc_code 字段没有传入，请检查...")
         lang = request_res.get('lang', None)
-        assert lang is not None, Exception("lang 字段没有传入，请检查...")
-        pageId = request_res.get('pageId', None)
-        assert pageId is not None, Exception("pageId 字段没有传入，请检查...")
-        pageSize = request_res.get('pageSize', None)
-        assert pageSize is not None, Exception("pageSize 字段没有传入，请检查...")
-        response, size = getActivitiesByType.execute(type=type, loc_code=loc_code, lang=lang, pageId=pageId,
+        pageId = request_res.get('pageId', 0)
+        pageSize = request_res.get('pageSize', 10)
+
+        if type is None or loc_code is None or lang is None:
+            message = {"code": 201, "msg": "缺少必填信息..."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+        page_res, size = getActivitiesByType.execute(type=type, loc_code=loc_code, lang=lang, pageId=pageId,
                                                      pageSize=pageSize)
-        message = {"response": response, "total": size, "code": 200, "succeed": True, "msg": message}
+        message = {"response": page_res, "total": size, "code": 200, "succeed": True, "msg": message}
 
     except Exception as e:
         message = {"response": {}, "total": 0, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
@@ -106,12 +113,15 @@ def get_recomm_acts(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            message =  {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
         loc_code = request_res.get('loc_code', None)
-        assert loc_code is not None, Exception("loc_code 字段没有传入，请检查...")
         lang = request_res.get('lang', None)
-        assert lang is not None, Exception("lang 字段没有传入，请检查...")
+
+        if loc_code is None or lang is None:
+            message = {"code": 201, "msg": "缺少必填信息..."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
         response = getRecommandActivities.execute(loc_code=loc_code, lang=lang)
         message = {"response": response, "code": 200, "succeed": True, "msg": "OK!"}
 
@@ -130,13 +140,16 @@ def get_single_act_det(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            message = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
         act_id = request_res.get('act_id', None)
-        assert act_id is not None, Exception("act_id 字段没有传入，请检查...")
         type = request_res.get('type', None)
-        assert type is not None, Exception("type 字段没有传入，请检查...")
         lang = request_res.get('lang', "zh")
+
+        if type is None or act_id is None:
+            message = {"code": 201, "msg": "缺少必填信息..."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
         response = getSingleActivityDetail().execute(act_id=act_id, type=type, lang=lang)
         message = {"response": response, "code": 200, "succeed": True, "msg": message}
 
@@ -155,13 +168,17 @@ def get_my_acts_bytype(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            message =  {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
-        uid = request_res.get('uid')
-        assert uid is not None, Exception("act_id 字段没有传入，请检查...")
-        type = request_res.get('type')
-        assert type is not None, Exception("type 字段没有传入，请检查...")
+
+        uid = request_res.get('uid', None)
+        type = request_res.get('type', None)
         lang = request_res.get('lang', "zh")
+
+        if type is None or uid is None:
+            message = {"code": 201, "msg": "缺少必填信息..."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
         response = getMyActivitiesBytype().execute(uid=uid, type=type, lang=lang)
         message = {"response": response, "code": 200, "succeed": True, "msg": message}
 
@@ -182,13 +199,17 @@ def get_my_act(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            message = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
-        uid = request_res.get('uid')
-        assert uid is not None, Exception("uid 字段没有传入，请检查...")
-        order_id = request_res.get('order_id')
-        assert order_id is not None, Exception("order_id 字段没有传入，请检查...")
+
+        uid = request_res.get('uid', None)
+        order_id = request_res.get('order_id', None)
         lang = request_res.get('lang', "zh")
+
+        if uid is None or order_id is None:
+            message = {"code": 201, "msg": "缺少必填信息..."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
         response = getMySingleActivity().execute(uid=uid, order_id=order_id, lang=lang)
         message = {"response": response, "code": 200, "succeed": True, "msg": message}
 
@@ -207,14 +228,17 @@ def add_coopfav(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            message = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
+
         need_fav = request_res.get('need_fav', None)
-        assert need_fav is not None, Exception("need_fav 字段没有传入，请检查...")
         uid = request_res.get('uid', None)
-        assert uid is not None, Exception("uid 字段没有传入，请检查...")
         coop_id = request_res.get('coop_id', None)
-        assert coop_id is not None, Exception("coop_id 字段没有传入，请检查...")
+
+        if need_fav is None or uid is None or coop_id is None:
+            message = {"code": 201, "msg": "缺少必填信息..."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
         state, msg = addCoopFav().execute(need_fav=need_fav, uid=uid, coop_id=coop_id)
         message = {"response": state, "code": 200, "succeed": True, "msg": msg}
 
@@ -233,11 +257,15 @@ def get_cooplist_type(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            message = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
         lang = request_res.get('lang', None)
         loc_code = request_res.get('loc_code', None)
-        assert loc_code is not None, Exception("loc_code 字段没有传入，请检查...")
+
+        if lang is None or loc_code is None:
+            message = {"code": 201, "msg": "缺少必填信息..."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
         response = getClubCoopListType().execute(loc_code=loc_code, lang=lang)
         message = {"response": response, "code": 200, "succeed": True, "msg": message}
 
@@ -256,21 +284,22 @@ def get_coopdet_bytype(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            message = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
+
         type = request_res.get('type', None)
-        assert type is not None, Exception("type 字段没有传入，请检查...")
         loc_code = request_res.get('loc_code', None)
-        assert loc_code is not None, Exception("loc_code 字段没有传入，请检查...")
         lang = request_res.get('lang', "zh")
-        pageId = request_res.get('pageId', None)
-        assert pageId is not None, Exception("pageId 字段没有传入，请检查...")
-        pageSize = request_res.get('pageSize', None)
-        assert pageSize is not None, Exception("pageSize 字段没有传入，请检查...")
-        pages, total_size = getClubCoopListByType(). \
+        pageId = request_res.get('pageId', 0)
+        pageSize = request_res.get('pageSize', 10)
+
+        if type is None or loc_code is None or lang is None:
+            message = {"code": 201, "msg": "缺少必填信息..."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+        page_res, total_size = getClubCoopListByType(). \
             execute(type=type, loc_code=loc_code, lang=lang, pageId=pageId, pageSize=pageSize)
-        spec_page = pages[pageId] if pageId <= total_size else []
-        message = {"response": spec_page, "total": total_size, "code": 200, "succeed": True, "msg": message}
+        message = {"response": page_res, "total": total_size, "code": 200, "succeed": True, "msg": message}
 
     except Exception as e:
         message = {"response": {}, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
@@ -287,11 +316,16 @@ def get_coopdet(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            message =  {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
+
         coop_id = request_res.get('coop_id')
-        assert coop_id is not None, Exception("coop_id 字段没有传入，请检查...")
         lang = request_res.get('lang')
+
+        if coop_id is None or lang is None:
+            message = {"code": 201, "msg": "缺少必填信息..."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
         response = getOneCoopDetail().execute(coop_id=coop_id, lang=lang)
         message = {"response": response, "code": 200, "succeed": True, "msg": message}
 
@@ -310,7 +344,7 @@ def modify_membership(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            message = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
         uid = request_res.get('uid', None)
         name = request_res.get('name', None)
@@ -363,7 +397,7 @@ def mininotify(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            response = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            response =  {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(response, ensure_ascii=False))
 
         response = WXMinPay().notify(request=request)
@@ -397,7 +431,7 @@ def search_order(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            message =  {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
 
         response = WXMinPay().search_order(request=request)
@@ -424,23 +458,13 @@ def auth_user(request):
         timestamp_milliseconds = str(int(time.time() * 1000))
         byte_str = (openid[0] + timestamp_milliseconds + openid[1:])
         access_token = byte_str
-
         # 缓存access_token
         try:
             res = retrieve_from_redis(access_token)
             if not res:
-                store_in_redis(access_token, access_token)
+                store_in_redis(access_token, 1)
         except Exception as e:
             raise Exception("Redis缓存操作失败...:%s" % e)
-
-        # 设置缓存
-        # try:
-        #     cached_result = cache.get(access_token)
-        #     if cached_result:
-        #         cache.delete(access_token)
-        # except Exception as e:
-        #     message = {"response": {}, "succeed": False, "msg": "access_token 清空失败：%s！" % e}
-        #     return HttpResponse(json.dumps(message, ensure_ascii=False))
 
         message = {
             "code": 200,
@@ -470,8 +494,7 @@ def test_access(request):
         print("validate access token")
 
     except Exception as e:
-        print(e)
-        message = {"response": {}, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！"}
+        message = {"response": {}, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查: %s" % e}
 
     return HttpResponse(json.dumps(message, ensure_ascii=False))
 
@@ -484,25 +507,22 @@ def auth_register(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            message = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
 
         userid = request_res.get('uid', None)
         name = request_res.get('name', None)
         level = request_res.get('level', None)
         wechat = request_res.get('wechat', None)
-        if not wechat:
-            message = {"response": 0, "code": 300, "msg": "微信号是必填信息..."}
-            return HttpResponse(json.dumps(message, ensure_ascii=False))
         profile = request_res.get('profile', None)
         email = request_res.get('email', None)
-        if not email:
-            message = {"response": 0, "code": 300, "msg": "email是必填信息..."}
-            return HttpResponse(json.dumps(message, ensure_ascii=False))
         phone_no = request_res.get('phone_no', None)
         location = request_res.get('location', "")
         register_time = timezone.now()
 
+        if wechat is None or name is None or email is None:
+            message = {"code": 201, "msg": "缺少必填信息..."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
         state, msg = registerMembership().execute(userid, name, level, wechat, profile, email, phone_no, location,
                                                   register_time)
 
@@ -521,7 +541,7 @@ def search_user(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message = {"response": {}, "succeed": False, "msg": "Invalidate access token."}
+            message =  {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
         uid = request_res.get('uid', None)
         response = getMemberInfo().execute(uid=uid)

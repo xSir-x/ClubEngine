@@ -22,26 +22,30 @@ class addFavActivity(View):
         :param uid:
         :return:
         """
-        message = "ok!"
+        mask_time = str(int(time.time()))
         try:
-            mask_time = str(int(time.time()))
             fav_act_obj = ActsMarkTable.objects.filter(uid=uid, act_id=act_id)
             if fav_act_obj.exists():
                 is_mark = fav_act_obj.values("is_mark")[0]["is_mark"]
                 if need_fav:
                     if is_mark != 1:
-                        ActsMarkTable.objects.filter(uid=uid, act_id=act_id).update(is_mark=1, mask_time=mask_time)
+                        ActsMarkTable.objects.filter(uid=uid, act_id=act_id).\
+                            update(is_mark=1, mask_time=mask_time)
                 else:
                     if is_mark != 0:
-                        ActsMarkTable.objects.filter(uid=uid, act_id=act_id).update(is_mark=0, mask_time=mask_time)
+                        ActsMarkTable.objects.filter(uid=uid, act_id=act_id).\
+                            update(is_mark=0, mask_time=mask_time)
             else:
                 if need_fav:
-                    ActsMarkTable.objects.create(uid=uid, act_id=act_id, is_mark=1, mask_time=mask_time)
+                    ActsMarkTable.objects.\
+                        create(uid=uid, act_id=act_id, is_mark=1, mask_time=mask_time)
                 else:
-                    ActsMarkTable.objects.filter(uid=uid, act_id=act_id).update(is_mark=0, mask_time=mask_time)
-            return 1, message
-        except IOError:
-            message = "【addFavActivity】数据库【ActsMarkTable】操作收藏活动失败..."
+                    ActsMarkTable.objects.\
+                        filter(uid=uid, act_id=act_id).\
+                        update(is_mark=0, mask_time=mask_time)
+            return 1, "活动收藏成功!"
+        except Exception as e:
+            message = "【addFavActivity】数据库【ActsMarkTable】操作收藏活动失败: %s" % e
             return 0, message
 
 
@@ -57,8 +61,7 @@ class getAllType(View):
         """
         res = []
         try:
-            acts_obj = ActivityInfoTable.objects.\
-                filter(loc_code=loc_code)
+            acts_obj = ActivityInfoTable.objects.filter(loc_code=loc_code)
             if acts_obj.exists():
                 act_types = acts_obj.values("type_en") \
                     if lang == "en" else acts_obj.values("type_zh")
@@ -80,21 +83,20 @@ def filter_lang(item_info, lang: str):
     :param lang:
     :return:
     """
-    if lang:
-        if lang == "zh":
-            if "detail_zh" in item_info:
-                item_info.pop("detail_en")
-            if "title_zh" in item_info:
-                item_info.pop("title_en")
-            if "type_zh" in item_info:
-                item_info.pop("type_en")
-        elif lang == "en":
-            if "detail_en" in item_info:
-                item_info.pop("detail_zh")
-            if "title_en" in item_info:
-                item_info.pop("title_zh")
-            if "type_en" in item_info:
-                item_info.pop("type_zh")
+    if lang == "zh":
+        if "detail_zh" in item_info:
+            item_info.pop("detail_en")
+        if "title_zh" in item_info:
+            item_info.pop("title_en")
+        if "type_zh" in item_info:
+            item_info.pop("type_en")
+    elif lang == "en":
+        if "detail_en" in item_info:
+            item_info.pop("detail_zh")
+        if "title_en" in item_info:
+            item_info.pop("title_zh")
+        if "type_en" in item_info:
+            item_info.pop("type_zh")
     return item_info
 
 
@@ -148,33 +150,41 @@ class getActivitiesByType(View):
         :return: List[dict{}, ...]
         """
         res = []
+        page = []
         size = 0
         key = type + "#" + str(loc_code) + "#" + lang
         his_cache = retrieve_from_redis(key)
         if his_cache:
             his_cache = eval(his_cache)
             size = len(his_cache)
-            assert pageId > size, Exception("pageId 大于查询到的page数: %s..." % len(res))
-            return his_cache[pageId], size
+            # assert pageId > size, Exception("pageId 大于查询到的page数: %s..." % len(res))
+            page = his_cache[pageId] if pageId <= size else []
+            return page, size
         else:
+            type = type.lower()
+            lang = lang.lower()
             try:
-                actinfo_obj = ActivityInfoTable.objects.filter(loc_code=loc_code, type_en=type) \
-                    if lang == "en" else ActivityInfoTable.objects.filter(loc_code=loc_code, type_zh=type)
+                actinfo_obj = None
+                if type == "all":
+                    actinfo_obj = ActivityInfoTable.objects.filter(loc_code=loc_code)
+                else:
+                    actinfo_obj = ActivityInfoTable.objects.filter(loc_code=loc_code, type_en=type) \
+                        if lang == "en" else \
+                        ActivityInfoTable.objects.filter(loc_code=loc_code, type_zh=type)
                 if actinfo_obj.exists():
                     type_acts = actinfo_obj.values()
                     temp = []
                     for i, act_item in enumerate(type_acts):
                         if len(temp) > pageSize:
                             res.append(temp)
-                        act_item = get_activity_dets(act_item, lang)
-                        temp.append(act_item)
+                            temp = []
+                        temp.append(get_activity_dets(act_item, lang))
                     if len(temp) > 0:
                         res.append(temp)
                     size = len(res)
-                    assert pageId > size, Exception("pageId 大于查询到的page数: %s..." % len(res))
-                    # cache.set(key, res, timeout)
                     store_in_redis(key, str(res), timeout)
-                return res, size
+                    page = his_cache[pageId] if pageId <= size else []
+                return page, size
             except Exception as e:
                 raise Exception("【getActivitiesByType】查询数据库[ActivityInfoTable]异常...: %s." % e)
 
@@ -198,8 +208,8 @@ class getRecommandActivities(View):
                     act_item = get_activity_dets(act_item, lang)
                     res.append(act_item)
             return res
-        except IOError:
-            raise Exception("【getRecommandActivities】查询数据库【ActivityInfoTable】[%s]异常..." % loc_code)
+        except Exception as e:
+            raise Exception("【getRecommandActivities】查询数据库【ActivityInfoTable】[%s]异常: %s" % (loc_code, e))
 
 
 class getSingleActivityDetail(View):
@@ -221,33 +231,37 @@ class getSingleActivityDetail(View):
                 act_info = act_obj.values()[0]
                 act_det = get_activity_dets(act_info, lang)
             return act_det
-        except IOError:
-            raise Exception("【getSingleActivityDetail】查询数据库【ActivityInfoTable or UserOrderTable】异常...")
+        except Exception as e:
+            raise Exception("【getSingleActivityDetail】查询数据库【ActivityInfoTable or UserOrderTable】异常: %s" % e)
 
 
 class getMyActivitiesBytype(View):
-    def execute(self, uid, type, lang):
+    def execute(self, uid, lang, type="ALL"):
         """
         获取我的活动列表: 根据uid&type两个字段查询ActivityInfoTable某个的活动
         :param uid:
-        :param type:
         :param lang: zh or en
+        :param type:
         :return: List[dict{},]
         """
         res = []
         try:
+            type = type.lower()
+            lang = lang.lower()
             acts_obj = UserOrderTable.objects.filter(uid=uid)
             if acts_obj.exists():
                 my_acts = acts_obj.values("act_id", "order_id", "order_status")
                 for item in my_acts:
                     item_obj = None
-                    if type.upper() == "ALL":
-                        item_obj = ActivityInfoTable.objects.filter(act_id=item.get("act_id", None))
+                    if type == "all":
+                        item_obj = ActivityInfoTable.objects.\
+                                    filter(act_id=item.get("act_id", None))
                     elif lang == "en":
-                        item_obj = ActivityInfoTable.objects.filter(act_id=item.get("act_id", None), type_en=type)
+                        item_obj = ActivityInfoTable.objects.\
+                                    filter(act_id=item.get("act_id", None), type_en=type)
                     elif lang == "zh":
-                        item_obj = ActivityInfoTable.objects.filter(act_id=item.get("act_id", None), type_zh=type)
-                    assert item.get("act_id", None) != None, Exception("act_id 字段在数据库不存在，请检查...")
+                        item_obj = ActivityInfoTable.objects.\
+                                    filter(act_id=item.get("act_id", None), type_zh=type)
                     if not item_obj.exists():
                         continue
                     f_items = item_obj.values()
@@ -256,8 +270,8 @@ class getMyActivitiesBytype(View):
                         item_info.update(item)
                         res.append(item_info)
             return res
-        except IOError:
-            raise Exception("【getMyActivitiesBytype】查询数据库【UserOrderTable】异常...")
+        except Exception as e:
+            raise Exception("【getMyActivitiesBytype】查询数据库【UserOrderTable】异常: %s." % e)
 
 
 class getMySingleActivity(View):
@@ -284,8 +298,8 @@ class getMySingleActivity(View):
                         item_info.update(order)
                         res.append(item_info)
             return res
-        except IOError:
-            raise Exception("【getMySingleActivity】查询数据库【UserOrderTable】异常...")
+        except Exception as e:
+            raise Exception("【getMySingleActivity】查询数据库【UserOrderTable】异常: %s" % e)
 
 
 ## 商家板块
@@ -306,21 +320,22 @@ class addCoopFav(View):
                 is_mark = fav_act_obj.values("is_mark")[0]["is_mark"]
                 if need_fav:
                     if is_mark != 1:
-                        MerchantMaskTable.objects.filter(uid=uid, coop_id=coop_id).update(is_mark=1,
-                                                                                          mask_time=mask_time)
+                        MerchantMaskTable.objects.filter(uid=uid, coop_id=coop_id).\
+                                    update(is_mark=1, mask_time=mask_time)
                 else:
                     if is_mark != 0:
-                        MerchantMaskTable.objects.filter(uid=uid, coop_id=coop_id).update(is_mark=0,
-                                                                                          mask_time=mask_time)
+                        MerchantMaskTable.objects.filter(uid=uid, coop_id=coop_id).\
+                                    update(is_mark=0, mask_time=mask_time)
             else:
                 if need_fav:
-                    MerchantMaskTable.objects.create(uid=uid, coop_id=coop_id, is_mark=1, mask_time=mask_time)
+                    MerchantMaskTable.objects.\
+                                    create(uid=uid, coop_id=coop_id, is_mark=1, mask_time=mask_time)
                 else:
-                    MerchantMaskTable.objects.filter(uid=uid, coop_id=coop_id).update(is_mark=0,
-                                                                                      mask_time=mask_time)
+                    MerchantMaskTable.objects.filter(uid=uid, coop_id=coop_id).\
+                                    update(is_mark=0, mask_time=mask_time)
             return 1, message
-        except IOError:
-            print("【addCoopFav】收藏商家异常...")
+        except Exception as e:
+            print("【addCoopFav】收藏商家异常: %s" % e)
             return 0, message
 
 
@@ -338,7 +353,8 @@ class getClubCoopListType(View):
         try:
             merch_obj = MerchantInfoTable.objects.filter(loc_code=loc_code)
             if merch_obj.exists():
-                merch_types = merch_obj.values("type_en") if lang == "en" else merch_obj.values("type_zh")
+                merch_types = merch_obj.values("type_en") \
+                            if lang.lower() == "en" else merch_obj.values("type_zh")
                 dummp = []
                 for item in merch_types:
                     _type = list(item)[-1]
@@ -346,8 +362,8 @@ class getClubCoopListType(View):
                         res.append(item)
                     dummp.append(_type)
             return res
-        except IOError:
-            raise Exception("【getClubCoopListType】获取合作商家失败...")
+        except Exception as e:
+            raise Exception("【getClubCoopListType】获取合作商家失败: %s" % e)
 
 
 class getClubCoopListByType(View):
@@ -362,35 +378,43 @@ class getClubCoopListByType(View):
         :return:
         """
         res = []
+        page_res = []
         key = "CLUBCOOP#" + type + "#" + loc_code + "#" + lang
-        # his_cache = cache.get(key, [])
         his_cache = retrieve_from_redis(key)
         cache_size = len(his_cache) if his_cache else 0
         if his_cache:
             his_cache = eval(his_cache)
-            assert pageId > cache_size, Exception("pageId 大于查询到的page数: %s..." % len(res))
-            return his_cache[pageId], cache_size
+            page_res = his_cache[pageId] if pageId <= cache_size else []
+            return page_res, cache_size
         else:
             try:
-                coop_merch_obj = MerchantInfoTable.objects.filter(loc_code=loc_code, type_en=type) \
-                    if lang == "en" else \
-                    MerchantInfoTable.objects.filter(loc_code=loc_code, type_zh=type)
+                type = type.lower()
+                lang = lang.lower()
+                coop_merch_obj = None
+                if type == "all":
+                    coop_merch_obj = MerchantInfoTable.objects.filter(loc_code=loc_code)
+                else:
+                    coop_merch_obj = MerchantInfoTable.objects.filter(loc_code=loc_code, type_en=type) \
+                        if lang == "en" else \
+                        MerchantInfoTable.objects.filter(loc_code=loc_code, type_zh=type)
+
                 if coop_merch_obj.exists():
                     coop_merchs = coop_merch_obj.values()
                     temp = []
                     for i, coop_item in enumerate(coop_merchs):
                         if len(temp) > pageSize:
                             res.append(temp)
-                        coop_item = filter_lang(coop_item, lang)
-                        temp.append(coop_item)
+                            temp = []
+                        temp.append(filter_lang(coop_item, lang))
                     if len(temp) > 0:
                         res.append(temp)
                     cache_size = len(res)
                     # cache.set(key, res, timeout)
                     store_in_redis(key, str(res), timeout)
-                return res, cache_size
-            except IOError:
-                raise Exception("【getClubCoopListByType】获取特定合作商家List失败...")
+                    page_res = his_cache[pageId] if pageId <= cache_size else []
+                return page_res, cache_size
+            except Exception as e:
+                raise Exception("【getClubCoopListByType】获取特定合作商家List失败: %s" % e)
 
 
 class getOneCoopDetail(View):
@@ -416,20 +440,18 @@ class getOneCoopDetail(View):
                 coop_merchs = coop_merch_obj.values()
                 for coop_item in coop_merchs:
                     coop_id = coop_item.get("coop_id", None)
-                    assert coop_id != None, Exception("coop_id 字段在数据库不存在，请检查...")
                     coop_acts_obj = ActivityInfoTable.objects.filter(coop_id=coop_id)
                     events = []
                     if coop_acts_obj.exists():
                         for act_det in coop_acts_obj.values():
                             act_id = act_det.get("act_id", None)
-                            assert act_id != None, Exception("act_id 字段在数据库不存在，请检查...")
                             act_det.update({"attendence": get_attendence(act_id)})
                             events.append(act_det)
                     coop_item = filter_lang(coop_item, lang)
                     coop_item.update({"EventList": events})
                     return coop_item
-        except IOError:
-            raise Exception("【getOneCoopDetail】获取合作商家失败...")
+        except Exception as e:
+            raise Exception("【getOneCoopDetail】获取合作商家失败: %s" % e)
 
 
 ## TODO：会员板块
@@ -476,7 +498,6 @@ class registerMembership(View):
         :param register_time:
         :return: 0: 注册失败，1: 注册成功, 2: 用户已存在
         """
-        msg = ""
         try:
             check_obj = UserInforTable.objects.filter(uid=uid)
             if not check_obj.exists():
@@ -498,8 +519,18 @@ class registerMembership(View):
 
 class modifyMembership(View):
     def execute(self, uid, name=None, wechat=None, pic=None, profile=None, email=None, phone_no=None, location=None):
-        """会员信息修改"""
-        msg = ""
+        """
+        会员信息修改
+        :param uid:
+        :param name:
+        :param wechat:
+        :param pic:
+        :param profile:
+        :param email:
+        :param phone_no:
+        :param location:
+        :return:
+        """
         try:
             check_obj = UserInforTable.objects.filter(uid=uid)
             if not check_obj.exists():

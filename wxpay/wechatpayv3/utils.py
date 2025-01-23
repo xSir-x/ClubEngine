@@ -143,7 +143,7 @@ def sha256(data):
     hash.update(data)
     return hash.finalize().hex()
 
-# def sm3(data):
-#     hash = Hash(SM3())
-#     hash.update(data)
-#     return hash.finalize().hex()
+def sm3(data):
+    hash = Hash(SM3())
+    hash.update(data)
+    return hash.finalize().hex()

@@ -8,6 +8,7 @@ from django.utils.timezone import is_aware, make_aware
 from django.utils import timezone
 from datetime import datetime
 
+redis_conn = get_redis_connection()
 
 def get_openid(js_code):
     """
@@ -30,22 +31,23 @@ def validate_accessToken(access_token):
     try:
         res = retrieve_from_redis(access_token)
         if not res:
-            return True
-        # cache.get(access_token)
+            print(">> Retrieve access token Failed....")
+            return False
     except Exception as e:
+        print(">> Retrieve access token Exception: %s...." % e)
         return False
     return True
 
 
-def store_in_redis(key, value, ex=30):
+def store_in_redis(key, value, ex=12*60*60):
     """使用Redis进行数据存储"""
-    redis_conn = get_redis_connection()
+    # redis_conn = get_redis_connection()
     redis_conn.set(key, value, ex)
 
 
 def retrieve_from_redis(key):
     """要从Redis中检索数据"""
-    redis_conn = get_redis_connection()
+    # redis_conn = get_redis_connection()
     return redis_conn.get(key)
 
 
