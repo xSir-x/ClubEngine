@@ -17,7 +17,13 @@ from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.templatetags.static import static
 
-logger = logging.getLogger(__name__)
+info_logger = logging.getLogger('django')
+# 根据loggers配置handlers,将日志写到指定的地方
+
+error_logger = logging.getLogger('django.request')
+
+
+# 根据loggers配置handlers,将日志写到指定的地方
 
 
 def get_sha256(str):

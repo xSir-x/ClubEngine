@@ -15,6 +15,9 @@ from dbModel.views import *
 from wxpay.views import *
 from django_redis import get_redis_connection
 import json
+from util.log import logHander
+
+_logger = logHander(__name__)
 
 
 @csrf_exempt
@@ -27,7 +30,7 @@ def add_fav_act(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message =  {"code": 100, "succeed": False, "msg": "Invalidate access token."}
+            message = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
         act_id = request_res.get('act_id', None)
         uid = request_res.get('uid', None)
@@ -37,6 +40,7 @@ def add_fav_act(request):
             message = {"code": 201, "msg": "缺少必填信息..."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
 
+        _logger.info("Request:: 发起活动收藏...")
         state, message = addFavActivity.execute(need_fav=need_fav, act_id=act_id, uid=uid)
         message = {"response": state, "code": 200, "succeed": False, "msg": message}
 
@@ -64,6 +68,7 @@ def get_all_type(request):
             message = {"code": 201, "msg": "缺少必填信息..."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
 
+        _logger.info("Request:: 获取所有活动类型...")
         response = getAllType.execute(loc_code=loc_code, lang=lang)
         message = {"response": response, "code": 200, "succeed": True, "msg": message}
 
@@ -94,6 +99,7 @@ def get_acts_bytype(request):
             message = {"code": 201, "msg": "缺少必填信息..."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
 
+        _logger.info("Request:: 根据类型获取活动列表, type: %s, loc_code: %s, lang: %s" % (type, loc_code, lang))
         page_res, size = getActivitiesByType.execute(type=type, loc_code=loc_code, lang=lang, pageId=pageId,
                                                      pageSize=pageSize)
         message = {"response": page_res, "total": size, "code": 200, "succeed": True, "msg": message}
@@ -113,7 +119,7 @@ def get_recomm_acts(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message =  {"code": 100, "succeed": False, "msg": "Invalidate access token."}
+            message = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
         loc_code = request_res.get('loc_code', None)
         lang = request_res.get('lang', None)
@@ -168,7 +174,7 @@ def get_my_acts_bytype(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message =  {"code": 100, "succeed": False, "msg": "Invalidate access token."}
+            message = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
 
         uid = request_res.get('uid', None)
@@ -316,7 +322,7 @@ def get_coopdet(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message =  {"code": 100, "succeed": False, "msg": "Invalidate access token."}
+            message = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
 
         coop_id = request_res.get('coop_id')
@@ -397,7 +403,7 @@ def mininotify(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            response =  {"code": 100, "succeed": False, "msg": "Invalidate access token."}
+            response = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(response, ensure_ascii=False))
 
         response = WXMinPay().notify(request=request)
@@ -431,7 +437,7 @@ def search_order(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message =  {"code": 100, "succeed": False, "msg": "Invalidate access token."}
+            message = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
 
         response = WXMinPay().search_order(request=request)
@@ -518,7 +524,7 @@ def auth_register(request):
         email = request_res.get('email', None)
         phone_no = request_res.get('phone_no', None)
         location = request_res.get('location', "")
-        register_time = timezone.now()
+        register_time = str(int(time.time()))
 
         if wechat is None or name is None or email is None:
             message = {"code": 201, "msg": "缺少必填信息..."}
@@ -541,7 +547,7 @@ def search_user(request):
         request_res = json.loads(request.body)
         access_token = request_res.get('access_token', None)
         if not validate_accessToken(access_token):
-            message =  {"code": 100, "succeed": False, "msg": "Invalidate access token."}
+            message = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
         uid = request_res.get('uid', None)
         response = getMemberInfo().execute(uid=uid)
