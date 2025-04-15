@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import path
 from . import views
 
+
+
 urlpatterns = [
     # path('admin/', admin.site.urls),
     # path('add', views.add),
@@ -24,5 +26,5 @@ urlpatterns = [
     # path('pay_rate', views.pay_rate),
     # path('get_top', views.get_top),
     path('userlogin', views.auth_user),
-    path('testAccess', views.test_access),
+    path('testAccess', views.test_access)
 ]
