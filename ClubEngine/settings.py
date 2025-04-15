@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
@@ -25,9 +24,10 @@ SECRET_KEY = 'django-insecure-8+7&#xifwa2n)qsz2p*yur(=frhd27o#n^nx=%*3+x40bhrg5%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['101.35.191.114', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['110.41.176.114', 'localhost', '127.0.0.1', '192.168.31.24']
 
-
+# 设置端口
+DEFAULT_PORT = 80
 # Application definition
 
 INSTALLED_APPS = [
@@ -71,17 +71,33 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ClubEngine.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # },
+
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',  # django连接mysql，还可以连oracle、sqlite3、postgresql等等
+    #     'NAME': 'yclub',  # 数据库名字
+    #     'USER': 'root',  # 用户
+    #     'PASSWORD': 'Vin015214',  # 密码Vin015214
+    #     'HOST': '127.0.0.1',  # 主机
+    #     'PORT': '3306',  # 端口
+    # }
+
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',  # django连接mysql，还可以连oracle、sqlite3、postgresql等等
+        'NAME': 'yclub',  # 数据库名字
+        'USER': 'root',  # 用户
+        'PASSWORD': '!Y12345678',  # 密码
+        'HOST': '47cc38820c8c49578e0ba59e1eb75132in01.internal.cn-south-1.mysql.rds.myhuaweicloud.com',  # 主机
+        'PORT': '3306',  # 端口
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -101,7 +117,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
@@ -114,7 +129,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -134,8 +148,23 @@ REST_FRAMEWORK = {
 }
 # 本地缓存
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
-        'LOCATION': '127.0.0.1:11211',  # Memcached 服务器地址和端口
+    # 'default': {
+    #     'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
+    #     'LOCATION': '127.0.0.1:11211',  # Memcached 服务器地址和端口
+    #     'VERSION': 1,
+    # }
+
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",  # 安装redis的主机的 IP 和 端口
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {
+                "max_connections": 1000,
+                "encoding": 'utf-8'
+            },
+            # "PASSWORD": "qwe123"  # redis密码
+            "AUTH": "qwe123"  # redis密码
+        }
     }
 }

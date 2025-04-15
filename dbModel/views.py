@@ -1,238 +1,361 @@
-import random
-
-from django.shortcuts import render
 from django.views import View
 from dbModel.models import ActivityInfoTable, MerchantInfoTable, UserInforTable, MerchantMaskTable, ActsMarkTable, \
     UserOrderTable
-from django.utils import timezone
+# from django.utils import timezone
+import time
+from datetime import datetime
+from django.core.cache import cache
+from util.external_api import store_in_redis, retrieve_from_redis
+
+from util.log import logHander
+
+_logger = logHander(__name__)
 
 
 ## 活动板块
 class addFavActivity(View):
-    def execuate(self, act_id, uid):
+    @classmethod
+    def execute(cls, need_fav: bool, act_id: str, uid: str):
         """
-        收藏活动操作：Roc update： 根据uid + act_id 查询用户活动收藏表，有的话把 is_mark置1， 无的话，新增一条记录并且把is_mark字段置1
+        收藏活动操作: 收藏成功返回1，否则返回0
+        :param need_fav: bool
         :param act_id:
         :param uid:
         :return:
         """
-        state = 0  # 0: 失败，1: 成功
+        mask_time = str(int(time.time()))
         try:
-            fav_act_obj = ActsMarkTable.objects.get(uid=uid, act_id=act_id)
+            fav_act_obj = ActsMarkTable.objects.filter(uid=uid, act_id=act_id)
             if fav_act_obj.exists():
-                ActsMarkTable.objects.filter(uid=uid, act_id=act_id).update(is_mark=1)
+                is_mark = fav_act_obj.values("is_mark")[0]["is_mark"]
+                if need_fav:
+                    if is_mark != 1:
+                        ActsMarkTable.objects.filter(uid=uid, act_id=act_id). \
+                            update(is_mark=1, mask_time=mask_time)
+                else:
+                    if is_mark != 0:
+                        ActsMarkTable.objects.filter(uid=uid, act_id=act_id). \
+                            update(is_mark=0, mask_time=mask_time)
             else:
-                ActsMarkTable.objects.create(uid=uid, act_id=act_id, is_mark=1, update_time=timezone.now)
-            return 1
-        except IOError:
-            print("【addFavActivity】数据库【ActsMarkTable】操作收藏活动失败...")
-            return 0
+                if need_fav:
+                    ActsMarkTable.objects. \
+                        create(uid=uid, act_id=act_id, is_mark=1, mask_time=mask_time)
+                else:
+                    ActsMarkTable.objects. \
+                        filter(uid=uid, act_id=act_id). \
+                        update(is_mark=0, mask_time=mask_time)
+            return 1, "活动收藏成功!"
+        except Exception as e:
+            message = "【addFavActivity】数据库【ActsMarkTable】操作收藏活动失败: %s" % e
+            _logger.error(message)
+            return 0, message
 
 
 class getAllType(View):
-    def execuate(self, loc_code):
+    @classmethod
+    def execute(cls, loc_code: str, lang: str):
         """
-        获取所有活动类型
-        roc update：根据loc_code 查询该地区所有活动的type， 返回类型为 list of string （i.e [sport，music，resturant,...]）
+        获取所有活动类型: 根据loc_code 查询该地区所有活动的type
         :param loc_code:
+        :param lang: 语言类型
         :return:
-            [{"act_id": act_id, "type": type},
-            ...]
+            [{"type": "活动类型1"}, {"type": "活动类型2"}, ...]
         """
-        res = {}
+        res = []
         try:
-            get_acts_obj = ActivityInfoTable.objects.filter(loc_code=loc_code)
-            if get_acts_obj.exists():
-                res = get_acts_obj.values("act_id", "type")
+            acts_obj = ActivityInfoTable.objects.filter(loc_code=loc_code)
+            if acts_obj.exists():
+                act_types = acts_obj.values("type_en") \
+                    if lang == "en" else acts_obj.values("type_zh")
+                dummp = []
+                for item in act_types:
+                    _type = list(item)[-1]
+                    if _type not in dummp:
+                        res.append(item)
+                    dummp.append(_type)
             return res
-        except IOError:
-            raise Exception("【getAllType】查询数据库【ActivityInfoTable】[param: %s]异常..." % loc_code)
+        except Exception as e:
+            raise Exception("【getAllType】查询数据库【ActivityInfoTable】[err: %s]异常..." % e)
+
+
+def filter_lang(item_info, lang: str):
+    """
+    根据语言进行过滤
+    :param item_info:
+    :param lang:
+    :return:
+    """
+    if lang == "zh":
+        if "detail_zh" in item_info:
+            item_info.pop("detail_en")
+        if "title_zh" in item_info:
+            item_info.pop("title_en")
+        if "type_zh" in item_info:
+            item_info.pop("type_en")
+    elif lang == "en":
+        if "detail_en" in item_info:
+            item_info.pop("detail_zh")
+        if "title_en" in item_info:
+            item_info.pop("title_zh")
+        if "type_en" in item_info:
+            item_info.pop("type_zh")
+    return item_info
+
+
+def get_activity_dets(act_det, lang: str):
+    """
+    多表查询获取单个活动的所有信息: 包含活动信息表的所有信息、is_mark(活动是否被收藏)、attendence(被哪些收藏，收藏者的pic)
+    :param act_det: 字典格式
+    :param lang:
+    :return:
+    """
+    try:
+        act_det = filter_lang(act_det, lang)
+        _logger.info(" >>[GET is_mark]: input: %s." % act_det)
+        # 查询表【ActsMarkTable】获取is_mark字段
+        act_id = act_det.get("act_id", None)
+        actmark_obj = ActsMarkTable.objects.filter(act_id=act_id)
+        is_mark = actmark_obj.values("is_mark")[0]["is_mark"] if actmark_obj.exists() else 0
+        act_det.update({"is_mark": is_mark})
+        # 查询订单表【UserOrderTable】获取"pic"字段追加到 attendence
+        _logger.info(" >>: act_id: %s, is_mark: %s" % (act_id, is_mark))
+        act_det.update({"attendence": get_attendence(act_id)})
+        return act_det
+    except Exception as e:
+        raise Exception("查询数据库 get attendence 异常: %s." % e)
+
+
+def get_attendence(act_id):
+    """获取attendence"""
+    try:
+        order2_obj = UserOrderTable.objects.filter(act_id=act_id, order_status=2)
+        _logger.info(" >>[GET attendence]: act_id:%s, obj: %s" % (act_id, order2_obj))
+        attendence = []
+        if order2_obj.exists():
+            att_uids = order2_obj.values("uid")
+            _logger.info(" >>: att_uids: %s" % (att_uids))
+            for _item in att_uids:
+                uid = _item.get("uid", None)
+                if uid:
+                    _pic_obj = UserInforTable.objects.filter(uid=uid)
+                    if _pic_obj.exists():
+                        for item in _pic_obj.values("pic"):
+                            pic = list(item)[-1]
+                            attendence.append(pic)
+        return attendence
+    except Exception as e:
+        raise Exception("查询数据库 get attendence 异常: %s." % e)
 
 
 class getActivitiesByType(View):
-    def execuate(self, type, loc_code, pageId=0, pageSize=7):
+    @classmethod
+    def execute(cls, type: str, loc_code: str, lang: str, timeout=300, pageId=0, pageSize=7):
         """
-        获取所有活动列表: 直接读取表ActivityInfoTable
-        ①、page查询需要进行redis缓存，redis设置过期时间；②、input para异常处理
-        :param type:
-        :param loc_code:
-        :param pageId:
-        :param pageSize:
-        :return:
-            [{}, {}]
+        获取所有活动列表: s1: 查询ActivityInfoTable获取所有的活动
+        s2: 根据活动信息查询is_mark和attendence(通过act_id查询UserOrderTable中order_status=2的pic)
+        :param type: 活动类型
+        :param loc_code: 活动区域
+        :param lang: 活动语言
+        :param pageId: 指定pageID
+        :param pageSize: 活动页数
+        :return: List[dict{}, ...]
         """
 
-        res = []
+        size, page = 0, []
         try:
-            type_acts_obj = ActivityInfoTable.objects.filter(loc_code=loc_code, type=type)
-            if type_acts_obj.exists():
-                type_acts = type_acts_obj\
-                    .values("act_id", "type", "title", "pic", "loc_code", "tag", "is_mark",
-                                                "act_time", "attendence")\
-                    .order_by('act_time')
-                res = [type_acts[i:i + pageSize] for i in range(0, type_acts, pageSize)]
-                return res
-        except IOError:
-            raise Exception("【getActivitiesByType】查询数据库[ActivityInfoTable]异常...")
+            _logger.info("*** GET_ACTS_BYTYPE >> type: %s, loc_code: %s, lang: %s" % (type, loc_code, lang))
+            key = type + "#" + str(loc_code) + "#" + lang
+            his_cache = retrieve_from_redis(key)
+            _logger.info(" >>: cache验证: %s" % his_cache)
+            if his_cache is not None:
+                his_cache = eval(his_cache)
+                size = len(his_cache)
+                page = his_cache[pageId] if pageId < size else []
+                return page, size
+            else:
+                res = []
+                type, lang = type.lower(), lang.lower()
+                actinfo_obj = None
+                if type == "all":
+                    actinfo_obj = ActivityInfoTable.objects.filter(loc_code=loc_code)
+                else:
+                    actinfo_obj = ActivityInfoTable.objects.filter(loc_code=loc_code, type_en=type) \
+                        if lang == "en" else \
+                        ActivityInfoTable.objects.filter(loc_code=loc_code, type_zh=type)
+                _logger.info(" >>: cache为空，查表, actinfo_obj: %s." % actinfo_obj)
+                if actinfo_obj.exists():
+                    type_acts = actinfo_obj.values()
+                    temp = []
+                    for i, act_item in enumerate(type_acts):
+                        if len(temp) > pageSize:
+                            res.append(temp)
+                            temp = []
+                        _logger.info(" >>: ITEM: %s" % act_item)
+                        temp.append(get_activity_dets(act_item, lang))
+                    if len(temp) > 0:
+                        res.append(temp)
+                    size = len(res)
+                    _logger.info(" >>: pageId: %s, res: %s" % (pageId, res))
+                    store_in_redis(key, str(res), timeout)
+                page = res[pageId] if pageId < size else []
+                _logger.info("*** output[GET_ACTS_BYTYPE]: size: %s, page: %s." % (size, page))
+                return page, size
+        except Exception as e:
+            raise Exception("【getActivitiesByType】异常...: %s." % e)
 
 
 class getRecommandActivities(View):
-    def execuate(self, loc_code):
+    @classmethod
+    def execute(cls, loc_code: str, lang: str):
         """
-        获取活动推荐列表:
-        roc update: 1。查询ActivityInfoTable，返回该地区，is_recommand为1的act_id对应的活动信息
-        2。attnedence通过act_id查询UserOrderTable中order_status=2(支付成功的)返回list of uid,
+        获取活动推荐列表:  s1: 根据loc_code&is_recommand=1两个字段查询ActivityInfoTable获取所有的活动
+        s2: 根据活动信息查询is_mark和attendence(通过act_id查询UserOrderTable中order_status=2的pic)
         :param loc_code:
-        :return:
-        [{act_id, type, title, time, pic, loc_code, tag, attendence, is_mark}]
+        :param lang:
+        :return: List[dict{},]
         """
         res = []
         try:
             recomm_act_obj = ActivityInfoTable.objects.filter(loc_code=loc_code, is_recommend=1)
             if recomm_act_obj.exists():
-                recomm_acts = recomm_act_obj\
-                    .values("act_id", "type", "title", "pic", "loc_code", "tag", "is_mark",
-                                                "act_time")
-                for reco_act in recomm_acts:
-                    act_id = reco_act.get("act_id", None)
-                    attendence = UserOrderTable.objects.filter(act_id=act_id, paymentid=2).values().count()
-                    reco_act.update({"attendence": attendence})
-                    res.append(reco_act)
+                recomm_acts = recomm_act_obj.values()
+                for i, act_item in enumerate(recomm_acts):
+                    act_item = get_activity_dets(act_item, lang)
+                    res.append(act_item)
             return res
-        except IOError:
-            raise Exception("【getRecommandActivities】查询数据库【ActivityInfoTable】[%s]异常..." % loc_code)
+        except Exception as e:
+            raise Exception("【getRecommandActivities】查询数据库【ActivityInfoTable】[%s]异常: %s" % (loc_code, e))
 
 
 class getSingleActivityDetail(View):
-    def execuate(self, act_id, type):
+    def execute(self, act_id, type: str, lang: str):
         """
-        获取单个活动细节:
-        roc update: 1。查询ActivityInfoTable，目标act_id的活动信息
-        2。attnedence通过act_id查询UserOrderTable中order_status=2(支付成功的)返回list of uid,
+        获取单个活动细节: s1: 根据act_id&type两个字段查询ActivityInfoTable某个的活动
+        s2: 根据活动信息查询is_mark和attendence(通过act_id查询UserOrderTable中order_status=2的pic)
+
         :param act_id:
         :param type:
-        :return:
-            {act_id, title, time, detail, price, loc_code, tag, pic, attendence, is_mark}
+        :param lang:
+        :return: dict{}
         """
-        res = []
         try:
-            sing_act_obj = ActivityInfoTable.objects.filter(act_id=act_id, type=type)
-            if sing_act_obj.exists():
-                single_act = sing_act_obj\
-                    .values("act_id", "title", "act_time", "detail", "price", "loc_code", "tag",
-                                               "pic", "is_mark")
-                attendence = UserOrderTable.objects.filter(act_id=act_id, paymentid=2).values().count()
-                single_act.update({"attendence": attendence})
-            return res
-        except IOError:
-            raise Exception("【getSingleActivityDetail】查询数据库【ActivityInfoTable or UserOrderTable】异常...")
-
-
-class getMyActivitiesType(View):
-    def execuate(self, uid, loc_code):
-        """
-        获取我的活动类型:
-        roc update：根据uid查询用户的所有订单order_status并返回 list of order_status
-
-        :param uid:
-        :param loc_code:
-        :return:
-            [{"order_id": order_id,
-            "order_status": order_status},
-            ...]
-        """
-        res = []
-        try:
-            my_all_acts_obj = UserOrderTable.objects.filter(uid=uid, loc_code=loc_code)
-            if my_all_acts_obj.exists():
-                res = my_all_acts_obj.values("order_id", "order_status")
-            return res
-        except IOError:
-            raise Exception("【getMyActivitiesType】查询数据库【UserOrderTable】异常...")
+            act_det = {}
+            act_obj = ActivityInfoTable.objects.filter(act_id=act_id, type_en=type) \
+                if lang == "en" else ActivityInfoTable.objects.filter(act_id=act_id, type_zh=type)
+            if act_obj.exists():
+                act_info = act_obj.values()[0]
+                act_det = get_activity_dets(act_info, lang)
+            return act_det
+        except Exception as e:
+            raise Exception("【getSingleActivityDetail】查询数据库【ActivityInfoTable or UserOrderTable】异常: %s" % e)
 
 
 class getMyActivitiesBytype(View):
-    def execuate(self, uid, type):
+    def execute(self, uid, lang, type="ALL"):
         """
-        获取我的活动列表: UserOrderTable
+        获取我的活动列表: 根据uid&type两个字段查询ActivityInfoTable某个的活动
         :param uid:
-        :param type: ongoing/past/new/all
-        :return:
-            [{"order_id": order_id,
-            "act_id": act_id,
-            "act_time": act_time,
-            "pic": pic,
-            "price": price,
-            "order_status": order_status
-            "title": title},
-            ...]
+        :param lang: zh or en
+        :param type:
+        :return: List[dict{},]
         """
         res = []
         try:
-            assert type in ["ongoing", "past", "new", "all"], print("type字段取值范围存在问题..")
-            my_acts_obj = UserOrderTable.objects.filter(uid=uid)
-            if my_acts_obj.exists():
-                my_acts = my_acts_obj.values("act_id", "order_id", "order_status")
+            type = type.lower()
+            lang = lang.lower()
+            acts_obj = UserOrderTable.objects.filter(uid=uid)
+            if acts_obj.exists():
+                my_acts = acts_obj.values("act_id", "order_id", "order_status")
                 for item in my_acts:
-                    item_infos = ActivityInfoTable.objects. \
-                        filter(act_id=item.get("act_id"), type=type). \
-                        values("act_time", "pic", "price", "title") if type != "all " else \
-                        ActivityInfoTable.objects\
-                            .filter(act_id=item.get("act_id"))\
-                            .values("act_time", "pic", "price", "title")
-                    res.append(item.update({item_infos}))
+                    item_obj = None
+                    if type == "all":
+                        item_obj = ActivityInfoTable.objects. \
+                            filter(act_id=item.get("act_id", None))
+                    elif lang == "en":
+                        item_obj = ActivityInfoTable.objects. \
+                            filter(act_id=item.get("act_id", None), type_en=type)
+                    elif lang == "zh":
+                        item_obj = ActivityInfoTable.objects. \
+                            filter(act_id=item.get("act_id", None), type_zh=type)
+                    if not item_obj.exists():
+                        continue
+                    f_items = item_obj.values()
+                    for _item_info in f_items:
+                        item_info = filter_lang(_item_info, lang)
+                        item_info.update(item)
+                        res.append(item_info)
             return res
-        except IOError:
-            raise Exception("【getMyActivitiesBytype】查询数据库【UserOrderTable】异常...")
+        except Exception as e:
+            raise Exception("【getMyActivitiesBytype】查询数据库【UserOrderTable】异常: %s." % e)
 
 
 class getMySingleActivity(View):
-    def execuate(self, order_id, uid):
+    def execute(self, order_id, uid, lang):
         """
-        获取我的单个活动列表: 查询UserOrderTable过滤即可, 然后根据act_id查询ActivityInfoTable
+        获取我的单个活动列表: 根据 uid & order_id 查询UserOrderTable，获取act_id，再根据act_id查询ActivityInfoTable
         :param order_id:
         :param uid:
-            {"order_id": order_id, "title": title, "time": time, "detail": detail, "price": price,
-            "loc_code": loc_code, "pic": pic,
-            "order_status": order_status, "paymentid": paymentid, "pay_time": pay_time}
+        :param lang: zh or en
+        :return: Dict{}
         """
         res = []
         try:
             my_act_obj = UserOrderTable.objects.filter(uid=uid, order_id=order_id)
             if my_act_obj.exists():
-                res = my_act_obj\
-                    .values("order_id", "title", "time", "detail", "price", "loc_code", "pic",
-                                        "order_status", "paymentid", "pay_time")\
-                    .order_by("order_time")
+                order_infos = my_act_obj.values()
+                for order in order_infos:
+                    act_det_obj = ActivityInfoTable.objects.filter(act_id=order.get("act_id"))
+                    if not act_det_obj.exists():
+                        continue
+                    act_det = act_det_obj.values()
+                    for _det in act_det:
+                        item_info = filter_lang(_det, lang)
+                        item_info.update(order)
+                        res.append(item_info)
             return res
-        except IOError:
-            raise Exception("【getMySingleActivity】查询数据库【UserOrderTable】异常...")
+        except Exception as e:
+            raise Exception("【getMySingleActivity】查询数据库【UserOrderTable】异常: %s" % e)
 
 
 ## 商家板块
 class addCoopFav(View):
-    def execuate(self, uid, coopid):
+    def execute(self, need_fav, uid, coop_id):
         """
         收藏商家:
         Roc update： 根据uid + coopid 查询用户商户收藏表，有的话把is_mark置1， 无的话，新增一条记录并且把is_mark字段置1
         :param uid:
-        :param coopid:
+        :param coop_id:
         :return:
         """
+        message = "ok!"
         try:
-            merch_mask_obj = MerchantMaskTable.objects.get(coopid=coopid, uid=uid)
-            if merch_mask_obj.exists():
-                ActsMarkTable.objects.filter(coopid=coopid, uid=uid).update(is_mark=1)
+            mask_time = str(int(time.time()))
+            fav_act_obj = MerchantMaskTable.objects.filter(uid=uid, coop_id=coop_id)
+            if fav_act_obj.exists():
+                is_mark = fav_act_obj.values("is_mark")[0]["is_mark"]
+                if need_fav:
+                    if is_mark != 1:
+                        MerchantMaskTable.objects.filter(uid=uid, coop_id=coop_id). \
+                            update(is_mark=1, mask_time=mask_time)
+                else:
+                    if is_mark != 0:
+                        MerchantMaskTable.objects.filter(uid=uid, coop_id=coop_id). \
+                            update(is_mark=0, mask_time=mask_time)
             else:
-                ActsMarkTable.objects.create(coopid=coopid, uid=uid, is_mark=1, update_time=timezone.now)
-            return 1
-        except IOError:
-            print("【addCoopFav】收藏商家失败...")
-            return 0
+                if need_fav:
+                    MerchantMaskTable.objects. \
+                        create(uid=uid, coop_id=coop_id, is_mark=1, mask_time=mask_time)
+                else:
+                    MerchantMaskTable.objects.filter(uid=uid, coop_id=coop_id). \
+                        update(is_mark=0, mask_time=mask_time)
+            return 1, message
+        except Exception as e:
+            print("【addCoopFav】收藏商家异常: %s" % e)
+            return 0, message
 
 
 class getClubCoopListType(View):
-    def execuate(self, loc_code):
+    def execute(self, loc_code, lang):
         """
         获取合作商家类型：
         Roc update： 根据字段[loc_code]读取MerchantInfoTable中对应的type字段，返回地区下的所有type ， 数据返回类型list of type
@@ -243,90 +366,203 @@ class getClubCoopListType(View):
         """
         res = []
         try:
-            merch_obj = MerchantInfoTable.objects.get(loc_code=loc_code)
+            merch_obj = MerchantInfoTable.objects.filter(loc_code=loc_code)
             if merch_obj.exists():
-                merch_infos = merch_obj.value("coopid", "type")
-                res = merch_infos
+                merch_types = merch_obj.values("type_en") \
+                    if lang.lower() == "en" else merch_obj.values("type_zh")
+                dummp = []
+                for item in merch_types:
+                    _type = list(item)[-1]
+                    if _type not in dummp:
+                        res.append(item)
+                    dummp.append(_type)
             return res
-        except IOError:
-            raise Exception("【getClubCoopListType】获取合作商家失败...")
+        except Exception as e:
+            raise Exception("【getClubCoopListType】获取合作商家失败: %s" % e)
 
 
 class getClubCoopListByType(View):
-    def execuate(self, type, loc_code, uid, pageId=0, pageSize=7):
+    def execute(self, type, loc_code, lang, timeout=300, pageId=0, pageSize=7):
         """
-        获取合作商家信息:
-        Roc update: 1。根据uid查询缓存，如果缓存存在，根绝pageID return 对应的coop信息， 如果缓存不存在执行2
-                    2。根据type+loc_code 查询coop的info， count总共N条数据，并且计算最大分页id（N/pageSize）， 缓存根据uid+pageid记录每一个页面信息， return 对pageid的coop的info
+        获取合作商家信息: 根据type, loc_code, lang 过滤 MerchantInfoTable
         :param type:
         :param loc_code:
-        :param uid:
+        :param lang:
         :param pageId:
         :param pageSize:
         :return:
-            [{"coopid": coopid, "name": name, "type": type, "pic": pic, "loc_code": loc_code},
-            ...]
         """
-        res = []
         try:
-            coop_merch_obj = MerchantInfoTable.objects.get(loc_code=loc_code, type=type)
-            if coop_merch_obj.exists():
-                coop_merchs = coop_merch_obj.values("coopid", "name", "type", "pic", "loc_code").order_by('act_time')
-                res = [coop_merchs[i:i + pageSize] for i in range(0, coop_merchs, pageSize)]
-            return res
-        except IOError:
-            raise Exception("【getClubCoopListByType】获取合作商家失败...")
+            res = []
+            page_res, cache_size = [], 0
+            key = "CLUBCOOP#" + type + "#" + loc_code + "#" + lang
+            his_cache = retrieve_from_redis(key)
+            if his_cache is not None:
+                his_cache = eval(his_cache)
+                cache_size = len(his_cache) if his_cache else 0
+                page_res = his_cache[pageId] if pageId < cache_size else []
+                return page_res, cache_size
+            else:
+                type, lang = type.lower(), lang.lower()
+                coop_merch_obj = None
+                if type == "all":
+                    coop_merch_obj = MerchantInfoTable.objects.filter(loc_code=loc_code)
+                else:
+                    coop_merch_obj = MerchantInfoTable.objects.filter(loc_code=loc_code, type_en=type) \
+                        if lang == "en" else \
+                        MerchantInfoTable.objects.filter(loc_code=loc_code, type_zh=type)
+
+                if coop_merch_obj.exists():
+                    coop_merchs = coop_merch_obj.values()
+                    temp = []
+                    for i, coop_item in enumerate(coop_merchs):
+                        if len(temp) > pageSize:
+                            res.append(temp)
+                            temp = []
+                        temp.append(filter_lang(coop_item, lang))
+                    if len(temp) > 0:
+                        res.append(temp)
+                    cache_size = len(res)
+                    store_in_redis(key, str(res), timeout)
+                    page_res = res[pageId] if pageId < cache_size else []
+                return page_res, cache_size
+        except Exception as e:
+            raise Exception("【getClubCoopListByType】获取特定合作商家List失败: %s" % e)
 
 
 class getOneCoopDetail(View):
-    def execuate(self, coopid):
+    def execute(self, coop_id, lang="zh"):
+        """
+        获取单个合作商家详情:
+        s1: 根据 coopid,lang 查询MerchantInfoTable
+
+        :param coop_id:
+        :param lang:
+        :return:
+        """
         """
         获取单个合作商家详情: 根据[coopid]查询MerchantInfoTable，然后根据[coopid]查询ActivityInfoTable
-        :param coopid:
+        :param coop_id:
         :return:
-            {"coopid", "name", "detail", "pic", "loc_code", "email", "wechatid",
+            {"coop_id", "name", "detail", "pic", "loc_code", "email", "wechatid",
                 EventList: [{"act_id", "type", "title", "act_time", "pic", "loc_code", "tag", "attendence"}]}
         """
-        coop_merchs = []
         try:
-            coop_merch_obj = MerchantInfoTable.objects.get(coopid=coopid)
+            coop_merch_obj = MerchantInfoTable.objects.filter(coop_id=coop_id)
             if coop_merch_obj.exists():
-                coop_merchs = coop_merch_obj.\
-                    values("coopid", "name", "detail", "pic", "loc_code", "email", "wechatid").\
-                    order_by('update_time')
-                acts = ActivityInfoTable.objects.\
-                    filter("coopid").\
-                    values("act_id", "type", "title", "act_time", "pic", "loc_code", "tag")
-                events = []
-                for act in acts:
-                    act.update("attendence", random.randint(5, 10))
-                    events.append(act)
-                coop_merchs.update({"EventList": events})
-            return coop_merchs
-        except IOError:
-            raise Exception("【getOneCoopDetail】获取合作商家失败...")
+                coop_merchs = coop_merch_obj.values()
+                for coop_item in coop_merchs:
+                    coop_id = coop_item.get("coop_id", None)
+                    coop_acts_obj = ActivityInfoTable.objects.filter(coop_id=coop_id)
+                    events = []
+                    if coop_acts_obj.exists():
+                        for act_det in coop_acts_obj.values():
+                            act_id = act_det.get("act_id", None)
+                            act_det.update({"attendence": get_attendence(act_id)})
+                            events.append(act_det)
+                    coop_item = filter_lang(coop_item, lang)
+                    coop_item.update({"EventList": events})
+                    return coop_item
+        except Exception as e:
+            raise Exception("【getOneCoopDetail】获取合作商家失败: %s" % e)
 
-## 会员板块
+
+## TODO：会员板块
+
 class getClubInfo(View):
-    def execuate(self, type):
+    def execute(self, type):
         """获取商会信息"""
 
 
 class getMembershipInfo(View):
-    def execuate(self, type):
+    def execute(self, type):
         """获取会员制度信息"""
 
 
 class getClubContactInfo(View):
-    def execuate(self, type):
+    def execute(self, type):
         """获取商会联系方式"""
 
 
 class getMemberInfo(View):
-    def execuate(self, type):
+    def execute(self, uid):
         """获取会员详细信息"""
+        res = {}
+        try:
+            check_obj = UserInforTable.objects.filter(uid=uid)
+            if not check_obj.exists():
+                res = UserInforTable.objects.values()
+            return res
+        except Exception as e:
+            raise Exception(e)
 
 
-class upgradeMembership(View):
-    def execuate(self, userid, wechat, email, phone, profile, location):
-        """注册会员"""
+class registerMembership(View):
+    def execute(self, uid, name, level, wechat, profile, email, phone_no, location, register_time):
+        """
+        注册会员:
+        :param uid:
+        :param name:
+        :param level:
+        :param wechat:
+        :param profile:
+        :param email:
+        :param location:
+        :param register_time:
+        :return: 0: 注册失败，1: 注册成功, 2: 用户已存在
+        """
+        try:
+            check_obj = UserInforTable.objects.filter(uid=uid)
+            if not check_obj.exists():
+                UserInforTable.objects.update(uid=uid,
+                                              name=name,
+                                              level=level,
+                                              wechat=wechat,
+                                              profile=profile,
+                                              email=email,
+                                              phone_no=phone_no,
+                                              location=location,
+                                              register_time=register_time)
+                return 1, "OK"
+            else:
+                return 2, "Existed..."
+        except Exception as e:
+            return 0, e
+
+
+class modifyMembership(View):
+    def execute(self, uid, name=None, wechat=None, pic=None, profile=None, email=None, phone_no=None, location=None):
+        """
+        会员信息修改
+        :param uid:
+        :param name:
+        :param wechat:
+        :param pic:
+        :param profile:
+        :param email:
+        :param phone_no:
+        :param location:
+        :return:
+        """
+        try:
+            check_obj = UserInforTable.objects.filter(uid=uid)
+            if not check_obj.exists():
+                msg = "异常用户，用户数据库无此人信息..."
+                return 0, msg
+            if name:
+                UserInforTable.objects.filter(uid=uid).update(name=name)
+            elif wechat:
+                UserInforTable.objects.filter(uid=uid).update(wechat=wechat)
+            elif pic:
+                UserInforTable.objects.filter(uid=uid).update(pic=pic)
+            elif profile:
+                UserInforTable.objects.filter(uid=uid).update(profile=profile)
+            elif email:
+                UserInforTable.objects.filter(uid=uid).update(email=email)
+            elif phone_no:
+                UserInforTable.objects.filter(uid=uid).update(phone_no=phone_no)
+            elif location:
+                UserInforTable.objects.filter(uid=uid).update(location=location)
+            return 1, "OK"
+        except Exception as e:
+            return 0, e

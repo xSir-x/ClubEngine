@@ -1,0 +1,19 @@
+2025-01-23 10:20:13,467 - 83077 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/ClubEngine/settings.py changed, reloading.
+2025-01-23 10:24:57,267 - 83258 - INFO: PUBLIC_KEY_ID: PUB_KEY_ID_0117045786432025011400326400001236
+2025-01-23 10:25:21,209 - 83258 - DEBUG: Starting new HTTPS connection (1): api.weixin.qq.com:443
+2025-01-23 10:25:21,478 - 83258 - DEBUG: https://api.weixin.qq.com:443 "GET /sns/jscode2session?appid=wxf07870791f65ca07&secret=b583d5d85d03874c0db4922f49b06827&js_code=0a16wIll2OiuVe4CGIkl2W5ayQ36wIlx&grant_type=authorization_code HTTP/1.1" 200 74
+2025-01-23 10:26:17,328 - 83258 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/util/log.py changed, reloading.
+2025-01-23 10:26:40,578 - 83300 - INFO: PUBLIC_KEY_ID: PUB_KEY_ID_0117045786432025011400326400001236
+2025-01-23 10:26:42,963 - 83300 - DEBUG: Starting new HTTPS connection (1): api.weixin.qq.com:443
+2025-01-23 10:26:43,213 - 83300 - DEBUG: https://api.weixin.qq.com:443 "GET /sns/jscode2session?appid=wxf07870791f65ca07&secret=b583d5d85d03874c0db4922f49b06827&js_code=0a11nx0w3nRGf43Q1u2w380C4Y21nx0P&grant_type=authorization_code HTTP/1.1" 200 82
+2025-01-23 10:27:37,594 - 83300 - INFO: Request:: 根据类型获取活动列表, type: Community, loc_code: 1, lang: en
+2025-01-23 10:27:37,595 - 83300 - INFO: get_acts_bytype: cache验证: None
+2025-01-23 10:27:37,596 - 83300 - INFO: get_acts_bytype: cache为空，查表...
+2025-01-23 10:28:44,740 - 83300 - INFO: Request:: 根据类型获取活动列表, type: Community, loc_code: 1, lang: en
+2025-01-23 10:28:44,741 - 83300 - INFO: get_acts_bytype: cache验证: b"[[{'act_id': 'act_id_09', 'coop_id': 'coop_id_01', 'type_en': 'Community', 'title_en': 'Drawing game', 'pic': 'https://test-cdn-energy.dyque.com/upload_files/1737526922467.png', 'loc_code': '1', 'tag': 'Y-Club', 'detail_en': 'ace detail: ....', 'is_recommend': 1, 'price': 1.12, 'start_time': '1733241600', 'end_time': '1733414400', 'address': 'ShenZhen 2 Zoological and Botanical Gardens Green House', 'longitude': '113.46', 'latitude': '22.52', 'is_mark': 0, 'attendence': []}]]"
+2025-01-23 10:30:41,455 - 83300 - INFO: /Users/vincenschan/Documents/projects/python_projects/ClubEngine/dbModel/views.py changed, reloading.
+2025-01-23 10:30:42,591 - 83364 - INFO: PUBLIC_KEY_ID: PUB_KEY_ID_0117045786432025011400326400001236
+2025-01-23 10:31:18,359 - 83364 - INFO: Order gen:: 订单创建成功, order_id: 1737628278-3147-40crs5oa3UQXYu9z
+2025-01-23 10:31:22,765 - 83364 - INFO: Order gen:: 订单已经存在...
+2025-01-23 10:31:29,100 - 83364 - INFO: Order gen:: 订单已经存在...
+2025-01-23 10:31:29,867 - 83364 - INFO: Order gen:: 订单已经存在...
