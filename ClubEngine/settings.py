@@ -94,8 +94,8 @@ DATABASES = {
         'NAME': 'tennis_buddy',  # 数据库名字
         'USER': 'root',  # 用户
         'PASSWORD': '!Y12345678',  # 密码
-        # 'HOST': '47cc38820c8c49578e0ba59e1eb75132in01.internal.cn-south-1.mysql.rds.myhuaweicloud.com',  # 主机
-        'HOST': 'localhost',  # 主机
+        'HOST': 'cce4b072d0cf426998ddf73cd65382b9in01.internal.cn-south-1.mysql.rds.myhuaweicloud.com',  # 主机
+        # 'HOST': 'localhost',  # 主机
         'PORT': '3306',  # 端口
     }
 }

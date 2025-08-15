@@ -124,7 +124,7 @@ class UserInforTable(models.Model):
     # email = models.CharField(verbose_name="邮箱用户", max_length=64)
     # phone_no = models.CharField(verbose_name="电话号码", max_length=32)
     class Meta:
-        db_table = "用户信息表"
+        db_table = "user_info"
         get_latest_by = "register_time"
         ordering = ['register_time']
-        verbose_name = "userInfo"
+        verbose_name = "user_info"
