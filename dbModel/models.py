@@ -114,17 +114,15 @@ class UserInforTable(models.Model):
     """用户信息表（会员标记）"""
     uid = models.CharField(verbose_name="用户id", max_length=64, primary_key=True)
     name = models.CharField(verbose_name="用户名称", max_length=16)
-    level = models.IntegerField(verbose_name="会员等级")
-    exptime = models.IntegerField(verbose_name="过期日期")
-    level_status = models.IntegerField(verbose_name="状态：0-已过期；1-正常")
-    wechat = models.CharField(verbose_name="微信ID", max_length=32)
     pic = models.CharField(verbose_name="用户头像图片链接", max_length=128)
     profile = models.CharField(verbose_name="用户个人简介", max_length=256)
-    email = models.CharField(verbose_name="邮箱用户", max_length=64)
-    phone_no = models.CharField(verbose_name="电话号码", max_length=32)
     location = models.CharField(verbose_name="用户地址", max_length=256)
     register_time = models.CharField(verbose_name="注册日期", max_length=64)
-
+    # level = models.IntegerField(verbose_name="会员等级")
+    # level_status = models.IntegerField(verbose_name="状态：0-已过期；1-正常")
+    # wechat = models.CharField(verbose_name="微信ID", max_length=32)
+    # email = models.CharField(verbose_name="邮箱用户", max_length=64)
+    # phone_no = models.CharField(verbose_name="电话号码", max_length=32)
     class Meta:
         db_table = "用户信息表"
         get_latest_by = "register_time"

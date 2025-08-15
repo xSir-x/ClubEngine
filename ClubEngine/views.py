@@ -518,18 +518,14 @@ def auth_register(request):
 
         userid = request_res.get('uid', None)
         name = request_res.get('name', None)
-        level = request_res.get('level', None)
-        wechat = request_res.get('wechat', None)
         profile = request_res.get('profile', None)
-        email = request_res.get('email', None)
-        phone_no = request_res.get('phone_no', None)
         location = request_res.get('location', "")
         register_time = str(int(time.time()))
 
-        if wechat is None or name is None or email is None:
-            message = {"code": 201, "msg": "缺少必填信息..."}
+        if name is None:
+            message = {"code": 201, "msg": "缺少名称信息..."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
-        state, msg = registerMembership().execute(userid, name, level, wechat, profile, email, phone_no, location,
+        state, msg = registerMembership().execute(userid, name, profile, location,
                                                   register_time)
 
         message = {"response": state, "code": 200, "msg": msg}

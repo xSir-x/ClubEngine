@@ -91,10 +91,11 @@ DATABASES = {
 
     'default': {
         'ENGINE': 'django.db.backends.mysql',  # django连接mysql，还可以连oracle、sqlite3、postgresql等等
-        'NAME': 'yclub',  # 数据库名字
+        'NAME': 'tennis_buddy',  # 数据库名字
         'USER': 'root',  # 用户
         'PASSWORD': '!Y12345678',  # 密码
-        'HOST': '47cc38820c8c49578e0ba59e1eb75132in01.internal.cn-south-1.mysql.rds.myhuaweicloud.com',  # 主机
+        # 'HOST': '47cc38820c8c49578e0ba59e1eb75132in01.internal.cn-south-1.mysql.rds.myhuaweicloud.com',  # 主机
+        'HOST': 'localhost',  # 主机
         'PORT': '3306',  # 端口
     }
 }

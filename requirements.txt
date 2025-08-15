@@ -1,2 +1,10 @@
 Django==4.2.17
 djangorestframework==3.15.2
+django-redis>=6.0.0
+redis>=6.4.0
+mysqlclient>=2.0.0
+requests>=2.28.0
+pycryptodome>=3.17.0
+uuid>=1.30
+pymysql>=1.1.0
+cryptography>=42.0.0

@@ -498,7 +498,7 @@ class getMemberInfo(View):
 
 
 class registerMembership(View):
-    def execute(self, uid, name, level, wechat, profile, email, phone_no, location, register_time):
+    def execute(self, uid, name, profile, location, register_time):
         """
         注册会员:
         :param uid:
@@ -516,12 +516,7 @@ class registerMembership(View):
             if not check_obj.exists():
                 UserInforTable.objects.update(uid=uid,
                                               name=name,
-                                              level=level,
-                                              wechat=wechat,
-                                              profile=profile,
-                                              email=email,
-                                              phone_no=phone_no,
-                                              location=location,
+                                              profile=profile,                                              location=location,
                                               register_time=register_time)
                 return 1, "OK"
             else:
@@ -531,7 +526,7 @@ class registerMembership(View):
 
 
 class modifyMembership(View):
-    def execute(self, uid, name=None, wechat=None, pic=None, profile=None, email=None, phone_no=None, location=None):
+    def execute(self, uid, name=None, pic=None, profile=None, location=None):
         """
         会员信息修改
         :param uid:
@@ -551,16 +546,10 @@ class modifyMembership(View):
                 return 0, msg
             if name:
                 UserInforTable.objects.filter(uid=uid).update(name=name)
-            elif wechat:
-                UserInforTable.objects.filter(uid=uid).update(wechat=wechat)
             elif pic:
                 UserInforTable.objects.filter(uid=uid).update(pic=pic)
             elif profile:
                 UserInforTable.objects.filter(uid=uid).update(profile=profile)
-            elif email:
-                UserInforTable.objects.filter(uid=uid).update(email=email)
-            elif phone_no:
-                UserInforTable.objects.filter(uid=uid).update(phone_no=phone_no)
             elif location:
                 UserInforTable.objects.filter(uid=uid).update(location=location)
             return 1, "OK"
