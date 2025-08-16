@@ -520,7 +520,7 @@ class registerMembership(View):
                                               name=name,
                                               profile=profile,
                                               pic="default.jpg",
-                                              location=location,                                                                                            location=location,
+                                              location=location,                    
                                               register_time=register_time)
                 return 1, "OK"
             else:
