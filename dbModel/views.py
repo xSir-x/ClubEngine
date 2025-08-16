@@ -499,7 +499,9 @@ class getMemberInfo(View):
                                            'tech_four', 'tech_five',
                                            'person_one', 'person_two', 'person_three',
                                            'person_four', 'person_five').first()
-            return res.update(res_rating) if res_rating else res
+            print("res_rating",res_rating)
+            print("res",res)
+            return res.update(res_rating)
         except Exception as e:
             raise Exception(e)
 
