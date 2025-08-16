@@ -501,7 +501,9 @@ class getMemberInfo(View):
                                            'person_four', 'person_five').first()
             print("res_rating",res_rating)
             print("res",res)
-            return res.update(res_rating)
+            res.update(res_rating)
+            print("res after union:",res)
+            return res
         except Exception as e:
             raise Exception(e)
 
