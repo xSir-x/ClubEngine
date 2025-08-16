@@ -40,7 +40,7 @@ def validate_accessToken(access_token):
     return True
 
 
-def store_in_redis(key, value, ex=12 * 60 * 60):
+def store_in_redis(key, value, ex=60 * 60):
     """使用Redis进行数据存储"""
     # redis_conn = get_redis_connection()
     redis_conn.set(key, value, ex)
