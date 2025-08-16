@@ -164,8 +164,8 @@ CACHES = {
                 "max_connections": 1000,
                 "encoding": 'utf-8'
             },
-            # "PASSWORD": "qwe123"  # redis密码
-            "AUTH": "qwe123"  # redis密码
+            "PASSWORD": "qwe123" # redis密码
+            # "AUTH": "qwe123"  # redis密码
         }
     }
 }
