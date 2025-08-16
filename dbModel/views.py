@@ -1,6 +1,6 @@
 from django.views import View
 from dbModel.models import ActivityInfoTable, MerchantInfoTable, UserInforTable, MerchantMaskTable, ActsMarkTable, \
-    UserOrderTable
+    UserOrderTable, UserRatingTable
 # from django.utils import timezone
 import time
 from datetime import datetime
@@ -490,11 +490,16 @@ class getMemberInfo(View):
         res = {}
         try:
             check_obj = UserInforTable.objects.filter(uid=uid)
+            rating_obj = UserRatingTable.objects.filter(uid=uid)
             if not check_obj.exists():
                 # res = UserInforTable.objects.values()
                 res = {}
             res = check_obj.values('uid', 'name', 'pic', 'profile', 'location', 'register_time').first()
-            return res
+            res_rating = rating_obj.values('tech_one', 'tech_two', 'tech_three',
+                                           'tech_four', 'tech_five',
+                                           'person_one', 'person_two', 'person_three',
+                                           'person_four', 'person_five').first()
+            return res.update(res_rating) if res_rating else res
         except Exception as e:
             raise Exception(e)
 
@@ -522,6 +527,17 @@ class registerMembership(View):
                                               pic="default.jpg",
                                               location=location,                    
                                               register_time=register_time)
+                UserRatingTable.objects.create(uid=uid,
+                                                tech_one= "",
+                                                tech_two = "",
+                                                tech_three = "",
+                                                tech_four = "",
+                                                tech_five = "",
+                                                person_one = "",
+                                                person_two = "",
+                                                person_three = "",
+                                                person_four = "",
+                                                person_five = "")
                 return 1, "OK"
             else:
                 return 2, "Existed..."

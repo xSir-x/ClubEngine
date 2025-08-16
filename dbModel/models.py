@@ -128,3 +128,23 @@ class UserInforTable(models.Model):
         get_latest_by = "register_time"
         ordering = ['register_time']
         verbose_name = "user_info"
+
+
+class UserRatingTable(models.Model):
+    """用户评分表（用户评分）"""
+    uid = models.CharField(verbose_name="用户id", max_length=100, primary_key=True)
+    tech_one = models.CharField(verbose_name="用户正手评分", max_length=10)
+    tech_two = models.CharField(verbose_name="反手评分", max_length=10)
+    tech_three = models.CharField(verbose_name="动作控点评分", max_length=10)
+    tech_four = models.CharField(verbose_name="切削评分", max_length=10)
+    tech_five = models.CharField(verbose_name="发球评分", max_length=10)
+    person_one = models.CharField(verbose_name="沟通评分", max_length=10)
+    person_two = models.CharField(verbose_name="时间观念评分", max_length=10)
+    person_three = models.CharField(verbose_name="竞技精神评分", max_length=10)
+    person_four = models.CharField(verbose_name="形象评分", max_length=10)
+    person_five = models.CharField(verbose_name="慷慨度评分", max_length=10)
+    class Meta:
+        db_table = "user_rating"
+        get_latest_by = "uid"
+        ordering = ['uid']
+        verbose_name = "user_rating"
