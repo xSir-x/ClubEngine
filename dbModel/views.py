@@ -516,9 +516,11 @@ class registerMembership(View):
         try:
             check_obj = UserInforTable.objects.filter(uid=uid)
             if not check_obj.exists():
-                UserInforTable.objects.update(uid=uid,
+                UserInforTable.objects.create(uid=uid,
                                               name=name,
-                                              profile=profile,                                              location=location,
+                                              profile=profile,
+                                              pic="default.jpg",
+                                              location=location,                                                                                            location=location,
                                               register_time=register_time)
                 return 1, "OK"
             else:
