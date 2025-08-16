@@ -491,7 +491,9 @@ class getMemberInfo(View):
         try:
             check_obj = UserInforTable.objects.filter(uid=uid)
             if not check_obj.exists():
-                res = UserInforTable.objects.values()
+                # res = UserInforTable.objects.values()
+                res = {}
+            res = check_obj.values('uid', 'name', 'pic', 'profile', 'location', 'register_time').first()
             return res
         except Exception as e:
             raise Exception(e)
