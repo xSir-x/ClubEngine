@@ -51,4 +51,8 @@ urlpatterns = [
     path('notifyOrder', views.mininotify),
     path('genOrder', views.genorder),
     path('serchOrder', views.search_order),
+    
+    # 邀请接口
+    path('sendInv', views.send_invitation),
+    path('getInv', views.get_invitation),
 ]

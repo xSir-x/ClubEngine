@@ -1,6 +1,6 @@
 from django.views import View
 from dbModel.models import ActivityInfoTable, MerchantInfoTable, UserInforTable, MerchantMaskTable, ActsMarkTable, \
-    UserOrderTable, UserRatingTable
+    UserOrderTable, UserRatingTable, UserInvTable
 # from django.utils import timezone
 import time
 from datetime import datetime
@@ -502,7 +502,7 @@ class getMemberInfo(View):
             print("res_rating",res_rating)
             print("res",res)
             res.update(res_rating)
-            print("res after union:",res)
+            print("res after union:", res)
             return res
         except Exception as e:
             raise Exception(e)
@@ -532,16 +532,16 @@ class registerMembership(View):
                                               location=location,                    
                                               register_time=register_time)
                 UserRatingTable.objects.create(uid=uid,
-                                                tech_one= "",
-                                                tech_two = "",
-                                                tech_three = "",
-                                                tech_four = "",
-                                                tech_five = "",
-                                                person_one = "",
-                                                person_two = "",
-                                                person_three = "",
-                                                person_four = "",
-                                                person_five = "")
+                                                tech_one= "0.0",
+                                                tech_two = "0.0",
+                                                tech_three = "0.0",
+                                                tech_four = "0.0",
+                                                tech_five = "0.0",
+                                                person_one = "0.0",
+                                                person_two = "0.0",
+                                                person_three = "0.0",
+                                                person_four = "0.0",
+                                                person_five = "0.0")
                 return 1, "OK"
             else:
                 return 2, "Existed..."
@@ -579,3 +579,90 @@ class modifyMembership(View):
             return 1, "OK"
         except Exception as e:
             return 0, e
+
+class createInvitation(View):
+    def execute(self,inviterId, inviteeId, matchTime, msg, place):
+        """
+        创建约球邀请:
+        :param uid:
+        :param name:
+        :param level:
+        :param wechat:
+        :param profile:
+        :param email:
+        :param location:
+        :param register_time:
+        :return: 0: 注册失败，1: 注册成功, 2: 用户已存在
+        """
+        try:
+            check_obj = UserInvTable.objects.filter(inviterId=inviterId, inviteeId=inviteeId, matchTime=matchTime)
+            if not check_obj.exists():
+                createTime = str(int(time.time() * 1000))
+                UserInvTable.objects.create(inviterId=inviterId,
+                                            inviteeId=inviteeId,
+                                            matchTime=matchTime,
+                                            createTime=createTime,
+                                            msg=msg,                    
+                                            place=place,
+                                            status="0")
+               
+                return 1, "invitation created"
+            else:
+                return 2, "invitation Existed"
+        except Exception as e:
+            return 0, e
+
+
+class getInvitationByStatus(View):
+    @classmethod
+    def execute(cls, inviterId=None, inviteeId=None, status=None):
+        """
+        根据状态获取邀请列表
+        :param inviterId: 邀请者ID，如果提供则过滤发出的邀请
+        :param inviteeId: 被邀请者ID，如果提供则过滤收到的邀请
+        :param status: 邀请状态：0-待处理，1-已接受，2-已拒绝，3-已过期
+        :return: 邀请列表
+        """
+        res = []
+        try:
+            # 构建过滤条件
+            filter_kwargs = {}
+            if inviterId:
+                filter_kwargs['inviterId'] = inviterId
+            if inviteeId:
+                filter_kwargs['inviteeId'] = inviteeId
+            if status is not None:
+                filter_kwargs['status'] = status
+                
+            # 查询邀请
+            invitations = UserInvTable.objects.filter(**filter_kwargs)
+            if not invitations.exists():
+                return res
+                
+            # 获取邀请列表
+            invitations_data = invitations.values(
+                'id', 'inviterId', 'inviteeId', 'matchTime', 
+                'createTime', 'msg', 'place', 'status'
+            )
+
+            # 获取邀请者信息
+            inviter = UserInforTable.objects.filter(uid=inv['inviterId']).first()
+            # 获取被邀请者信息
+            invitee = UserInforTable.objects.filter(uid=inv['inviteeId']).first()
+            
+            # 添加发送者和接收者的用户信息
+            for inv in invitations_data:
+                if inviter:
+                    inv['inviterName'] = inviter.name
+                    inv['inviterPic'] = inviter.pic
+                
+                if invitee:
+                    inv['inviteeName'] = invitee.name
+                    inv['inviteePic'] = invitee.pic
+                
+                res.append(inv)
+                
+            return res
+        except Exception as e:
+            _logger.error(f"获取邀请列表异常: {str(e)}")
+            raise Exception(f"获取邀请列表失败: {str(e)}")

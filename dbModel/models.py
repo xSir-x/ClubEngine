@@ -148,3 +148,22 @@ class UserRatingTable(models.Model):
         get_latest_by = "uid"
         ordering = ['uid']
         verbose_name = "user_rating"
+
+
+class UserInvTable(models.Model):
+    """用户邀请表（用户邀请表）"""
+    inv_id = models.CharField(verbose_name="约球id", max_length=100, primary_key=True)
+    inviterId = models.CharField(verbose_name="邀请者用户id", max_length=100)
+    inviteeId = models.CharField(verbose_name="被邀者用户id", max_length=10)
+    matchTime = models.CharField(verbose_name="约球时间", max_length=10)
+    msg = models.CharField(verbose_name="约球信息", max_length=10)
+    place = models.CharField(verbose_name="约球地点", max_length=10)
+    status = models.CharField(verbose_name="状态 0-邀请中 1-已接受", max_length=10)
+    other = models.CharField(verbose_name="其他", max_length=10)
+    createTime = models.CharField(verbose_name="创建时间", max_length=10)
+    
+    class Meta:
+        db_table = "user_inv"
+        get_latest_by = "createTime"
+        ordering = ['createTime']
+        verbose_name = "user_inv"

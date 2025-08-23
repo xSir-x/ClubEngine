@@ -552,3 +552,99 @@ def search_user(request):
     except Exception as e:
         message = {"response": {}, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
     return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+@csrf_exempt
+def send_invitation(request):
+    """
+    发送邀请
+    前端传入字段:
+    inviteeId: 被邀请人ID
+    inviterId: 邀请人ID
+    matchTime: 比赛时间戳
+    msg: 邀请消息
+    place: 地点
+    """
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = request_res.get('access_token', None)
+        if not validate_accessToken(access_token):
+            message = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+        inviteeId = request_res.get('inviteeId', None)
+        inviterId = request_res.get('inviterId', None)
+        matchTime = request_res.get('matchTime', None)
+        msg = request_res.get('msg', "")
+        place = request_res.get('place', None)
+        
+        if not all([inviteeId, inviterId, matchTime, place]):
+            message = {"code": 201, "msg": "缺少必填信息..."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+        # TODO: 在这里实现邀请逻辑
+        # 例如：创建邀请记录，发送通知等
+        success,message = createInvitation().execute(inviterId, inviteeId, matchTime, msg,
+                                                  place)
+        
+        if success == 1:
+            message = {"response": 1, "code": 200, "succeed": True, "msg": "邀请创建成功: "+message}
+        else:
+            message = {"response": 0, "code": 300, "succeed": False, "msg": "邀请创建失败: "+message}
+
+    except Exception as e:
+        message = {"response": 0, "code": 300, "succeed": False, "msg": f"您的请求提交不正确或提交格式错误，请检查！[{str(e)}]"}
+    
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+@csrf_exempt
+def get_invitation(request):
+    """
+    获取邀请列表
+    前端传入字段:
+    access_token: 访问令牌
+    inviterId: 邀请人ID (可选)
+    inviteeId: 被邀请人ID (可选)
+    status: 邀请状态 (可选): 0-待处理，1-已接受，2-已拒绝，3-已过期
+    """
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = request_res.get('access_token', None)
+        if not validate_accessToken(access_token):
+            message = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+        # 获取可选参数
+        inviterId = request_res.get('inviterId', None)
+        inviteeId = request_res.get('inviteeId', None)
+        status = request_res.get('status', None)
+        
+        # 至少需要提供一个ID参数
+        if not inviterId and not inviteeId:
+            message = {"code": 201, "succeed": False, "msg": "至少需要提供inviterId或inviteeId参数"}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+            
+        # 如果status是字符串，转换为整数
+        if status is not None:
+            try:
+                status = int(status)
+            except ValueError:
+                message = {"code": 201, "succeed": False, "msg": "status参数必须是数字"}
+                return HttpResponse(json.dumps(message, ensure_ascii=False))
+        
+        # 获取邀请列表
+        invitations = getInvitationByStatus().execute(
+            inviterId=inviterId,
+            inviteeId=inviteeId,
+            status=status
+        )
+        
+        message = {"response": invitations, "code": 200, "succeed": True, "msg": "获取邀请列表成功"}
+        
+    except Exception as e:
+        message = {"response": [], "code": 300, "succeed": False, "msg": f"获取邀请列表失败：{str(e)}"}
+        
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
