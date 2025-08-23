@@ -1,3 +1,5 @@
 /ClubEngine/__pycache__
 *.pyc
 *.log
+*.log
+logs/loging.log

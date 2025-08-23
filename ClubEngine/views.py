@@ -589,12 +589,15 @@ def send_invitation(request):
                                                   place)
         
         if success == 1:
-            message = {"response": 1, "code": 200, "succeed": True, "msg": "邀请创建成功: "+message}
+            message = {"response": 1, "code": 200, "succeed": True, "msg": "邀请创建成功: "+str(message)}
+        elif success == 2:
+            message = {"response": 2, "code": 300, "succeed": False, "msg": "邀请已存在"}
         else:
-            message = {"response": 0, "code": 300, "succeed": False, "msg": "邀请创建失败: "+message}
+            _logger.error("数据库异常: "+str(message))
+            message = {"response": 0, "code": 400, "succeed": False, "msg": "数据库操作失误: "+str(message)}
 
     except Exception as e:
-        message = {"response": 0, "code": 300, "succeed": False, "msg": f"您的请求提交不正确或提交格式错误，请检查！[{str(e)}]"}
+        message = {"response": 0, "code": 500, "succeed": False, "msg": f"您的请求提交不正确或提交格式错误，请检查！[{str(e)}]"}
     
     return HttpResponse(json.dumps(message, ensure_ascii=False))
 
