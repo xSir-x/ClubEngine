@@ -707,3 +707,43 @@ def update_invitation(request):
         message = {"response": 0, "code": 500, "succeed": False, "msg": f"更新邀请状态失败：{str(e)}"}
         
     return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+@csrf_exempt
+def get_friends(request):
+    """
+    获取用户好友列表
+    前端传入字段:
+    access_token: 访问令牌
+    userId: 用户ID
+    friendshipCreateTime: 好友关系创建时间过滤条件 (可选)，只返回大于等于此时间的好友
+    """
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = request_res.get('access_token', None)
+        if not validate_accessToken(access_token):
+            message = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+        # 获取必需参数
+        userId = request_res.get('userId', None)
+        
+        # 获取可选参数
+        friendshipCreateTime = request_res.get('friendshipCreateTime', None)
+        
+        # 验证必需参数
+        if not userId:
+            message = {"code": 201, "succeed": False, "msg": "缺少必填信息: userId"}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        
+        # 调用getFriends执行查询操作
+        friends_list = getFriends.execute(userId=userId, friendshipCreateTime=friendshipCreateTime)
+        
+        message = {"response": friends_list, "code": 200, "succeed": True, "msg": "获取好友列表成功"}
+        
+    except Exception as e:
+        _logger.error(f"获取好友列表接口异常: {str(e)}")
+        message = {"response": [], "code": 500, "succeed": False, "msg": f"获取好友列表失败：{str(e)}"}
+        
+    return HttpResponse(json.dumps(message, ensure_ascii=False))

@@ -736,3 +736,49 @@ class updateInvitation(View):
         except Exception as e:
             _logger.error(f"更新邀请状态异常: {str(e)}")
             return 0, f"更新邀请状态失败: {str(e)}"
+
+
+class getFriends(View):
+    @classmethod
+    def execute(cls, userId, friendshipCreateTime=None):
+        """
+        获取用户好友列表
+        :param userId: 用户ID
+        :param friendshipCreateTime: 好友关系创建时间过滤条件，只返回大于等于此时间的好友
+        :return: 好友信息列表
+        """
+        res = []
+        try:
+            # 构建查询条件
+            filter_kwargs = {'userId': userId}
+            if friendshipCreateTime is not None:
+                filter_kwargs['createTime__gte'] = friendshipCreateTime
+            
+            # 查询用户好友表，获取所有该用户的好友ID
+            friend_relationships = UserFriendTable.objects.filter(**filter_kwargs)
+            
+            if not friend_relationships.exists():
+                return res
+            
+            # 获取所有好友ID
+            friend_ids = friend_relationships.values_list('friendId', flat=True)
+            
+            # 根据好友ID查询用户信息表，获取好友详细信息
+            friends_info = UserInforTable.objects.filter(uid__in=friend_ids)
+            
+            if friends_info.exists():
+                # 获取好友信息并添加好友关系创建时间
+                for friend in friends_info.values('uid', 'name', 'pic', 'profile', 'location', 'register_time'):
+                    # 获取该好友关系的创建时间
+                    friend_relation = friend_relationships.filter(friendId=friend['uid']).first()
+                    if friend_relation:
+                        friend['friendshipCreateTime'] = friend_relation.createTime
+                        friend['other'] = friend_relation.other or ""
+                    
+                    res.append(friend)
+            
+            return res
+            
+        except Exception as e:
+            _logger.error(f"获取好友列表异常: {str(e)}")
+            raise Exception(f"【getFriends】获取好友列表失败: {str(e)}")

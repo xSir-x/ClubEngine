@@ -56,4 +56,7 @@ urlpatterns = [
     path('sendInv', views.send_invitation),
     path('getInv', views.get_invitation),
     path('updateInv', views.update_invitation),
+    
+    # 好友接口
+    path('getFriends', views.get_friends),
 ]
