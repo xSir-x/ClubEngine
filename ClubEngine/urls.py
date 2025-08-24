@@ -55,4 +55,5 @@ urlpatterns = [
     # 邀请接口
     path('sendInv', views.send_invitation),
     path('getInv', views.get_invitation),
+    path('updateInv', views.update_invitation),
 ]

@@ -1,6 +1,6 @@
 from django.views import View
 from dbModel.models import ActivityInfoTable, MerchantInfoTable, UserInforTable, MerchantMaskTable, ActsMarkTable, \
-    UserOrderTable, UserRatingTable, UserInvTable
+    UserOrderTable, UserRatingTable, UserInvTable, UserFriendTable
 # from django.utils import timezone
 import time
 from datetime import datetime
@@ -669,3 +669,70 @@ class getInvitationByStatus(View):
         except Exception as e:
             _logger.error(f"获取邀请列表异常: {str(e)}")
             raise Exception(f"获取邀请列表失败: {str(e)}")
+
+
+class updateInvitation(View):
+    @classmethod
+    def execute(cls, inv_id, inviterId, inviteeId, action, access_token):
+        """
+        更新邀请状态
+        :param inv_id: 邀请ID
+        :param inviterId: 邀请者ID
+        :param inviteeId: 被邀请者ID  
+        :param action: 操作类型 accept-接受, reject-拒绝
+        :param access_token: 访问令牌
+        :return: 操作结果
+        """
+        try:
+            # 验证邀请是否存在
+            invitation = UserInvTable.objects.filter(inv_id=inv_id).first()
+            if not invitation:
+                return 0, "邀请不存在"
+            
+            # 验证邀请者和被邀请者是否匹配
+            if invitation.inviterId != inviterId or invitation.inviteeId != inviteeId:
+                return 0, "邀请信息不匹配"
+            
+            if action == "accept":
+                # 接受邀请：将状态改为1
+                UserInvTable.objects.filter(inv_id=inv_id).update(status="1")
+                
+                # 检查好友关系是否已存在
+                friend_exists = UserFriendTable.objects.filter(
+                    userId=inviterId, 
+                    friendId=inviteeId
+                ).exists()
+                
+                if not friend_exists:
+                    # 创建双向好友关系
+                    create_time = str(int(time.time()))
+                    
+                    # 创建 inviterId -> inviteeId 的好友关系
+                    UserFriendTable.objects.create(
+                        userId=inviterId,
+                        friendId=inviteeId,
+                        createTime=create_time,
+                        other=""
+                    )
+                    
+                    # 创建 inviteeId -> inviterId 的好友关系
+                    UserFriendTable.objects.create(
+                        userId=inviteeId,
+                        friendId=inviterId,
+                        createTime=create_time,
+                        other=""
+                    )
+                
+                return 1, "邀请已接受，好友关系已建立"
+                
+            elif action == "reject":
+                # 拒绝邀请：将状态改为2
+                UserInvTable.objects.filter(inv_id=inv_id).update(status="2")
+                return 1, "邀请已拒绝"
+            
+            else:
+                return 0, "无效的操作类型"
+                
+        except Exception as e:
+            _logger.error(f"更新邀请状态异常: {str(e)}")
+            return 0, f"更新邀请状态失败: {str(e)}"

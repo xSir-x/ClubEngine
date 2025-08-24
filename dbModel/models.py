@@ -167,3 +167,18 @@ class UserInvTable(models.Model):
         get_latest_by = "createTime"
         ordering = ['createTime']
         verbose_name = "user_inv"
+
+
+class UserFriendTable(models.Model):
+    """用户好友表"""
+    userId = models.CharField(verbose_name="用户id", max_length=100)
+    friendId = models.CharField(verbose_name="好友id", max_length=100)
+    createTime = models.CharField(verbose_name="创建时间", max_length=64)
+    other = models.CharField(verbose_name="其他", max_length=256, blank=True, null=True)
+    
+    class Meta:
+        db_table = "user_friend"
+        unique_together = ('userId', 'friendId')  # 确保同一对好友关系不会重复
+        get_latest_by = "createTime"
+        ordering = ['createTime']
+        verbose_name = "user_friend"

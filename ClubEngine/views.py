@@ -651,3 +651,59 @@ def get_invitation(request):
         message = {"response": [], "code": 300, "succeed": False, "msg": f"获取邀请列表失败：{str(e)}"}
         
     return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+@csrf_exempt
+def update_invitation(request):
+    """
+    更新邀请状态
+    前端传入字段:
+    access_token: 访问令牌
+    inv_id: 邀请ID
+    inviterId: 邀请者ID
+    inviteeId: 被邀请者ID
+    action: 操作类型 (accept-接受, reject-拒绝)
+    """
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = request_res.get('access_token', None)
+        if not validate_accessToken(access_token):
+            message = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+        # 获取必需参数
+        inv_id = request_res.get('inv_id', None)
+        inviterId = request_res.get('inviterId', None)
+        inviteeId = request_res.get('inviteeId', None)
+        action = request_res.get('action', None)
+        
+        # 验证必需参数
+        if not all([inv_id, inviterId, inviteeId, action]):
+            message = {"code": 201, "succeed": False, "msg": "缺少必填信息 (inv_id, inviterId, inviteeId, action)"}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+            
+        # 验证action参数
+        if action not in ['accept', 'reject']:
+            message = {"code": 201, "succeed": False, "msg": "action参数必须是 'accept' 或 'reject'"}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        
+        # 调用updateInvitation执行更新操作
+        state, msg = updateInvitation.execute(
+            inv_id=inv_id,
+            inviterId=inviterId,
+            inviteeId=inviteeId,
+            action=action,
+            access_token=access_token
+        )
+        
+        if state == 1:
+            message = {"response": 1, "code": 200, "succeed": True, "msg": msg}
+        else:
+            message = {"response": 0, "code": 400, "succeed": False, "msg": msg}
+        
+    except Exception as e:
+        _logger.error(f"更新邀请状态接口异常: {str(e)}")
+        message = {"response": 0, "code": 500, "succeed": False, "msg": f"更新邀请状态失败：{str(e)}"}
+        
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
