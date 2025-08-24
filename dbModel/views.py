@@ -644,7 +644,7 @@ class getInvitationByStatus(View):
                 
             # 获取邀请列表
             invitations_data = invitations.values(
-                'id', 'inviterId', 'inviteeId', 'matchTime', 
+                'inv_id', 'inviterId', 'inviteeId', 'matchTime', 
                 'createTime', 'msg', 'place', 'status'
             )
 
