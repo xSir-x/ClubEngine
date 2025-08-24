@@ -520,7 +520,7 @@ def auth_register(request):
         name = request_res.get('name', None)
         profile = request_res.get('profile', None)
         location = request_res.get('location', "")
-        register_time = str(int(time.time()))
+        register_time = str(int(time.time() * 1000))  # 修改为毫秒级时间戳
 
         if name is None:
             message = {"code": 201, "msg": "缺少名称信息..."}

@@ -78,7 +78,7 @@ class WXMinPay(object):
             for det_item in res_det:
                 order_time = det_item["order_time"]
                 exp_time = det_item["exp_time"]
-                delta_min = (int(time.time()) - int(order_time)) / 60
+                delta_min = (int(time.time() * 1000) - int(order_time)) / 60000  # 修改为毫秒计算
             if False and delta_min >= exp_time:  # 订单过期删除
                 _logger.info("payOrder:: 订单已过期...")
                 response = {'code': 300,
@@ -149,7 +149,7 @@ class WXMinPay(object):
             return response
         else:
             order_status = 3
-            pay_time = str(int(time.time()))
+            pay_time = str(int(time.time() * 1000))  # 修改为毫秒级时间戳
             try:
                 UserOrderTable.objects.filter(order_id=order_id).update(order_status=order_status,
                                                                         pay_time=pay_time)
@@ -188,7 +188,7 @@ class WXMinPay(object):
                 # 在这里可以写我们的业务处理，必须要返回一个SUCCESS的回复，否则微信会视为没有调用成功，从而一直调用当前请求。
 
                 order_status = 2
-                pay_time = str(int(time.time()))
+                pay_time = str(int(time.time() * 1000))  # 修改为毫秒级时间戳
                 paymentid = transaction_id
 
                 UserOrderTable.objects.filter(order_id=order_id).update(order_status=order_status,
@@ -239,9 +239,9 @@ class WXMinPay(object):
                     order_id = det_item["order_id"]
                     order_time = det_item["order_time"]
                     exp_time = det_item["exp_time"]
-                    order_status = det_item["exp_time"]
+                    order_status = det_item["order_status"]  # 修正变量名
 
-                    delta_min = (int(time.time()) - int(order_time)) / 60
+                    delta_min = (int(time.time() * 1000) - int(order_time)) / 60000  # 修改为毫秒计算
                     if delta_min < exp_time + 3:  # 缓冲时间3分钟
                         if order_status == 2:
                             _logger.info("Order gen:: 订单[%s]已经存在，且已经支付..." % order_id)
@@ -255,13 +255,13 @@ class WXMinPay(object):
 
             _logger.info("Order gen:: 不存在未支付订单，重新创建订单...")
             # order_time = timezone.now()
-            order_time = str(int(time.time()))
+            order_time = str(int(time.time() * 1000))  # 修改为毫秒级时间戳
             # t_time = time.localtime(float(order_time))
-            exp_time = 30  # 默认过期时间10min:   timezone.now()
+            exp_time = 30  # 默认过期时间30分钟
             order_status = 1  # 订单状态：1-未支付 2-支付成功 3-支付失败
             random_bytes = os.urandom(16)
             random_string = base64.urlsafe_b64encode(random_bytes).decode('utf-8')[:16]  # 取前16个字符以匹配长度需求
-            order_id = f'{str(int(time.time()))}-{random.randint(1000, 9999)}-{random_string}'
+            order_id = f'{str(int(time.time() * 1000))}-{random.randint(1000, 9999)}-{random_string}'  # 修改为毫秒级时间戳
             UserOrderTable.objects.create(order_id=order_id,
                                           uid=uid,
                                           act_id=act_id,

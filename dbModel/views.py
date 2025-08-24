@@ -23,7 +23,7 @@ class addFavActivity(View):
         :param uid:
         :return:
         """
-        mask_time = str(int(time.time()))
+        mask_time = str(int(time.time() * 1000))  # 修改为毫秒级时间戳
         try:
             fav_act_obj = ActsMarkTable.objects.filter(uid=uid, act_id=act_id)
             if fav_act_obj.exists():
@@ -329,7 +329,7 @@ class addCoopFav(View):
         """
         message = "ok!"
         try:
-            mask_time = str(int(time.time()))
+            mask_time = str(int(time.time() * 1000))  # 修改为毫秒级时间戳
             fav_act_obj = MerchantMaskTable.objects.filter(uid=uid, coop_id=coop_id)
             if fav_act_obj.exists():
                 is_mark = fav_act_obj.values("is_mark")[0]["is_mark"]
@@ -705,7 +705,7 @@ class updateInvitation(View):
                 
                 if not friend_exists:
                     # 创建双向好友关系
-                    create_time = str(int(time.time()))
+                    create_time = str(int(time.time() * 1000))  # 修改为毫秒级时间戳
                     
                     # 创建 inviterId -> inviteeId 的好友关系
                     UserFriendTable.objects.create(
