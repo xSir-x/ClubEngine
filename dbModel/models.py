@@ -171,6 +171,7 @@ class UserInvTable(models.Model):
 
 class UserFriendTable(models.Model):
     """用户好友表"""
+    id = models.AutoField(primary_key=True)  # 添加这一行
     userId = models.CharField(verbose_name="用户id", max_length=100)
     friendId = models.CharField(verbose_name="好友id", max_length=100)
     createTime = models.CharField(verbose_name="创建时间", max_length=64)
