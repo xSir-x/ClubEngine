@@ -615,12 +615,13 @@ class createInvitation(View):
 
 class getInvitationByStatus(View):
     @classmethod
-    def execute(cls, inviterId=None, inviteeId=None, status=None):
+    def execute(cls, inviterId=None, inviteeId=None, status=None, beforeAt=None):
         """
         根据状态获取邀请列表
         :param inviterId: 邀请者ID，如果提供则过滤发出的邀请
         :param inviteeId: 被邀请者ID，如果提供则过滤收到的邀请
         :param status: 邀请状态：0-待处理，1-已接受，2-已拒绝，3-已过期
+        :param beforeAt: 过滤条件，只返回matchTime大于等于beforeAt的记录
         :return: 邀请列表
         """
         res = []
@@ -633,6 +634,8 @@ class getInvitationByStatus(View):
                 filter_kwargs['inviteeId'] = inviteeId
             if status is not None:
                 filter_kwargs['status'] = status
+            if beforeAt is not None:
+                filter_kwargs['matchTime__gte'] = beforeAt
                 
             # 查询邀请
             invitations = UserInvTable.objects.filter(**filter_kwargs)
@@ -645,13 +648,13 @@ class getInvitationByStatus(View):
                 'createTime', 'msg', 'place', 'status'
             )
 
-            # 获取邀请者信息
-            inviter = UserInforTable.objects.filter(uid=inv['inviterId']).first()
-            # 获取被邀请者信息
-            invitee = UserInforTable.objects.filter(uid=inv['inviteeId']).first()
-            
-            # 添加发送者和接收者的用户信息
+            # 获取用户信息并添加到结果中
             for inv in invitations_data:
+                # 获取邀请者信息
+                inviter = UserInforTable.objects.filter(uid=inv['inviterId']).first()
+                # 获取被邀请者信息
+                invitee = UserInforTable.objects.filter(uid=inv['inviteeId']).first()
+                
                 if inviter:
                     inv['inviterName'] = inviter.name
                     inv['inviterPic'] = inviter.pic
