@@ -1,11 +1,12 @@
 from django.views import View
 from dbModel.models import ActivityInfoTable, MerchantInfoTable, UserInforTable, MerchantMaskTable, ActsMarkTable, \
-    UserOrderTable, UserRatingTable, UserInvTable, UserFriendTable
+    UserOrderTable, UserRatingTable, UserInvTable, UserFriendTable, UserRatingLongTable, UserRatingShortTable
 # from django.utils import timezone
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.core.cache import cache
 from util.external_api import store_in_redis, retrieve_from_redis
+from django.db import transaction
 
 from util.log import logHander
 
@@ -648,7 +649,7 @@ class getInvitationByStatus(View):
                 'createTime', 'msg', 'place', 'status'
             )
 
-            # 获取用户信息并添加到结果中
+            from util.external_api import retrieve_from_redis
             for inv in invitations_data:
                 # 获取邀请者信息
                 inviter = UserInforTable.objects.filter(uid=inv['inviterId']).first()
@@ -662,6 +663,16 @@ class getInvitationByStatus(View):
                 if invitee:
                     inv['inviteeName'] = invitee.name
                     inv['inviteePic'] = invitee.pic
+                
+                # rated30 字段判断
+                # 只有已接受的邀请（status==1）才允许评分
+                if str(inv['status']) == '1':
+                    # 评分key: rating_邀请者_被邀请者
+                    rating_key = f"rating_{inv['inviterId']}_{inv['inviteeId']}"
+                    rated_flag = retrieve_from_redis(rating_key)
+                    inv['rated30'] = 0 if rated_flag else 1
+                else:
+                    inv['rated30'] = 0
                 
                 res.append(inv)
                 
@@ -782,3 +793,162 @@ class getFriends(View):
         except Exception as e:
             _logger.error(f"获取好友列表异常: {str(e)}")
             raise Exception(f"【getFriends】获取好友列表失败: {str(e)}")
+
+
+class RateCompetition(View):
+    def execute(self, rater_uid, rated_uid, ratings):
+        """
+        用户评分接口 - 每对用户一个月只能互评一次
+        :param rater_uid: 评分者用户ID
+        :param rated_uid: 被评分者用户ID  
+        :param ratings: 评分数据字典，包含tech_one到tech_five和person_one到person_five
+        :return: 成功返回1，失败返回0和错误信息
+        """
+        try:
+            # 只检查 Redis，简化逻辑
+            rating_cache_key = f"rating_{rater_uid}_{rated_uid}"
+            last_rating_time = retrieve_from_redis(rating_cache_key)
+            if last_rating_time:
+                return 0, "该用户对在30天内已经互评过，无法重复评分"
+
+            current_time_str = datetime.now().isoformat()
+            with transaction.atomic():
+                # 1. 更新UserRatingShortTable（队列方式，保持最新30条记录）
+                self._update_short_table(rated_uid, ratings, current_time_str)
+                # 2. 更新UserRatingLongTable  
+                self._update_long_table(rated_uid)
+                # 3. 更新UserRatingTable（综合评分）
+                self._update_main_rating_table(rated_uid)
+                # 4. 记录本次评分，防止重复评分
+                store_in_redis(rating_cache_key, current_time_str, 30 * 24 * 3600)  # 30天过期
+            return 1, "评分成功"
+        except Exception as e:
+            _logger.error(f"【RateCompetition】评分异常: {e}")
+            return 0, f"评分失败: {str(e)}"
+    
+    def _update_short_table(self, uid, ratings, rating_time):
+        """更新短周期评分表（队列方式，保持最新30条记录）"""
+        # 获取用户当前所有短周期评分记录，按时间排序
+        short_ratings = list(UserRatingShortTable.objects.filter(
+            uid=uid
+        ).order_by('rating_time'))
+        
+        # 如果记录数已达到30条，移除最旧的记录并聚合到长周期表
+        if len(short_ratings) >= 30:
+            oldest_rating = short_ratings[0]
+            self._aggregate_to_long_table(uid, oldest_rating)
+            oldest_rating.delete()
+        
+        # 添加新的评分记录
+        UserRatingShortTable.objects.create(
+            uid=uid,
+            tech_one=str(ratings.get('tech_one', 0)),
+            tech_two=str(ratings.get('tech_two', 0)),
+            tech_three=str(ratings.get('tech_three', 0)),
+            tech_four=str(ratings.get('tech_four', 0)),
+            tech_five=str(ratings.get('tech_five', 0)),
+            person_one=str(ratings.get('person_one', 0)),
+            person_two=str(ratings.get('person_two', 0)),
+            person_three=str(ratings.get('person_three', 0)),
+            person_four=str(ratings.get('person_four', 0)),
+            person_five=str(ratings.get('person_five', 0)),
+            rating_time=rating_time
+        )
+    
+    def _aggregate_to_long_table(self, uid, old_rating):
+        """将最旧的评分聚合到长周期表"""
+        long_rating, created = UserRatingLongTable.objects.get_or_create(
+            uid=uid,
+            defaults={
+                'tech_one': '0', 'tech_two': '0', 'tech_three': '0', 
+                'tech_four': '0', 'tech_five': '0',
+                'person_one': '0', 'person_two': '0', 'person_three': '0',
+                'person_four': '0', 'person_five': '0', 'n': '0'
+            }
+        )
+        
+        # 获取当前计数
+        current_n = int(long_rating.n) if long_rating.n else 0
+        new_n = current_n + 1
+        
+        # 计算新的平均值
+        rating_fields = ['tech_one', 'tech_two', 'tech_three', 'tech_four', 'tech_five',
+                        'person_one', 'person_two', 'person_three', 'person_four', 'person_five']
+        
+        for field in rating_fields:
+            current_avg = float(getattr(long_rating, field)) if getattr(long_rating, field) else 0
+            old_value = float(getattr(old_rating, field)) if getattr(old_rating, field) else 0
+            
+            # 计算新的平均值: (当前平均值 * 当前计数 + 新值) / (计数 + 1)
+            new_avg = (current_avg * current_n + old_value) / new_n
+            setattr(long_rating, field, str(round(new_avg, 2)))
+        
+        long_rating.n = str(new_n)
+        long_rating.save()
+    
+    def _update_long_table(self, uid):
+        """确保长周期表存在记录"""
+        UserRatingLongTable.objects.get_or_create(
+            uid=uid,
+            defaults={
+                'tech_one': '0', 'tech_two': '0', 'tech_three': '0', 
+                'tech_four': '0', 'tech_five': '0',
+                'person_one': '0', 'person_two': '0', 'person_three': '0',
+                'person_four': '0', 'person_five': '0', 'n': '0'
+            }
+        )
+    
+    def _update_main_rating_table(self, uid):
+        """更新主评分表：0.6*短周期 + 0.4*长周期"""
+        # 获取短周期平均分
+        short_ratings = UserRatingShortTable.objects.filter(uid=uid)
+        short_avg = self._calculate_average_ratings(short_ratings, 'short')
+        
+        # 获取长周期平均分
+        try:
+            long_rating = UserRatingLongTable.objects.get(uid=uid)
+            long_avg = {
+                'tech_one': float(long_rating.tech_one) if long_rating.tech_one else 0,
+                'tech_two': float(long_rating.tech_two) if long_rating.tech_two else 0,
+                'tech_three': float(long_rating.tech_three) if long_rating.tech_three else 0,
+                'tech_four': float(long_rating.tech_four) if long_rating.tech_four else 0,
+                'tech_five': float(long_rating.tech_five) if long_rating.tech_five else 0,
+                'person_one': float(long_rating.person_one) if long_rating.person_one else 0,
+                'person_two': float(long_rating.person_two) if long_rating.person_two else 0,
+                'person_three': float(long_rating.person_three) if long_rating.person_three else 0,
+                'person_four': float(long_rating.person_four) if long_rating.person_four else 0,
+                'person_five': float(long_rating.person_five) if long_rating.person_five else 0,
+            }
+        except UserRatingLongTable.DoesNotExist:
+            long_avg = {field: 0 for field in ['tech_one', 'tech_two', 'tech_three', 'tech_four', 'tech_five',
+                                              'person_one', 'person_two', 'person_three', 'person_four', 'person_five']}
+        
+        # 计算综合评分：0.6*短周期 + 0.4*长周期
+        final_ratings = {}
+        for field in ['tech_one', 'tech_two', 'tech_three', 'tech_four', 'tech_five',
+                     'person_one', 'person_two', 'person_three', 'person_four', 'person_five']:
+            final_score = 0.6 * short_avg[field] + 0.4 * long_avg[field]
+            final_ratings[field] = str(round(final_score, 2))
+        
+        # 更新或创建主评分表记录
+        UserRatingTable.objects.update_or_create(
+            uid=uid,
+            defaults=final_ratings
+        )
+    
+    def _calculate_average_ratings(self, ratings_queryset, table_type='short'):
+        """计算评分平均值"""
+        if not ratings_queryset.exists():
+            return {field: 0 for field in ['tech_one', 'tech_two', 'tech_three', 'tech_four', 'tech_five',
+                                          'person_one', 'person_two', 'person_three', 'person_four', 'person_five']}
+        
+        ratings_list = list(ratings_queryset.values())
+        count = len(ratings_list)
+        
+        averages = {}
+        for field in ['tech_one', 'tech_two', 'tech_three', 'tech_four', 'tech_five',
+                     'person_one', 'person_two', 'person_three', 'person_four', 'person_five']:
+            total = sum(float(rating[field]) if rating[field] else 0 for rating in ratings_list)
+            averages[field] = total / count if count > 0 else 0
+        
+        return averages

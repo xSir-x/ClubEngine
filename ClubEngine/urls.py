@@ -52,11 +52,12 @@ urlpatterns = [
     path('genOrder', views.genorder),
     path('serchOrder', views.search_order),
     
-    # 邀请接口
-    path('sendInv', views.send_invitation),
-    path('getInv', views.get_invitation),
-    path('updateInv', views.update_invitation),
-    
-    # 好友接口
+    # 社交功能接口
+    path('sendInvitation', views.send_invitation),
+    path('getInvitation', views.get_invitation), 
+    path('updateInvitation', views.update_invitation),
     path('getFriends', views.get_friends),
+    
+    # 评分接口
+    path('rateCompetition', views.rate_competition),
 ]

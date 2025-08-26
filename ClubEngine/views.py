@@ -747,3 +747,57 @@ def get_friends(request):
         message = {"response": [], "code": 500, "succeed": False, "msg": f"获取好友列表失败：{str(e)}"}
         
     return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+@csrf_exempt
+def rate_competition(request):
+    """用户评分接口"""
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = request_res.get('access_token', None)
+        if not validate_accessToken(access_token):
+            message = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        
+        rater_uid = request_res.get('rater_uid', None)
+        rated_uid = request_res.get('rated_uid', None)
+        ratings = request_res.get('ratings', {})
+        
+        # 验证必填参数
+        if not rater_uid or not rated_uid or not ratings:
+            message = {"code": 201, "succeed": False, "msg": "缺少必填信息: rater_uid, rated_uid, ratings"}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        
+        # 验证评分数据完整性
+        required_fields = ['tech_one', 'tech_two', 'tech_three', 'tech_four', 'tech_five',
+                          'person_one', 'person_two', 'person_three', 'person_four', 'person_five']
+        
+        for field in required_fields:
+            if field not in ratings:
+                message = {"code": 202, "succeed": False, "msg": f"评分数据缺少字段: {field}"}
+                return HttpResponse(json.dumps(message, ensure_ascii=False))
+            
+            # 验证评分范围 (假设评分范围是0-10)
+            try:
+                score = float(ratings[field])
+                if score < 0.0 or score > 5.0:
+                    message = {"code": 203, "succeed": False, "msg": f"评分{field}超出范围(0-5): {score}"}
+                    return HttpResponse(json.dumps(message, ensure_ascii=False))
+            except (ValueError, TypeError):
+                message = {"code": 204, "succeed": False, "msg": f"评分{field}格式错误: {ratings[field]}"}
+                return HttpResponse(json.dumps(message, ensure_ascii=False))
+        
+        # 执行评分逻辑
+        state, msg = RateCompetition().execute(rater_uid=rater_uid, rated_uid=rated_uid, ratings=ratings)
+        
+        if state == 1:
+            message = {"code": 200, "succeed": True, "msg": msg}
+        else:
+            message = {"code": 300, "succeed": False, "msg": msg}
+            
+    except Exception as e:
+        _logger.error(f"评分接口异常: {e}")
+        message = {"code": 500, "succeed": False, "msg": f"服务器内部错误: {str(e)}"}
+    
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
