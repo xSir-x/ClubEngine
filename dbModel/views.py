@@ -816,7 +816,7 @@ class RateCompetition(View):
                 # 1. 更新UserRatingShortTable（队列方式，保持最新30条记录）
                 self._update_short_table(rated_uid, ratings, current_time_str)
                 # 2. 更新UserRatingLongTable  
-                self._update_long_table(rated_uid)
+                self._update_long_table(rated_uid, ratings)
                 # 3. 更新UserRatingTable（综合评分）
                 self._update_main_rating_table(rated_uid)
                 # 4. 记录本次评分，防止重复评分
@@ -836,7 +836,6 @@ class RateCompetition(View):
         # 如果记录数已达到30条，移除最旧的记录并聚合到长周期表
         if len(short_ratings) >= 30:
             oldest_rating = short_ratings[0]
-            self._aggregate_to_long_table(uid, oldest_rating)
             oldest_rating.delete()
         
         # 添加新的评分记录
@@ -857,16 +856,27 @@ class RateCompetition(View):
     
     def _aggregate_to_long_table(self, uid, old_rating):
         """将最旧的评分聚合到长周期表"""
-        long_rating, created = UserRatingLongTable.objects.get_or_create(
-            uid=uid,
-            defaults={
-                'tech_one': '0', 'tech_two': '0', 'tech_three': '0', 
-                'tech_four': '0', 'tech_five': '0',
-                'person_one': '0', 'person_two': '0', 'person_three': '0',
-                'person_four': '0', 'person_five': '0', 'n': '0'
-            }
+        long_rating= UserRatingLongTable.objects.get(
+            uid=uid
         )
         
+        #如果第一次记录，则直接插入新的评分
+        if not long_rating:
+            long_rating = UserRatingLongTable.objects.create(
+                uid=uid,
+                tech_one=old_rating["tech_one"],  
+                tech_two=old_rating["tech_two"],
+                tech_three=old_rating["tech_three"],
+                tech_four=old_rating["tech_four"],
+                tech_five=old_rating["tech_five"],
+                person_one=old_rating["person_one"],
+                person_two=old_rating["person_two"],
+                person_three=old_rating["person_three"],
+                person_four=old_rating["person_four"],
+                person_five=old_rating["person_five"],
+                n="1"
+            )
+            return
         # 获取当前计数
         current_n = int(long_rating.n) if long_rating.n else 0
         new_n = current_n + 1
@@ -886,17 +896,9 @@ class RateCompetition(View):
         long_rating.n = str(new_n)
         long_rating.save()
     
-    def _update_long_table(self, uid):
+    def _update_long_table(self, uid, ratings):
         """确保长周期表存在记录"""
-        UserRatingLongTable.objects.get_or_create(
-            uid=uid,
-            defaults={
-                'tech_one': '0', 'tech_two': '0', 'tech_three': '0', 
-                'tech_four': '0', 'tech_five': '0',
-                'person_one': '0', 'person_two': '0', 'person_three': '0',
-                'person_four': '0', 'person_five': '0', 'n': '0'
-            }
-        )
+        self._aggregate_to_long_table(uid, ratings)
     
     def _update_main_rating_table(self, uid):
         """更新主评分表：0.6*短周期 + 0.4*长周期"""
