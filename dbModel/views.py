@@ -841,16 +841,16 @@ class RateCompetition(View):
         # 添加新的评分记录
         UserRatingShortTable.objects.create(
             uid=uid,
-            tech_one=str(ratings.get('tech_one', 0)),
-            tech_two=str(ratings.get('tech_two', 0)),
-            tech_three=str(ratings.get('tech_three', 0)),
-            tech_four=str(ratings.get('tech_four', 0)),
-            tech_five=str(ratings.get('tech_five', 0)),
-            person_one=str(ratings.get('person_one', 0)),
-            person_two=str(ratings.get('person_two', 0)),
-            person_three=str(ratings.get('person_three', 0)),
-            person_four=str(ratings.get('person_four', 0)),
-            person_five=str(ratings.get('person_five', 0)),
+            tech_one=str(ratings.get('tech_one', 0.0)),
+            tech_two=str(ratings.get('tech_two', 0.0)),
+            tech_three=str(ratings.get('tech_three', 0.0)),
+            tech_four=str(ratings.get('tech_four', 0.0)),
+            tech_five=str(ratings.get('tech_five', 0.0)),
+            person_one=str(ratings.get('person_one', 0.0)),
+            person_two=str(ratings.get('person_two', 0.0)),
+            person_three=str(ratings.get('person_three', 0.0)),
+            person_four=str(ratings.get('person_four', 0.0)),
+            person_five=str(ratings.get('person_five', 0.0)),
             rating_time=rating_time
         )
     
@@ -878,7 +878,7 @@ class RateCompetition(View):
             )
             return
         # 获取当前计数
-        current_n = int(long_rating.n) if long_rating.n else 0
+        current_n = int(long_rating.n) if long_rating.n else 0.0
         new_n = current_n + 1
         
         # 计算新的平均值
@@ -887,8 +887,8 @@ class RateCompetition(View):
         
         for field in rating_fields:
             _logger.info(f"Aggregating field: {field}")
-            current_avg = float(getattr(long_rating, field)) if getattr(long_rating, field) else 0
-            old_value = float(getattr(old_rating, field)) if getattr(old_rating, field) else 0
+            current_avg = float(getattr(long_rating, field)) if getattr(long_rating, field) else 0.0
+            old_value = float(old_rating[field]) if field in old_rating else 0.0
             
             # 计算新的平均值: (当前平均值 * 当前计数 + 新值) / (计数 + 1)
             new_avg = (current_avg * current_n + old_value) / new_n
