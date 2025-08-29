@@ -834,7 +834,7 @@ class RateCompetition(View):
         ).order_by('rating_time'))
         
         # 如果记录数已达到30条，移除最旧的记录并聚合到长周期表
-        if len(short_ratings) >= 30:
+        if len(short_ratings) >= 10:
             oldest_rating = short_ratings[0]
             oldest_rating.delete()
         
