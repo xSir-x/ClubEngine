@@ -886,6 +886,7 @@ class RateCompetition(View):
                         'person_one', 'person_two', 'person_three', 'person_four', 'person_five']
         
         for field in rating_fields:
+            _logger.info(f"Aggregating field: {field}")
             current_avg = float(getattr(long_rating, field)) if getattr(long_rating, field) else 0
             old_value = float(getattr(old_rating, field)) if getattr(old_rating, field) else 0
             

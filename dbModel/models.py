@@ -206,7 +206,8 @@ class UserRatingLongTable(models.Model):
 
 class UserRatingShortTable(models.Model):
     """用户短周期评分表（用户评分）"""
-    uid = models.CharField(verbose_name="用户id", max_length=100, primary_key=True)
+    id = models.AutoField(primary_key=True)  # 添加主键字段
+    uid = models.CharField(verbose_name="用户id", max_length=100)
     tech_one = models.CharField(verbose_name="用户正手评分", max_length=10)
     tech_two = models.CharField(verbose_name="反手评分", max_length=10)
     tech_three = models.CharField(verbose_name="动作控点评分", max_length=10)
