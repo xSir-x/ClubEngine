@@ -809,7 +809,7 @@ class RateCompetition(View):
             rating_cache_key = f"rating_{rater_uid}_{rated_uid}"
             last_rating_time = retrieve_from_redis(rating_cache_key)
             if last_rating_time:
-                return 0, "该用户对在30天内已经互评过，无法重复评分"
+                return 0, "您对该用户在7天内已评过分，无法重复评分"
 
             current_time_str = datetime.now().isoformat()
             with transaction.atomic():
@@ -820,7 +820,7 @@ class RateCompetition(View):
                 # 3. 更新UserRatingTable（综合评分）
                 self._update_main_rating_table(rated_uid)
                 # 4. 记录本次评分，防止重复评分
-                store_in_redis(rating_cache_key, current_time_str, 30 * 24 * 3600)  # 30天过期
+                store_in_redis(rating_cache_key, current_time_str, 7 * 24 * 3600)  # 7天过期
             return 1, "评分成功"
         except Exception as e:
             _logger.error(f"【RateCompetition】评分异常: {e}")
@@ -856,9 +856,9 @@ class RateCompetition(View):
     
     def _aggregate_to_long_table(self, uid, old_rating):
         """将最旧的评分聚合到长周期表"""
-        long_rating= UserRatingLongTable.objects.get(
+        long_rating= UserRatingLongTable.objects.filter(
             uid=uid
-        )
+        ).first()
         
         #如果第一次记录，则直接插入新的评分
         if not long_rating:
