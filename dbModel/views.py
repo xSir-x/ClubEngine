@@ -638,7 +638,7 @@ class getInvitationByStatus(View):
             if beforeAt is not None:
                 filter_kwargs['matchTime__gte'] = beforeAt
                 
-            # 查询邀请
+            # 查询邀请近
             invitations = UserInvTable.objects.filter(**filter_kwargs)
             if not invitations.exists():
                 return res
@@ -833,7 +833,7 @@ class RateCompetition(View):
             uid=uid
         ).order_by('rating_time'))
         
-        # 如果记录数已达到30条，移除最旧的记录并聚合到长周期表
+        # 如果记录数已达到10条，移除最旧的记录并聚合到长周期表
         if len(short_ratings) >= 10:
             oldest_rating = short_ratings[0]
             oldest_rating.delete()

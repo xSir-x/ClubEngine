@@ -468,7 +468,7 @@ def auth_user(request):
         try:
             res = retrieve_from_redis(access_token)
             if not res:
-                store_in_redis(access_token, 1)
+                store_in_redis(access_token, 1, 2 * 24 * 3600) #access token 2天过期
         except Exception as e:
             raise Exception("Redis缓存操作失败...:%s" % e)
 
@@ -773,6 +773,7 @@ def rate_competition(request):
         required_fields = ['tech_one', 'tech_two', 'tech_three', 'tech_four', 'tech_five',
                           'person_one', 'person_two', 'person_three', 'person_four', 'person_five']
         
+
         for field in required_fields:
             if field not in ratings:
                 message = {"code": 202, "succeed": False, "msg": f"评分数据缺少字段: {field}"}
