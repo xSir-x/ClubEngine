@@ -814,11 +814,11 @@ class RateCompetition(View):
             current_time_str = datetime.now().isoformat()
             with transaction.atomic():
                 # 1. 更新UserRatingShortTable（队列方式，保持最新30条记录）
-                self._update_short_table(rated_uid, ratings, current_time_str)
+                self._update_short_table(rater_uid,rated_uid, ratings, current_time_str)
                 # 2. 更新UserRatingLongTable  
-                self._update_long_table(rated_uid, ratings)
+                self._update_long_table(rater_uid, rated_uid, ratings)
                 # 3. 更新UserRatingTable（综合评分）
-                self._update_main_rating_table(rated_uid)
+                self._update_main_rating_table(rater_uid, rated_uid, ratings)
                 # 4. 记录本次评分，防止重复评分
                 store_in_redis(rating_cache_key, current_time_str, 7 * 24 * 3600)  # 7天过期
             return 1, "评分成功"
@@ -826,12 +826,15 @@ class RateCompetition(View):
             _logger.error(f"【RateCompetition】评分异常: {e}")
             return 0, f"评分失败: {str(e)}"
     
-    def _update_short_table(self, uid, ratings, rating_time):
+    def _update_short_table(self, rater_uid, uid, ratings, rating_time):
         """更新短周期评分表（队列方式，保持最新30条记录）"""
         # 获取用户当前所有短周期评分记录，按时间排序
         short_ratings = list(UserRatingShortTable.objects.filter(
             uid=uid
         ).order_by('rating_time'))
+
+        if rater_uid == 'AI' and not short_ratings: # AI评分且用户无短周期评分记录，不更新短周期表
+            return
         
         # 如果记录数已达到10条，移除最旧的记录并聚合到长周期表
         if len(short_ratings) >= 10:
@@ -841,39 +844,42 @@ class RateCompetition(View):
         # 添加新的评分记录
         UserRatingShortTable.objects.create(
             uid=uid,
-            tech_one=str(ratings.get('tech_one', 0.0)),
-            tech_two=str(ratings.get('tech_two', 0.0)),
-            tech_three=str(ratings.get('tech_three', 0.0)),
-            tech_four=str(ratings.get('tech_four', 0.0)),
-            tech_five=str(ratings.get('tech_five', 0.0)),
-            person_one=str(ratings.get('person_one', 0.0)),
-            person_two=str(ratings.get('person_two', 0.0)),
-            person_three=str(ratings.get('person_three', 0.0)),
-            person_four=str(ratings.get('person_four', 0.0)),
-            person_five=str(ratings.get('person_five', 0.0)),
+            tech_one=str(float(ratings.get('tech_one', 0.0))),
+            tech_two=str(float(ratings.get('tech_two', 0.0))),
+            tech_three=str(float(ratings.get('tech_three', 0.0))),
+            tech_four=str(float(ratings.get('tech_four', 0.0))),
+            tech_five=str(float(ratings.get('tech_five', 0.0))),
+            person_one=str(float(ratings.get('person_one', 0.0))),
+            person_two=str(float(ratings.get('person_two', 0.0))),
+            person_three=str(float(ratings.get('person_three', 0.0))),
+            person_four=str(float(ratings.get('person_four', 0.0))),
+            person_five=str(float(ratings.get('person_five', 0.0))),
             rating_time=rating_time
         )
     
-    def _aggregate_to_long_table(self, uid, old_rating):
+    def _aggregate_to_long_table(self, rater_uid, uid, old_rating):
         """将最旧的评分聚合到长周期表"""
         long_rating= UserRatingLongTable.objects.filter(
             uid=uid
         ).first()
+
+        if rater_uid == 'AI' and not long_rating: # AI评分且用户无短周期评分记录，不更新长周期表
+            return
         
         #如果第一次记录，则直接插入新的评分
         if not long_rating:
             long_rating = UserRatingLongTable.objects.create(
                 uid=uid,
-                tech_one=old_rating["tech_one"],  
-                tech_two=old_rating["tech_two"],
-                tech_three=old_rating["tech_three"],
-                tech_four=old_rating["tech_four"],
-                tech_five=old_rating["tech_five"],
-                person_one=old_rating["person_one"],
-                person_two=old_rating["person_two"],
-                person_three=old_rating["person_three"],
-                person_four=old_rating["person_four"],
-                person_five=old_rating["person_five"],
+                tech_one=str(float(old_rating["tech_one"])),  
+                tech_two=str(float(old_rating["tech_two"])),
+                tech_three=str(float(old_rating["tech_three"])),
+                tech_four=str(float(old_rating["tech_four"])),
+                tech_five=str(float(old_rating["tech_five"])),
+                person_one=str(float(old_rating["person_one"])),
+                person_two=str(float(old_rating["person_two"])),
+                person_three=str(float(old_rating["person_three"])),
+                person_four=str(float(old_rating["person_four"])),
+                person_five=str(float(old_rating["person_five"])),
                 n="1"
             )
             return
@@ -897,15 +903,22 @@ class RateCompetition(View):
         long_rating.n = str(new_n)
         long_rating.save()
     
-    def _update_long_table(self, uid, ratings):
+    def _update_long_table(self, rater_uid, uid, ratings):
         """确保长周期表存在记录"""
-        self._aggregate_to_long_table(uid, ratings)
+        self._aggregate_to_long_table(rater_uid, uid, ratings)
     
-    def _update_main_rating_table(self, uid):
+    def _update_main_rating_table(self,rater_uid ,uid, ratings):
         """更新主评分表：0.6*短周期 + 0.4*长周期"""
+       
         # 获取短周期平均分
         short_ratings = UserRatingShortTable.objects.filter(uid=uid)
         short_avg = self._calculate_average_ratings(short_ratings, 'short')
+
+        if rater_uid == 'AI' and not short_ratings: # AI评分且无记录的情况下直接修改rating表
+            UserRatingTable.objects.update_or_create(
+            uid=uid,
+            defaults=ratings
+        )
         
         # 获取长周期平均分
         try:
