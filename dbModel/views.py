@@ -923,6 +923,7 @@ class RateCompetition(View):
             uid=uid,
             defaults=AI_ratings
         )
+            return
         
         # 获取长周期平均分
         try:
