@@ -918,7 +918,7 @@ class RateCompetition(View):
             AI_ratings = {}
             for field in ['tech_one', 'tech_two', 'tech_three', 'tech_four', 'tech_five',
                         'person_one', 'person_two', 'person_three', 'person_four', 'person_five']:
-                AI_ratings[field] = str(float(ratings["field"]))
+                AI_ratings[field] = str(float(ratings[field]))
             UserRatingTable.objects.update_or_create(
             uid=uid,
             defaults=AI_ratings
