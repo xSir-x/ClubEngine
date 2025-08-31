@@ -915,9 +915,13 @@ class RateCompetition(View):
         short_avg = self._calculate_average_ratings(short_ratings, 'short')
 
         if rater_uid == 'AI' and not short_ratings: # AI评分且无记录的情况下直接修改rating表
+            AI_ratings = {}
+            for field in ['tech_one', 'tech_two', 'tech_three', 'tech_four', 'tech_five',
+                        'person_one', 'person_two', 'person_three', 'person_four', 'person_five']:
+                AI_ratings[field] = str(float(ratings["field"]))
             UserRatingTable.objects.update_or_create(
             uid=uid,
-            defaults=ratings
+            defaults=AI_ratings
         )
         
         # 获取长周期平均分
