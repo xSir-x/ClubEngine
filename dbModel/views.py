@@ -713,6 +713,55 @@ class getInvitationByStatus(View):
                     inv['inviteeName'] = invitee.name
                     inv['inviteePic'] = invitee.pic
                 
+                # rated30 字段判断
+                # 只有已接受的邀请（status==1）才允许评分
+                if str(inv['status']) == '1':
+                    # 评分key: rating_邀请者_被邀请者
+                    rating_key = f"rating_{inv['inviterId']}_{inv['inviteeId']}"
+                    rated_flag = retrieve_from_redis(rating_key)
+                    inv['rated30'] = 0 if rated_flag else 1
+                else:
+                    inv['rated30'] = 0
+                
+                res.append(inv)
+                
+            return res
+        except Exception as e:
+            _logger.error(f"获取邀请列表异常: {str(e)}")
+            raise Exception(f"获取邀请列表失败: {str(e)}")
+
+class updateInvitation(View):
+    @classmethod
+    def execute(cls, inv_id, inviterId, inviteeId, action, access_token):
+        """
+        更新邀请状态
+        :param inv_id: 邀请ID
+        :param inviterId: 邀请者ID
+        :param inviteeId: 被邀请者ID  
+        :param action: 操作类型 accept-接受, reject-拒绝
+        :param access_token: 访问令牌
+        :return: 操作结果
+        """
+        try:
+            # 验证邀请是否存在
+            invitation = UserInvTable.objects.filter(inv_id=inv_id).first()
+            if not invitation:
+                return 0, "邀请不存在"
+            
+            # 验证邀请者和被邀请者是否匹配
+            if invitation.inviterId != inviterId or invitation.inviteeId != inviteeId:
+                return 0, "邀请信息不匹配"
+            
+            if action == "accept":
+                # 接受邀请：将状态改为1
+                UserInvTable.objects.filter(inv_id=inv_id).update(status="1")
+                
+                # 检查好友关系是否已存在
+                friend_exists = UserFriendTable.objects.filter(
+                    userId=inviterId, 
+                    friendId=inviteeId
+                ).exists()
+
                 
                 if not friend_exists:
                     # 创建双向好友关系
