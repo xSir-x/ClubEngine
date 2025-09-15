@@ -509,6 +509,55 @@ class getMemberInfo(View):
             raise Exception(e)
 
 
+class getMemberInfoByName(View):
+    def execute(self, name, exact_match=True):
+        """
+        根据用户名查询会员信息
+        :param name: 用户名
+        :param exact_match: 是否精确匹配，True为精确匹配，False为模糊匹配
+        :return: 用户信息列表或单个用户信息
+        """
+        res = []
+        try:
+            if exact_match:
+                # 精确匹配
+                user_obj = UserInforTable.objects.filter(name=name)
+            else:
+                # 模糊匹配
+                user_obj = UserInforTable.objects.filter(name__icontains=name)
+            
+            if not user_obj.exists():
+                return res
+            
+            # 获取用户基本信息
+            users_info = user_obj.values('uid', 'name', 'pic', 'profile', 'location', 'register_time')
+            
+            for user in users_info:
+                uid = user['uid']
+                # 获取用户评分信息
+                rating_obj = UserRatingTable.objects.filter(uid=uid)
+                if rating_obj.exists():
+                    rating_info = rating_obj.values('tech_one', 'tech_two', 'tech_three',
+                                                   'tech_four', 'tech_five',
+                                                   'person_one', 'person_two', 'person_three',
+                                                   'person_four', 'person_five').first()
+                    user.update(rating_info)
+                else:
+                    # 如果没有评分信息，设置默认值
+                    default_ratings = {
+                        'tech_one': '0.0', 'tech_two': '0.0', 'tech_three': '0.0', 'tech_four': '0.0', 'tech_five': '0.0',
+                        'person_one': '0.0', 'person_two': '0.0', 'person_three': '0.0', 'person_four': '0.0', 'person_five': '0.0'
+                    }
+                    user.update(default_ratings)
+                
+                res.append(user)
+            
+            return res
+            
+        except Exception as e:
+            raise Exception(f"【getMemberInfoByName】根据用户名查询用户信息异常: {str(e)}")
+
+
 class registerMembership(View):
     def execute(self, uid, name, profile, location, register_time):
         """
@@ -664,55 +713,6 @@ class getInvitationByStatus(View):
                     inv['inviteeName'] = invitee.name
                     inv['inviteePic'] = invitee.pic
                 
-                # rated30 字段判断
-                # 只有已接受的邀请（status==1）才允许评分
-                if str(inv['status']) == '1':
-                    # 评分key: rating_邀请者_被邀请者
-                    rating_key = f"rating_{inv['inviterId']}_{inv['inviteeId']}"
-                    rated_flag = retrieve_from_redis(rating_key)
-                    inv['rated30'] = 0 if rated_flag else 1
-                else:
-                    inv['rated30'] = 0
-                
-                res.append(inv)
-                
-            return res
-        except Exception as e:
-            _logger.error(f"获取邀请列表异常: {str(e)}")
-            raise Exception(f"获取邀请列表失败: {str(e)}")
-
-
-class updateInvitation(View):
-    @classmethod
-    def execute(cls, inv_id, inviterId, inviteeId, action, access_token):
-        """
-        更新邀请状态
-        :param inv_id: 邀请ID
-        :param inviterId: 邀请者ID
-        :param inviteeId: 被邀请者ID  
-        :param action: 操作类型 accept-接受, reject-拒绝
-        :param access_token: 访问令牌
-        :return: 操作结果
-        """
-        try:
-            # 验证邀请是否存在
-            invitation = UserInvTable.objects.filter(inv_id=inv_id).first()
-            if not invitation:
-                return 0, "邀请不存在"
-            
-            # 验证邀请者和被邀请者是否匹配
-            if invitation.inviterId != inviterId or invitation.inviteeId != inviteeId:
-                return 0, "邀请信息不匹配"
-            
-            if action == "accept":
-                # 接受邀请：将状态改为1
-                UserInvTable.objects.filter(inv_id=inv_id).update(status="1")
-                
-                # 检查好友关系是否已存在
-                friend_exists = UserFriendTable.objects.filter(
-                    userId=inviterId, 
-                    friendId=inviteeId
-                ).exists()
                 
                 if not friend_exists:
                     # 创建双向好友关系

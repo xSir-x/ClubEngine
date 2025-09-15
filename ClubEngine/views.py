@@ -555,6 +555,32 @@ def search_user(request):
 
 
 @csrf_exempt
+def search_user_by_name(request):
+    """根据用户名搜索用户信息"""
+    message = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = request_res.get('access_token', None)
+        if not validate_accessToken(access_token):
+            message = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        
+        name = request_res.get('name', None)
+        exact_match = request_res.get('exact_match', True)  # 默认精确匹配
+        
+        if not name:
+            message = {"code": 201, "succeed": False, "msg": "缺少必填信息: name"}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+        
+        response = getMemberInfoByName().execute(name=name, exact_match=exact_match)
+        message = {"response": response, "code": 200, "succeed": True, "msg": "查询成功"}
+
+    except Exception as e:
+        message = {"response": [], "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+@csrf_exempt
 def send_invitation(request):
     """
     发送邀请

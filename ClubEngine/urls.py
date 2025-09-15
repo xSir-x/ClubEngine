@@ -29,6 +29,7 @@ urlpatterns = [
     path('userlogin', views.auth_user),
     path('userRegister', views.auth_register),
     path('searchUser', views.search_user),
+    path('searchUserByName', views.search_user_by_name),
     path('testAccess', views.test_access),
 
     # 页面接口
