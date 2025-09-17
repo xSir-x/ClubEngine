@@ -507,7 +507,7 @@ def test_access(request):
 
 @csrf_exempt
 def auth_register(request):
-    """用户注册:  0: 注册失败，1: 注册成功, 2: 用户已存在"""
+    """用户注册:  0: 注册失败，1: 注册成功, 2: 用户已存在, 3: 用户名已被使用"""
     message = {}
     try:
         request_res = json.loads(request.body)
@@ -523,12 +523,19 @@ def auth_register(request):
         register_time = str(int(time.time() * 1000))  # 修改为毫秒级时间戳
 
         if name is None:
-            message = {"code": 201, "msg": "缺少名称信息..."}
+            message = {"code": 201, "succeed": False, "msg": "缺少名称信息..."}
             return HttpResponse(json.dumps(message, ensure_ascii=False))
-        state, msg = registerMembership().execute(userid, name, profile, location,
-                                                  register_time)
-
-        message = {"response": state, "code": 200, "msg": msg}
+            
+        state, msg = registerMembership().execute(userid, name, profile, location, register_time)
+        
+        if state == 1:
+            message = {"response": state, "code": 200, "succeed": True, "msg": msg}
+        elif state == 2:
+            message = {"response": state, "code": 202, "succeed": False, "msg": msg}
+        elif state == 3:
+            message = {"response": state, "code": 203, "succeed": False, "msg": msg}
+        else:
+            message = {"response": state, "code": 400, "succeed": False, "msg": msg}
 
     except Exception as e:
         message = {"response": 0, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}

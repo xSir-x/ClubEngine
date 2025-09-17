@@ -6,7 +6,7 @@ import time
 from datetime import datetime, timedelta
 from django.core.cache import cache
 from util.external_api import store_in_redis, retrieve_from_redis
-from django.db import transaction
+from django.db import transaction, IntegrityError
 
 from util.log import logHander
 
@@ -564,39 +564,60 @@ class registerMembership(View):
         注册会员:
         :param uid:
         :param name:
-        :param level:
-        :param wechat:
         :param profile:
-        :param email:
         :param location:
         :param register_time:
-        :return: 0: 注册失败，1: 注册成功, 2: 用户已存在
+        :return: 0: 注册失败，1: 注册成功, 2: 用户已存在, 3: 用户名已被使用
         """
         try:
+            # 首先检查用户ID是否已存在
             check_obj = UserInforTable.objects.filter(uid=uid)
-            if not check_obj.exists():
-                UserInforTable.objects.create(uid=uid,
-                                              name=name,
-                                              profile=profile,
-                                              pic="default.jpg",
-                                              location=location,                    
-                                              register_time=register_time)
-                UserRatingTable.objects.create(uid=uid,
-                                                tech_one= "0.0",
-                                                tech_two = "0.0",
-                                                tech_three = "0.0",
-                                                tech_four = "0.0",
-                                                tech_five = "0.0",
-                                                person_one = "0.0",
-                                                person_two = "0.0",
-                                                person_three = "0.0",
-                                                person_four = "0.0",
-                                                person_five = "0.0")
-                return 1, "OK"
+            if check_obj.exists():
+                return 2, "用户已存在"
+            
+            # 检查用户名是否已被使用（业务层面检查）
+            name_check = UserInforTable.objects.filter(name=name)
+            if name_check.exists():
+                return 3, "用户名已被使用，请选择其他用户名"
+            
+            # 创建用户信息
+            UserInforTable.objects.create(
+                uid=uid,
+                name=name,
+                profile=profile,
+                pic="default.jpg",
+                location=location,                    
+                register_time=register_time
+            )
+            
+            # 创建用户评分记录
+            UserRatingTable.objects.create(
+                uid=uid,
+                tech_one="0.0",
+                tech_two="0.0",
+                tech_three="0.0",
+                tech_four="0.0",
+                tech_five="0.0",
+                person_one="0.0",
+                person_two="0.0",
+                person_three="0.0",
+                person_four="0.0",
+                person_five="0.0"
+            )
+            
+            return 1, "注册成功"
+            
+        except IntegrityError as e:
+            # 捕获数据库唯一性约束异常
+            error_msg = str(e).lower()
+            if 'unique' in error_msg and 'name' in error_msg:
+                return 3, "用户名已被使用，请选择其他用户名"
             else:
-                return 2, "Existed..."
+                _logger.error(f"【registerMembership】数据库完整性错误: {str(e)}")
+                return 0, "注册失败，数据库约束错误"
         except Exception as e:
-            return 0, e
+            _logger.error(f"【registerMembership】注册异常: {str(e)}")
+            return 0, f"注册失败: {str(e)}"
 
 
 class modifyMembership(View):

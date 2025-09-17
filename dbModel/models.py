@@ -113,7 +113,7 @@ class AreaCodeTable(models.Model):
 class UserInforTable(models.Model):
     """用户信息表（会员标记）"""
     uid = models.CharField(verbose_name="用户id", max_length=64, primary_key=True)
-    name = models.CharField(verbose_name="用户名称", max_length=16)
+    name = models.CharField(verbose_name="用户名称", max_length=16, unique=True)  # 添加唯一性约束
     pic = models.CharField(verbose_name="用户头像图片链接", max_length=128)
     profile = models.CharField(verbose_name="用户个人简介", max_length=256)
     location = models.CharField(verbose_name="用户地址", max_length=256)
