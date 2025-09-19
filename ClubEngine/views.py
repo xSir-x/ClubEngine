@@ -657,6 +657,7 @@ def get_invitation(request):
         inviterId = request_res.get('inviterId', None)
         inviteeId = request_res.get('inviteeId', None)
         status = request_res.get('status', None)
+        beforeAt = request_res.get('beforeAt', None)
         
         # 至少需要提供一个ID参数
         if not inviterId and not inviteeId:
@@ -675,7 +676,8 @@ def get_invitation(request):
         invitations = getInvitationByStatus().execute(
             inviterId=inviterId,
             inviteeId=inviteeId,
-            status=status
+            status=status,
+            beforeAt=beforeAt
         )
         
         message = {"response": invitations, "code": 200, "succeed": True, "msg": "获取邀请列表成功"}
