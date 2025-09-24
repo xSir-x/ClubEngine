@@ -24,7 +24,7 @@ SECRET_KEY = 'django-insecure-8+7&#xifwa2n)qsz2p*yur(=frhd27o#n^nx=%*3+x40bhrg5%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['110.41.176.114', 'localhost', '127.0.0.1', '192.168.31.24','113.46.199.111']
+ALLOWED_HOSTS = ['110.41.176.114', 'localhost', '127.0.0.1', '192.168.31.24','113.46.199.111','yclubapp.tech']
 
 # 设置端口
 DEFAULT_PORT = 80
