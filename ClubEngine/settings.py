@@ -169,3 +169,12 @@ CACHES = {
         }
     }
 }
+
+# 邮件配置
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.yeah.net'  # 或其他 SMTP 服务器
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'pengyazhang@yeah.net'  # 替换为你的邮箱
+EMAIL_HOST_PASSWORD = '!Mf8hans'  # Gmail 需要应用密码
+DEFAULT_FROM_EMAIL = 'pengyazhang@yeah.net'
