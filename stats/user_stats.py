@@ -32,6 +32,7 @@ def send_user_stats_email():
         
         报告生成时间: {django.utils.timezone.now()}
         """
+        print(message)
         
         # 发送邮件
         send_mail(
