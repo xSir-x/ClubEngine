@@ -1,7 +1,7 @@
 import os
 import sys
 import django
-from django.core.mail import send_mail
+import requests
 from django.conf import settings
 
 # 添加项目路径到 sys.path
@@ -15,18 +15,17 @@ django.setup()
 # 导入 UserInforTable 模型
 from dbModel.models import UserInforTable
 
-def send_user_stats_email():
+def send_user_stats_notification():
     """
-    统计 UserInforTable 用户数量并发送邮件
+    统计 UserInforTable 用户数量并推送微信通知
     """
     try:
         # 统计用户数量
         total_users = UserInforTable.objects.count()
         
-        # 构建邮件内容
-        subject = '网搭TennisBuddy 用户统计报告'
+        # 构建消息内容
         message = f"""
-        ClubEngine 用户统计报告
+        网搭TennisBudy 用户统计报告
         
         总用户数: {total_users}
         
@@ -34,19 +33,25 @@ def send_user_stats_email():
         """
         print(message)
         
-        # 发送邮件
-        send_mail(
-            subject=subject,
-            message=message,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=['pengyazhang@yeah.net'],  # 替换为你的邮箱
-            fail_silently=False,
-        )
+        # 微信机器人 Webhook URL
+        webhook_url = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=693axxx6-7aoc-4bc4-97a0-0ec2sifa5aaa'
         
-        print("用户统计邮件发送成功")
+        # 构建推送数据
+        data = {
+            "msgtype": "text",
+            "text": {
+                "content": message
+            }
+        }
+        
+        # 发送推送
+        response = requests.post(webhook_url, json=data)
+        response.raise_for_status()  # 如果状态码不是 200，会抛出异常
+        
+        print("用户统计微信通知发送成功")
         
     except Exception as e:
-        print(f"发送邮件失败: {str(e)}")
+        print(f"发送微信通知失败: {str(e)}")
 
 if __name__ == '__main__':
-    send_user_stats_email()
+    send_user_stats_notification()
