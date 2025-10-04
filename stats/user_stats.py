@@ -34,7 +34,7 @@ def send_user_stats_notification():
         print(message)
         
         # 微信机器人 Webhook URL
-        webhook_url = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=693axxx6-7aoc-4bc4-97a0-0ec2sifa5aaa'
+        webhook_url = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=3cd3f3b8-3e99-461f-af59-fb7a45c08a32'
         
         # 构建推送数据
         data = {
