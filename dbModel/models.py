@@ -224,3 +224,76 @@ class UserRatingShortTable(models.Model):
         get_latest_by = "uid"
         ordering = ['uid']
         verbose_name = "user_rating_short"
+
+
+class CoachCourseTable(models.Model):
+    """教练课程表"""
+    course_id = models.CharField(verbose_name="课程ID", max_length=64, primary_key=True)
+    coach_id = models.CharField(verbose_name="教练ID", max_length=64)
+    coach_name = models.CharField(verbose_name="教练姓名", max_length=32)
+    
+    # 课程信息
+    title = models.CharField(verbose_name="课程标题", max_length=128)
+    description = models.TextField(verbose_name="课程描述")
+    cover_image = models.CharField(verbose_name="封面图片", max_length=256)
+    level = models.CharField(verbose_name="课程级别", max_length=32)  # beginner/intermediate/advanced
+    category = models.CharField(verbose_name="课程分类", max_length=32)  # technique/physical/strategy等
+    
+    # 时间和地点
+    course_date = models.CharField(verbose_name="课程日期", max_length=32)  # YYYY-MM-DD
+    course_time = models.CharField(verbose_name="课程时间", max_length=16)  # HH:MM
+    duration = models.IntegerField(verbose_name="课程时长(分钟)")
+    location = models.CharField(verbose_name="上课地点", max_length=256)
+    
+    # 学员人数
+    min_students = models.IntegerField(verbose_name="最少学员数")
+    max_students = models.IntegerField(verbose_name="最多学员数")
+    current_students = models.IntegerField(verbose_name="当前报名人数", default=0)
+    
+    # 价格信息
+    original_price = models.DecimalField(verbose_name="原价", max_digits=10, decimal_places=2)
+    current_price = models.DecimalField(verbose_name="现价", max_digits=10, decimal_places=2)
+    
+    # 状态和时间戳
+    status = models.IntegerField(verbose_name="课程状态", default=1)  # 1-待开课 2-进行中 3-已结束 4-已取消
+    is_deleted = models.BooleanField(verbose_name="是否删除", default=False)
+    create_time = models.CharField(verbose_name="创建时间", max_length=64)
+    update_time = models.CharField(verbose_name="更新时间", max_length=64, null=True, blank=True)
+    
+    class Meta:
+        db_table = "coach_course"
+        get_latest_by = "create_time"
+        ordering = ['-create_time']
+        verbose_name = "教练课程"
+        indexes = [
+            models.Index(fields=['coach_id', 'course_date']),
+            models.Index(fields=['status', 'course_date']),
+        ]
+
+
+class CourseEnrollmentTable(models.Model):
+    """课程报名表"""
+    enrollment_id = models.CharField(verbose_name="报名ID", max_length=64, primary_key=True)
+    course_id = models.CharField(verbose_name="课程ID", max_length=64)
+    user_id = models.CharField(verbose_name="用户ID", max_length=64)
+    user_name = models.CharField(verbose_name="用户姓名", max_length=32)
+    
+    # 订单信息
+    order_id = models.CharField(verbose_name="订单ID", max_length=64, null=True, blank=True)
+    payment_status = models.IntegerField(verbose_name="支付状态", default=1)  # 1-未支付 2-已支付 3-已退款
+    paid_amount = models.DecimalField(verbose_name="支付金额", max_digits=10, decimal_places=2)
+    
+    # 状态和时间
+    enrollment_status = models.IntegerField(verbose_name="报名状态", default=1)  # 1-已报名 2-已取消 3-已完成
+    enroll_time = models.CharField(verbose_name="报名时间", max_length=64)
+    cancel_time = models.CharField(verbose_name="取消时间", max_length=64, null=True, blank=True)
+    
+    class Meta:
+        db_table = "course_enrollment"
+        get_latest_by = "enroll_time"
+        ordering = ['-enroll_time']
+        verbose_name = "课程报名"
+        indexes = [
+            models.Index(fields=['course_id', 'enrollment_status']),
+            models.Index(fields=['user_id', 'enrollment_status']),
+        ]

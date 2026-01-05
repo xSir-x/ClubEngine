@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from . import views
-
+from dbModel import course_views
 
 
 urlpatterns = [
@@ -61,4 +61,12 @@ urlpatterns = [
     
     # 评分接口
     path('rateCompetition', views.rate_competition),
+    
+    # 课程接口
+    path('api/courses/publish', course_views.publish_courses, name='publish_courses'),
+    path('api/courses/list', course_views.get_courses, name='get_courses'),
+    path('api/courses/detail', course_views.get_course_detail, name='get_course_detail'),
+    path('api/courses/update', course_views.update_course, name='update_course'),
+    path('api/courses/delete', course_views.delete_course, name='delete_course'),
+    path('api/courses/enroll', course_views.enroll_course, name='enroll_course'),
 ]
