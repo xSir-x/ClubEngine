@@ -66,7 +66,7 @@ class UserOrderTable(models.Model):
     order_status = models.IntegerField(verbose_name="订单状态：1-未支付 2-支付成功 3-支付失败")
 
     class Meta:
-        db_table = "用户订单表"
+        db_table = "user_order"
         get_latest_by = "pay_time"
         ordering = ['pay_time']
         verbose_name = "userOrder"

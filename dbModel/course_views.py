@@ -478,22 +478,36 @@ def enroll_course(request):
         existing = CourseEnrollmentTable.objects.filter(
             course_id=course_id,
             user_id=user_id,
-            enrollment_status=1
-        ).exists()
+            enrollment_status__in=[1, 2]  # 已报名或待支付
+        ).first()
         
         if existing:
-            return JsonResponse({'code': 400, 'message': '您已报名此课程'})
+            # 如果已存在未支付的报名，返回报名信息
+            if existing.payment_status == 1:
+                return JsonResponse({
+                    'code': 200,
+                    'message': '您已有待支付的报名记录',
+                    'data': {
+                        'enrollmentId': existing.enrollment_id,
+                        'courseId': course_id,
+                        'amount': float(course.current_price),
+                        'paymentStatus': 1  # 待支付
+                    }
+                })
+            else:
+                return JsonResponse({'code': 400, 'message': '您已报名此课程'})
         
         # 检查人数限制
         current_enrollments = CourseEnrollmentTable.objects.filter(
             course_id=course_id,
-            enrollment_status=1
+            enrollment_status=1,  # 只统计已支付的
+            payment_status=2  # 已支付
         ).count()
         
         if current_enrollments >= course.max_students:
             return JsonResponse({'code': 400, 'message': '课程报名人数已满'})
         
-        # 创建报名记录
+        # 创建报名记录（待支付状态）
         enrollment_id = f"ENROLL-{course_id}-{user_id}-{uuid.uuid4().hex[:8]}"
         current_time = str(int(time.time()))
         
@@ -503,24 +517,25 @@ def enroll_course(request):
             user_id=user_id,
             user_name=user_name,
             paid_amount=course.current_price,
-            payment_status=1,
-            enrollment_status=1,
+            payment_status=1,  # 1-待支付
+            enrollment_status=2,  # 2-待确认（支付后变为1-已报名）
             enroll_time=current_time
         )
         
-        # 更新课程当前学员数
-        course.current_students = current_enrollments + 1
-        course.save()
-        
-        logger.info(f'学员报名成功: {enrollment_id}, 用户: {user_name}, 课程: {course.title}')
+        logger.info(f'学员创建报名记录: {enrollment_id}, 用户: {user_name}, 课程: {course.title}, 待支付')
         
         return JsonResponse({
             'code': 200,
-            'message': '报名成功',
+            'message': '报名记录创建成功，请继续支付',
             'data': {
                 'enrollmentId': enrollment_id,
                 'courseId': course_id,
-                'amount': float(course.current_price)
+                'courseTitle': course.title,
+                'courseDate': course.course_date,
+                'courseTime': course.course_time,
+                'location': course.location,
+                'amount': float(course.current_price),
+                'paymentStatus': 1  # 待支付
             }
         })
     
@@ -529,4 +544,112 @@ def enroll_course(request):
     
     except Exception as e:
         logger.error(f'报名课程失败: {str(e)}', exc_info=True)
+        return JsonResponse({'code': 500, 'message': f'服务器错误: {str(e)}'})
+
+
+@csrf_exempt
+def course_payment_callback(request):
+    """
+    课程支付回调处理
+    在微信支付成功后更新课程报名状态
+    POST /api/courses/payment/callback
+    
+    注意：此接口只负责更新课程报名状态，不创建订单
+    订单已经由 genOrder 接口创建，由微信回调 notifyOrder 接口更新支付状态
+    
+    请求参数:
+    {
+        "access_token": "xxx",
+        "order_id": "订单ID",
+        "course_id": "课程ID",
+        "user_id": "用户ID"
+    }
+    """
+    if request.method != 'POST':
+        return JsonResponse({'code': 405, 'message': '方法不允许'})
+    
+    try:
+        data = json.loads(request.body)
+        
+        # 验证access_token
+        access_token = data.get('access_token', None)
+        if not validate_accessToken(access_token):
+            return JsonResponse({'code': 100, 'message': 'Invalidate access token.'})
+        
+        order_id = data.get('order_id')
+        course_id = data.get('course_id')
+        user_id = data.get('user_id')
+        
+        if not all([order_id, course_id, user_id]):
+            return JsonResponse({'code': 400, 'message': '参数不完整'})
+        
+        # 使用事务确保数据一致性
+        with transaction.atomic():
+            # 1. 验证订单是否存在且已支付
+            from dbModel.models import UserOrderTable
+            
+            try:
+                order = UserOrderTable.objects.get(order_id=order_id)
+            except UserOrderTable.DoesNotExist:
+                return JsonResponse({'code': 404, 'message': '订单不存在'})
+            
+            # 验证订单状态
+            if order.order_status != 2:  # 2-支付成功
+                return JsonResponse({
+                    'code': 400, 
+                    'message': f'订单未支付或支付失败，当前状态: {order.order_status}'
+                })
+            
+            # 验证订单是否属于该用户和课程
+            if order.uid != user_id or order.act_id != course_id:
+                return JsonResponse({'code': 403, 'message': '订单信息不匹配'})
+            
+            # 2. 更新报名记录
+            enrollment = CourseEnrollmentTable.objects.filter(
+                course_id=course_id,
+                user_id=user_id,
+                payment_status=1  # 待支付
+            ).first()
+            
+            if not enrollment:
+                return JsonResponse({'code': 404, 'message': '未找到待支付的报名记录'})
+            
+            # 更新支付状态
+            enrollment.payment_status = 2  # 已支付
+            enrollment.enrollment_status = 1  # 已报名
+            enrollment.order_id = order_id
+            enrollment.save()
+            
+            # 3. 更新课程报名人数
+            course = CoachCourseTable.objects.get(course_id=course_id, is_deleted=False)
+            paid_enrollments = CourseEnrollmentTable.objects.filter(
+                course_id=course_id,
+                payment_status=2,
+                enrollment_status=1
+            ).count()
+            course.current_students = paid_enrollments
+            course.save()
+            
+            logger.info(f'课程支付确认成功: 订单={order_id}, 课程={course_id}, 用户={user_id}, 微信支付ID={order.paymentid}')
+        
+        return JsonResponse({
+            'code': 200,
+            'message': '支付成功，报名确认完成',
+            'data': {
+                'enrollmentId': enrollment.enrollment_id,
+                'courseId': course_id,
+                'orderId': order_id,
+                'paymentId': order.paymentid,
+                'currentStudents': paid_enrollments
+            }
+        })
+    
+    except CoachCourseTable.DoesNotExist:
+        return JsonResponse({'code': 404, 'message': '课程不存在'})
+    
+    except json.JSONDecodeError:
+        return JsonResponse({'code': 400, 'message': 'JSON格式错误'})
+    
+    except Exception as e:
+        logger.error(f'课程支付回调处理失败: {str(e)}', exc_info=True)
         return JsonResponse({'code': 500, 'message': f'服务器错误: {str(e)}'})

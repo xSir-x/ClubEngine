@@ -69,4 +69,5 @@ urlpatterns = [
     path('api/courses/update', course_views.update_course, name='update_course'),
     path('api/courses/delete', course_views.delete_course, name='delete_course'),
     path('api/courses/enroll', course_views.enroll_course, name='enroll_course'),
+    path('api/courses/payment/callback', course_views.course_payment_callback, name='course_payment_callback'),
 ]
