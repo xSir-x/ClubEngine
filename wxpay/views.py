@@ -93,22 +93,22 @@ class WXMinPay(object):
             return response
         _logger.info("payOrder:: 订单验证成功")
 
-        # 金额验证
-        act_info_obj = ActivityInfoTable.objects.filter(act_id=act_id)
-        if act_info_obj.exists():
-            _amount = int(float(act_info_obj.values("price")[0]["price"]) * 100)
-            if amount != _amount:
-                _logger.info("payOrder:: 金额与用户当前等级不一致，无法支付...")
-                response = {'code': 300,
-                            'succeed': False,
-                            'msg': '金额与用户当前等级不一致，无法支付...'}
-                return response
-        else:
-            _logger.info("payOrder:: 订单对应的活动不存在...")
-            response = {'code': 300,
-                        'succeed': False,
-                        'msg': '订单对应的活动不存在...'}
-            return response
+        # # 金额验证
+        # act_info_obj = ActivityInfoTable.objects.filter(act_id=act_id)
+        # if act_info_obj.exists():
+        #     _amount = int(float(act_info_obj.values("price")[0]["price"]) * 100)
+        #     if amount != _amount:
+        #         _logger.info("payOrder:: 金额与用户当前等级不一致，无法支付...")
+        #         response = {'code': 300,
+        #                     'succeed': False,
+        #                     'msg': '金额与用户当前等级不一致，无法支付...'}
+        #         return response
+        # else:
+        #     _logger.info("payOrder:: 订单对应的活动不存在...")
+        #     response = {'code': 300,
+        #                 'succeed': False,
+        #                 'msg': '订单对应的活动不存在...'}
+        #     return response
 
         # 以小程序下单为例，下单成功后，将prepay_id和其他必须的参数组合传递给小程序的wx.requestPayment接口唤起支付
         # out_trade_no = ''.join(sample(ascii_letters + digits, 8))
