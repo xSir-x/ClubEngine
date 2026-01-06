@@ -59,7 +59,7 @@ class WXMinPay(object):
         """
         request_res = json.loads(request.body)
         order_id = request_res.get("order_id", None)
-        amount = int(float(request_res.get('amount', 0)))
+        amount = int(float(request_res.get('amount', 0)) * 100)
         description = request_res.get("description", 'Y-Club WXminPay')
         payer = {'openid': request_res.get("openid", None)}
         act_id = request_res.get("act_id", None)
