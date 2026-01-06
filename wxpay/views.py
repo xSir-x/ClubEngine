@@ -167,8 +167,11 @@ class WXMinPay(object):
         :return:
         """
         try:
-            _logger.info("payOrder -> notify:: 支付回调...")
-            result = wxpay.callback(request.headers, request.data)
+            _logger.info("payOrder -> notify:: 收到微信支付回调...")
+            
+            # Django 标准请求使用 request.body，不是 request.data
+            result = wxpay.callback(request.headers, request.body)
+            
             # 如果处理结果存在且事件类型为 'TRANSACTION.SUCCESS'
             if result and result.get('event_type') == 'TRANSACTION.SUCCESS':
                 # 从处理结果中获取资源信息
@@ -185,35 +188,48 @@ class WXMinPay(object):
                 success_time = resp.get('success_time')
                 payer = resp.get('payer')
                 amount = resp.get('amount').get('total')
+                
+                _logger.info("payOrder -> notify:: 微信回调数据解析成功, order_id: %s, transaction_id: %s, amount: %s" % 
+                           (order_id, transaction_id, amount))
+                
                 # 在这里可以写我们的业务处理，必须要返回一个SUCCESS的回复，否则微信会视为没有调用成功，从而一直调用当前请求。
-
                 order_status = 2
                 pay_time = str(int(time.time() * 1000))  # 修改为毫秒级时间戳
                 paymentid = transaction_id
 
-                UserOrderTable.objects.filter(order_id=order_id).update(order_status=order_status,
-                                                                        pay_time=pay_time,
-                                                                        paymentid=paymentid)
+                UserOrderTable.objects.filter(order_id=order_id).update(
+                    order_status=order_status,
+                    pay_time=pay_time,
+                    paymentid=paymentid
+                )
+                
                 _logger.info("payOrder -> notify:: 支付回调成功，order_id: %s, order_status: %s, paymentid: %s 信息入库成功..." %
                              (order_id, order_status, paymentid))
-                response = {'code': 200,
-                            'succeed': True,
-                            'response': {"order_id": order_id,
-                                         "paymentid": paymentid,
-                                         "trade_state": trade_state,
-                                         "trade_state_desc": trade_state_desc,
-                                         "bank_type": bank_type,
-                                         "amount": amount,
-                                         "success_time": success_time},
-                            'message': '支付回调成功...'}
+                
+                response = {
+                    'code': 200,
+                    'succeed': True,
+                    'response': {
+                        "order_id": order_id,
+                        "paymentid": paymentid,
+                        "trade_state": trade_state,
+                        "trade_state_desc": trade_state_desc,
+                        "bank_type": bank_type,
+                        "amount": amount,
+                        "success_time": success_time
+                    },
+                    'message': '支付回调成功...'
+                }
                 return response
             else:
-                _logger.info("支付回调失败...")
+                _logger.warning("payOrder -> notify:: 支付回调失败，事件类型不匹配或结果为空")
                 response = {'code': 300, 'succeed': False, 'message': '支付回调失败...'}
                 return response
+                
         except Exception as e:
-            _logger.error("支付回调异常: %s..." % e)
-            raise Exception("**支付回调失败: %s" % e)
+            _logger.error("payOrder -> notify:: 支付回调异常: %s" % str(e), exc_info=True)
+            response = {'code': 300, 'succeed': False, 'message': '支付回调处理失败: %s' % str(e)}
+            return response
 
     @classmethod
     def gen_order(cls, request):
