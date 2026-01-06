@@ -397,18 +397,24 @@ def minipay(request):
 
 @csrf_exempt
 def mininotify(request):
-    """小程序支付回调"""
+    """
+    微信支付回调接口
+    注意：此接口由微信支付平台调用，不需要验证 access_token
+    安全性由微信 SDK 的签名验证保证
+    """
     response = {}
     try:
-        request_res = json.loads(request.body)
-        access_token = request_res.get('access_token', None)
-        if not validate_accessToken(access_token):
-            response = {"code": 100, "succeed": False, "msg": "Invalidate access token."}
-            return HttpResponse(json.dumps(response, ensure_ascii=False))
-
+        _logger.info("mininotify:: 收到微信支付回调...")
+        
+        # 直接调用 notify 方法，其中会验证微信签名
         response = WXMinPay().notify(request=request)
+        
+        _logger.info("mininotify:: 微信支付回调处理完成")
+        
     except Exception as e:
-        response = {"response": {}, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+        _logger.error(f"mininotify:: 微信支付回调处理异常: {str(e)}")
+        response = {"response": {}, "code": 300, "succeed": False, "msg": "微信支付回调处理失败: %s" % e}
+    
     return HttpResponse(json.dumps(response, ensure_ascii=False))
 
 
