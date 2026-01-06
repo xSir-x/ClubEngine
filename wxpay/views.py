@@ -260,7 +260,7 @@ class WXMinPay(object):
             exp_time = 30  # 默认过期时间30分钟
             order_status = 1  # 订单状态：1-未支付 2-支付成功 3-支付失败
             random_bytes = os.urandom(16)
-            random_string = base64.urlsafe_b64encode(random_bytes).decode('utf-8')[:16]  # 取前16个字符以匹配长度需求
+            random_string = base64.urlsafe_b64encode(random_bytes).decode('utf-8')[:12]  # 取前16个字符以匹配长度需求
             order_id = f'{str(int(time.time() * 1000))}-{random.randint(1000, 9999)}-{random_string}'  # 修改为毫秒级时间戳
             UserOrderTable.objects.create(order_id=order_id,
                                           uid=uid,
