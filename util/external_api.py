@@ -40,6 +40,29 @@ def validate_accessToken(access_token):
     return True
 
 
+def get_uid_from_token(access_token):
+    """
+    从 access_token 中提取用户 openid (uid)
+    access_token 格式: openid[0] + timestamp + openid[1:]
+    通过去除中间的时间戳来还原 openid
+    """
+    if not access_token or len(access_token) < 14:
+        return None
+    
+    try:
+        # access_token 由 openid[0] + 13位时间戳 + openid[1:] 组成
+        # 提取第一个字符
+        first_char = access_token[0]
+        # 跳过13位时间戳，提取剩余部分
+        remaining = access_token[14:]
+        # 还原 openid
+        openid = first_char + remaining
+        return openid
+    except Exception as e:
+        print(f">> Extract uid from token failed: {e}")
+        return None
+
+
 def store_in_redis(key, value, ex=60 * 60):
     """使用Redis进行数据存储"""
     # redis_conn = get_redis_connection()
@@ -65,12 +88,3 @@ import time
 from datetime import datetime
 
 
-def to_timestamp(date_str):
-    # date_str = "2022-02-28"
-    date_obj = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
-    timestamp = time.mktime(date_obj.timetuple())
-    print("timestamp:", timestamp)
-    return timestamp
-
-
-to_timestamp("2024-12-23 00:00:00")

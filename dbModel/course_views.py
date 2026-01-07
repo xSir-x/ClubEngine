@@ -653,3 +653,163 @@ def course_payment_callback(request):
     except Exception as e:
         logger.error(f'课程支付回调处理失败: {str(e)}', exc_info=True)
         return JsonResponse({'code': 500, 'message': f'服务器错误: {str(e)}'})
+
+
+@csrf_exempt
+def get_user_courses(request):
+    """
+    用户查询自己的课程
+    GET /api/courses/my?userId=xxx&status=1&page=1&pageSize=20
+    
+    参数:
+    - userId: 用户ID (必填)
+    - status: 报名状态筛选 (可选) 1-已报名 2-已取消 3-已完成
+    - paymentStatus: 支付状态筛选 (可选) 1-未支付 2-已支付 3-已退款
+    - page: 页码 (可选，默认1)
+    - pageSize: 每页数量 (可选，默认20)
+    
+    返回:
+    {
+        "code": 200,
+        "message": "查询成功",
+        "data": {
+            "total": 10,
+            "page": 1,
+            "pageSize": 20,
+            "enrollments": [
+                {
+                    "enrollmentId": "报名ID",
+                    "courseId": "课程ID",
+                    "courseTitle": "课程标题",
+                    "coachName": "教练姓名",
+                    "coverImage": "封面图片",
+                    "courseDate": "2026-01-10",
+                    "courseTime": "10:00",
+                    "duration": 90,
+                    "location": "上课地点",
+                    "paidAmount": 150.00,
+                    "paymentStatus": 2,
+                    "enrollmentStatus": 1,
+                    "enrollTime": "报名时间",
+                    "orderId": "订单ID"
+                }
+            ]
+        }
+    }
+    """
+    if request.method != 'GET':
+        return JsonResponse({'code': 405, 'message': '方法不允许'})
+    
+    try:
+        # 验证access_token
+        access_token = request.GET.get('access_token', None)
+        if not access_token:
+            access_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        
+        if not validate_accessToken(access_token):
+            return JsonResponse({'code': 100, 'message': 'Invalidate access token.'})
+        
+        # 获取参数
+        user_id = request.GET.get('userId')
+        enrollment_status = request.GET.get('status')
+        payment_status = request.GET.get('paymentStatus')
+        page = int(request.GET.get('page', 1))
+        page_size = int(request.GET.get('pageSize', 20))
+        
+        if not user_id:
+            return JsonResponse({'code': 400, 'message': '用户ID不能为空'})
+        
+        # 构建查询条件
+        filters = {'user_id': user_id}
+        
+        if enrollment_status:
+            filters['enrollment_status'] = int(enrollment_status)
+        
+        if payment_status:
+            filters['payment_status'] = int(payment_status)
+        
+        # 查询报名记录
+        enrollments = CourseEnrollmentTable.objects.filter(**filters).order_by('-enroll_time')
+        
+        # 分页
+        total = enrollments.count()
+        start = (page - 1) * page_size
+        end = start + page_size
+        enrollments_page = enrollments[start:end]
+        
+        # 构建返回数据
+        enrollments_list = []
+        for enrollment in enrollments_page:
+            # 获取课程详情
+            try:
+                course = CoachCourseTable.objects.get(
+                    course_id=enrollment.course_id,
+                    is_deleted=False
+                )
+                
+                enrollments_list.append({
+                    'enrollmentId': enrollment.enrollment_id,
+                    'courseId': enrollment.course_id,
+                    'courseTitle': course.title,
+                    'coachId': course.coach_id,
+                    'coachName': course.coach_name,
+                    'coverImage': course.cover_image,
+                    'level': course.level,
+                    'category': course.category,
+                    'courseDate': course.course_date,
+                    'courseTime': course.course_time,
+                    'duration': course.duration,
+                    'location': course.location,
+                    'paidAmount': float(enrollment.paid_amount),
+                    'paymentStatus': enrollment.payment_status,
+                    'paymentStatusText': {1: '未支付', 2: '已支付', 3: '已退款'}.get(enrollment.payment_status, '未知'),
+                    'enrollmentStatus': enrollment.enrollment_status,
+                    'enrollmentStatusText': {1: '已报名', 2: '已取消', 3: '已完成'}.get(enrollment.enrollment_status, '未知'),
+                    'enrollTime': enrollment.enroll_time,
+                    'cancelTime': enrollment.cancel_time,
+                    'orderId': enrollment.order_id,
+                    'courseStatus': course.status,
+                    'courseStatusText': {1: '待开课', 2: '进行中', 3: '已结束', 4: '已取消'}.get(course.status, '未知')
+                })
+            except CoachCourseTable.DoesNotExist:
+                logger.warning(f'课程不存在或已删除: {enrollment.course_id}')
+                # 课程已被删除，仍然返回基本报名信息
+                enrollments_list.append({
+                    'enrollmentId': enrollment.enrollment_id,
+                    'courseId': enrollment.course_id,
+                    'courseTitle': '课程已删除',
+                    'coachId': '',
+                    'coachName': '',
+                    'coverImage': '',
+                    'level': '',
+                    'category': '',
+                    'courseDate': '',
+                    'courseTime': '',
+                    'duration': 0,
+                    'location': '',
+                    'paidAmount': float(enrollment.paid_amount),
+                    'paymentStatus': enrollment.payment_status,
+                    'paymentStatusText': {1: '未支付', 2: '已支付', 3: '已退款'}.get(enrollment.payment_status, '未知'),
+                    'enrollmentStatus': enrollment.enrollment_status,
+                    'enrollmentStatusText': {1: '已报名', 2: '已取消', 3: '已完成'}.get(enrollment.enrollment_status, '未知'),
+                    'enrollTime': enrollment.enroll_time,
+                    'cancelTime': enrollment.cancel_time,
+                    'orderId': enrollment.order_id,
+                    'courseStatus': 4,
+                    'courseStatusText': '已取消'
+                })
+        
+        return JsonResponse({
+            'code': 200,
+            'message': '查询成功',
+            'data': {
+                'total': total,
+                'page': page,
+                'pageSize': page_size,
+                'enrollments': enrollments_list
+            }
+        })
+    
+    except Exception as e:
+        logger.error(f'查询用户课程失败: {str(e)}', exc_info=True)
+        return JsonResponse({'code': 500, 'message': f'服务器错误: {str(e)}'})
