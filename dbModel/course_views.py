@@ -888,8 +888,19 @@ def cancel_course_enrollment(request):
             'order_id': enrollment.order_id,
             'refund_reason': cancel_reason
         }).encode('utf-8')
+
+        class MockRequest:
+            def __init__(self, body_data):
+                self.body = json.dumps(body_data).encode('utf-8')
+
+        mock_request = MockRequest({
+            'order_id': enrollment.order_id,
+            'refund_reason': cancel_reason
+        })
+
+        refund_result = WXMinPay.refund(mock_request)
         
-        refund_result = WXMinPay.refund(refund_request)
+        # refund_result = WXMinPay.refund(refund_request)
         
         if refund_result.get('succeed'):
             logger.info(f'课程退款成功: enrollment_id={enrollment_id}')
