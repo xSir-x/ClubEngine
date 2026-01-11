@@ -64,6 +64,7 @@ class UserOrderTable(models.Model):
     exp_time = models.IntegerField(verbose_name="过期时间")
     paymentid = models.CharField(verbose_name="支付ID：成功支付才存在，否则为空", max_length=128)
     order_status = models.IntegerField(verbose_name="订单状态：1-未支付 2-支付成功 3-支付失败")
+    refund_status = models.IntegerField(verbose_name="退款状态：0-未退款 1-部分退款 2-全额退款", default=0)
 
     class Meta:
         db_table = "user_order"
@@ -296,4 +297,42 @@ class CourseEnrollmentTable(models.Model):
         indexes = [
             models.Index(fields=['course_id', 'enrollment_status']),
             models.Index(fields=['user_id', 'enrollment_status']),
+        ]
+
+
+class RefundOrderTable(models.Model):
+    """退款订单表"""
+    refund_id = models.CharField(verbose_name="退款单号", max_length=64, primary_key=True)
+    order_id = models.CharField(verbose_name="原订单ID", max_length=64)
+    transaction_id = models.CharField(verbose_name="微信支付订单号", max_length=64)
+    user_id = models.CharField(verbose_name="用户ID", max_length=64)
+    
+    # 金额信息（单位：分）
+    total_amount = models.IntegerField(verbose_name="原订单金额(分)")
+    refund_amount = models.IntegerField(verbose_name="退款金额(分)")
+    
+    # 退款原因和状态
+    refund_reason = models.CharField(verbose_name="退款原因", max_length=256)
+    refund_status = models.IntegerField(verbose_name="退款状态", default=1)  
+    # 1-退款中 2-退款成功 3-退款失败 4-退款关闭
+    
+    # 时间戳
+    refund_time = models.CharField(verbose_name="发起退款时间", max_length=64)
+    success_time = models.CharField(verbose_name="退款成功时间", max_length=64, null=True, blank=True)
+    
+    # 微信退款单号
+    wx_refund_id = models.CharField(verbose_name="微信退款单号", max_length=64, null=True, blank=True)
+    
+    # 课程相关（如果是课程退款）
+    course_id = models.CharField(verbose_name="课程ID", max_length=64, null=True, blank=True)
+    enrollment_id = models.CharField(verbose_name="报名ID", max_length=64, null=True, blank=True)
+    
+    class Meta:
+        db_table = "refund_order"
+        get_latest_by = "refund_time"
+        ordering = ['-refund_time']
+        verbose_name = "退款订单"
+        indexes = [
+            models.Index(fields=['order_id']),
+            models.Index(fields=['user_id', 'refund_status']),
         ]

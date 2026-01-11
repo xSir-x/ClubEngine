@@ -266,11 +266,22 @@ def get_course_detail(request):
         except CoachCourseTable.DoesNotExist:
             return JsonResponse({'code': 404, 'message': '课程不存在'})
         
-        # 查询报名学员数量
-        enrollment_count = CourseEnrollmentTable.objects.filter(
+        # 查询报名学员列表（已支付且已报名的）
+        enrollments = CourseEnrollmentTable.objects.filter(
             course_id=course_id,
-            enrollment_status=1
-        ).count()
+            enrollment_status=1,  # 已报名
+            payment_status=2  # 已支付
+        ).values('user_id', 'user_name', 'enrollment_id', 'enroll_time')
+        
+        # 构建学员列表
+        enrolled_students = []
+        for enrollment in enrollments:
+            enrolled_students.append({
+                'userId': enrollment['user_id'],
+                'userName': enrollment['user_name'],
+                'enrollmentId': enrollment['enrollment_id'],
+                'enrollTime': enrollment['enroll_time']
+            })
         
         course_detail = {
             'courseId': course.course_id,
@@ -287,12 +298,13 @@ def get_course_detail(request):
             'location': course.location,
             'minStudents': course.min_students,
             'maxStudents': course.max_students,
-            'currentStudents': enrollment_count,
+            'currentStudents': len(enrolled_students),
             'originalPrice': float(course.original_price),
             'currentPrice': float(course.current_price),
             'status': course.status,
             'createTime': course.create_time,
-            'updateTime': course.update_time
+            'updateTime': course.update_time,
+            'enrolledStudents': enrolled_students  # 新增：已报名学员列表
         }
         
         return JsonResponse({
@@ -812,4 +824,242 @@ def get_user_courses(request):
     
     except Exception as e:
         logger.error(f'查询用户课程失败: {str(e)}', exc_info=True)
+        return JsonResponse({'code': 500, 'message': f'服务器错误: {str(e)}'})
+
+
+@csrf_exempt
+def cancel_course_enrollment(request):
+    """
+    取消课程报名并退款
+    POST /api/courses/cancel
+    请求参数:
+    {
+        "access_token": "xxx",
+        "enrollment_id": "报名ID",
+        "cancel_reason": "取消原因"
+    }
+    """
+    if request.method != 'POST':
+        return JsonResponse({'code': 405, 'message': '方法不允许'})
+    
+    try:
+        data = json.loads(request.body)
+        
+        # 验证token
+        access_token = data.get('access_token', None)
+        if not validate_accessToken(access_token):
+            return JsonResponse({'code': 100, 'message': 'Invalidate access token.'})
+        
+        enrollment_id = data.get('enrollment_id')
+        cancel_reason = data.get('cancel_reason', '用户取消报名')
+        
+        if not enrollment_id:
+            return JsonResponse({'code': 400, 'message': '报名ID不能为空'})
+        
+        # 查询报名记录
+        try:
+            enrollment = CourseEnrollmentTable.objects.get(enrollment_id=enrollment_id)
+        except CourseEnrollmentTable.DoesNotExist:
+            return JsonResponse({'code': 404, 'message': '报名记录不存在'})
+        
+        # 检查支付状态
+        if enrollment.payment_status != 2:
+            return JsonResponse({'code': 400, 'message': '未支付或已退款，无法取消'})
+        
+        if not enrollment.order_id:
+            return JsonResponse({'code': 400, 'message': '缺少订单信息'})
+        
+        # 检查课程状态和时间（可选：添加退款规则）
+        course = CoachCourseTable.objects.filter(course_id=enrollment.course_id).first()
+        if course:
+            # 可以添加退款规则，比如开课前24小时才能退款
+            # from datetime import datetime, timedelta
+            # course_datetime = datetime.strptime(f"{course.course_date} {course.course_time}", "%Y-%m-%d %H:%M")
+            # if course_datetime - datetime.now() < timedelta(hours=24):
+            #     return JsonResponse({'code': 400, 'message': '开课前24小时内不可退款'})
+            pass
+        
+        # 调用退款接口
+        from wxpay.views import WXMinPay
+        from django.http import HttpRequest
+        
+        refund_request = HttpRequest()
+        refund_request.body = json.dumps({
+            'order_id': enrollment.order_id,
+            'refund_reason': cancel_reason
+        }).encode('utf-8')
+        
+        refund_result = WXMinPay.refund(refund_request)
+        
+        if refund_result.get('succeed'):
+            logger.info(f'课程退款成功: enrollment_id={enrollment_id}')
+            return JsonResponse(refund_result)
+        else:
+            logger.error(f'课程退款失败: {refund_result.get("msg")}')
+            return JsonResponse(refund_result)
+            
+    except Exception as e:
+        logger.error(f'取消课程报名失败: {str(e)}', exc_info=True)
+        return JsonResponse({'code': 500, 'message': f'服务器错误: {str(e)}'})
+
+
+@csrf_exempt
+def batch_verify_enrollments(request):
+    """
+    教练批量核销课程学员
+    POST /api/courses/batch_verify
+    
+    请求参数:
+    {
+        "access_token": "xxx",
+        "coach_id": "教练ID",
+        "course_id": "课程ID",
+        "enrollment_ids": ["报名ID1", "报名ID2", "报名ID3"]
+    }
+    
+    返回:
+    {
+        "code": 200,
+        "message": "核销成功",
+        "data": {
+            "success_count": 3,
+            "failed_count": 0,
+            "success_list": [
+                {
+                    "enrollmentId": "报名ID1",
+                    "userId": "用户ID",
+                    "userName": "用户名",
+                    "status": "已完成"
+                }
+            ],
+            "failed_list": []
+        }
+    }
+    """
+    if request.method != 'POST':
+        return JsonResponse({'code': 405, 'message': '方法不允许'})
+    
+    try:
+        data = json.loads(request.body)
+        
+        # 验证access_token
+        access_token = data.get('access_token', None)
+        if not validate_accessToken(access_token):
+            return JsonResponse({'code': 100, 'message': 'Invalidate access token.'})
+        
+        coach_id = data.get('coach_id')
+        course_id = data.get('course_id')
+        enrollment_ids = data.get('enrollment_ids', [])
+        
+        # 参数验证
+        if not coach_id:
+            return JsonResponse({'code': 400, 'message': '教练ID不能为空'})
+        
+        if not course_id:
+            return JsonResponse({'code': 400, 'message': '课程ID不能为空'})
+        
+        if not enrollment_ids or len(enrollment_ids) == 0:
+            return JsonResponse({'code': 400, 'message': '报名ID列表不能为空'})
+        
+        # 1. 验证教练权限：检查该课程是否属于该教练
+        try:
+            course = CoachCourseTable.objects.get(course_id=course_id, is_deleted=False)
+        except CoachCourseTable.DoesNotExist:
+            return JsonResponse({'code': 404, 'message': '课程不存在'})
+        
+        # 权限检查：防止其他人员随意核销课程
+        if course.coach_id != coach_id:
+            logger.warning(f'权限验证失败: 教练{coach_id}尝试核销不属于自己的课程{course_id}，实际教练为{course.coach_id}')
+            return JsonResponse({
+                'code': 403, 
+                'message': '权限不足，只有该课程的教练才能核销学员'
+            })
+        
+        # 2. 批量核销学员
+        success_list = []
+        failed_list = []
+        
+        with transaction.atomic():
+            for enrollment_id in enrollment_ids:
+                try:
+                    # 查询报名记录
+                    enrollment = CourseEnrollmentTable.objects.get(
+                        enrollment_id=enrollment_id,
+                        course_id=course_id
+                    )
+                    
+                    # 检查支付状态
+                    if enrollment.payment_status != 2:
+                        failed_list.append({
+                            'enrollmentId': enrollment_id,
+                            'reason': '未支付或已退款，无法核销'
+                        })
+                        continue
+                    
+                    # 检查报名状态
+                    if enrollment.enrollment_status == 3:
+                        # 已经是已完成状态
+                        success_list.append({
+                            'enrollmentId': enrollment_id,
+                            'userId': enrollment.user_id,
+                            'userName': enrollment.user_name,
+                            'status': '已完成',
+                            'message': '该学员已核销过'
+                        })
+                        continue
+                    
+                    if enrollment.enrollment_status != 1:
+                        failed_list.append({
+                            'enrollmentId': enrollment_id,
+                            'reason': f'报名状态异常: {enrollment.enrollment_status}'
+                        })
+                        continue
+                    
+                    # 更新为已完成状态
+                    enrollment.enrollment_status = 3  # 3-已完成
+                    enrollment.save()
+                    
+                    success_list.append({
+                        'enrollmentId': enrollment_id,
+                        'userId': enrollment.user_id,
+                        'userName': enrollment.user_name,
+                        'status': '已完成'
+                    })
+                    
+                    logger.info(f'核销成功: 课程={course_id}, 教练={coach_id}, 学员={enrollment.user_name}({enrollment.user_id})')
+                    
+                except CourseEnrollmentTable.DoesNotExist:
+                    failed_list.append({
+                        'enrollmentId': enrollment_id,
+                        'reason': '报名记录不存在或课程不匹配'
+                    })
+                    logger.warning(f'核销失败: 报名记录不存在 enrollment_id={enrollment_id}')
+                    
+                except Exception as e:
+                    failed_list.append({
+                        'enrollmentId': enrollment_id,
+                        'reason': str(e)
+                    })
+                    logger.error(f'核销失败: enrollment_id={enrollment_id}, 错误={str(e)}')
+        
+        # 返回结果
+        success_count = len(success_list)
+        failed_count = len(failed_list)
+        
+        return JsonResponse({
+            'code': 200,
+            'message': f'核销完成: 成功{success_count}个，失败{failed_count}个',
+            'data': {
+                'success_count': success_count,
+                'failed_count': failed_count,
+                'success_list': success_list,
+                'failed_list': failed_list
+            }
+        })
+    
+    except json.JSONDecodeError:
+        return JsonResponse({'code': 400, 'message': 'JSON格式错误'})
+    
+    except Exception as e:
+        logger.error(f'批量核销失败: {str(e)}', exc_info=True)
         return JsonResponse({'code': 500, 'message': f'服务器错误: {str(e)}'})

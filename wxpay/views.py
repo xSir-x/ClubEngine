@@ -93,29 +93,6 @@ class WXMinPay(object):
             return response
         _logger.info("payOrder:: 订单验证成功")
 
-        # # 金额验证
-        # act_info_obj = ActivityInfoTable.objects.filter(act_id=act_id)
-        # if act_info_obj.exists():
-        #     _amount = int(float(act_info_obj.values("price")[0]["price"]) * 100)
-        #     if amount != _amount:
-        #         _logger.info("payOrder:: 金额与用户当前等级不一致，无法支付...")
-        #         response = {'code': 300,
-        #                     'succeed': False,
-        #                     'msg': '金额与用户当前等级不一致，无法支付...'}
-        #         return response
-        # else:
-        #     _logger.info("payOrder:: 订单对应的活动不存在...")
-        #     response = {'code': 300,
-        #                 'succeed': False,
-        #                 'msg': '订单对应的活动不存在...'}
-        #     return response
-
-        # 以小程序下单为例，下单成功后，将prepay_id和其他必须的参数组合传递给小程序的wx.requestPayment接口唤起支付
-        # out_trade_no = ''.join(sample(ascii_letters + digits, 8))
-        # description = 'Y-Club WXminPay'
-        # amount = 1
-        # payer = {'openid': 'demo-openid'}
-
         code, message = wxpay.pay(
             description=description,  # 商品描述
             out_trade_no=order_id,  # 订单号
@@ -302,12 +279,6 @@ class WXMinPay(object):
         :return:
         """
         try:
-            # request_res = json.loads(request.body)
-            # order_id = request_res.get("order_id", None)
-            # code, message = wxpay.query(
-            #     transaction_id=order_id
-            # )
-            # print('code: %s, message: %s' % (code, message))
             request_res = json.loads(request.body)
             order_id = request_res.get("order_id", None)
             my_act_obj = UserOrderTable.objects.filter(order_id=order_id)
@@ -319,6 +290,307 @@ class WXMinPay(object):
         except Exception as e:
             response = {'code': 300, 'succeed': False, 'msg': '订单查询失败: %s.' % e}
             return response
+
+    @classmethod
+    def refund(cls, request):
+        """
+        发起退款
+        POST /refundOrder
+        请求参数:
+        {
+            "access_token": "xxx",
+            "order_id": "订单ID",
+            "refund_reason": "退款原因",
+            "refund_amount": 150.00  # 可选，不传则全额退款
+        }
+        """
+        try:
+            request_res = json.loads(request.body)
+            order_id = request_res.get("order_id", None)
+            refund_reason = request_res.get("refund_reason", "用户申请退款")
+            refund_amount_yuan = request_res.get("refund_amount", None)  # 元
+            
+            if not order_id:
+                return {'code': 400, 'succeed': False, 'msg': '订单ID不能为空'}
+            
+            # 1. 查询原订单
+            try:
+                order = UserOrderTable.objects.get(order_id=order_id)
+            except UserOrderTable.DoesNotExist:
+                return {'code': 404, 'succeed': False, 'msg': '订单不存在'}
+            
+            # 2. 验证订单状态
+            if order.order_status != 2:
+                return {'code': 400, 'succeed': False, 'msg': '订单未支付，无法退款'}
+            
+            if not order.paymentid:
+                return {'code': 400, 'succeed': False, 'msg': '订单无支付记录'}
+            
+            # 3. 查询订单金额（从活动表或课程表）
+            total_amount = 0
+            course_id = None
+            enrollment_id = None
+            
+            # 优先查询课程报名
+            enrollment = CourseEnrollmentTable.objects.filter(
+                order_id=order_id
+            ).first()
+            
+            if enrollment:
+                total_amount = int(float(enrollment.paid_amount) * 100)  # 转为分
+                course_id = enrollment.course_id
+                enrollment_id = enrollment.enrollment_id
+                
+                # 检查是否已退款
+                if enrollment.payment_status == 3:
+                    return {'code': 400, 'succeed': False, 'msg': '该课程已退款'}
+            else:
+                # 查询活动信息
+                activity = ActivityInfoTable.objects.filter(act_id=order.act_id).first()
+                if activity:
+                    total_amount = int(float(activity.price) * 100)
+            
+            if total_amount == 0:
+                return {'code': 400, 'succeed': False, 'msg': '无法获取订单金额'}
+            
+            # 4. 计算退款金额
+            if refund_amount_yuan:
+                refund_amount = int(float(refund_amount_yuan) * 100)
+                if refund_amount > total_amount:
+                    return {'code': 400, 'succeed': False, 'msg': '退款金额不能超过订单金额'}
+            else:
+                refund_amount = total_amount  # 全额退款
+            
+            # 5. 生成退款单号
+            refund_id = f"REFUND-{order_id}-{int(time.time() * 1000)}-{uuid.uuid4().hex[:8]}"
+            
+            # 6. 检查是否已有退款记录
+            existing_refund = RefundOrderTable.objects.filter(
+                order_id=order_id,
+                refund_status__in=[1, 2]  # 退款中或已成功
+            ).first()
+            
+            if existing_refund:
+                return {
+                    'code': 400, 
+                    'succeed': False, 
+                    'msg': f'订单已有退款记录: {existing_refund.refund_id}'
+                }
+            
+            # 7. 调用微信退款API
+            _logger.info(f"Refund:: 发起退款, order_id: {order_id}, refund_id: {refund_id}, "
+                        f"total: {total_amount}, refund: {refund_amount}")
+            
+            code, message = wxpay.refund(
+                out_refund_no=refund_id,  # 商户退款单号
+                out_trade_no=order_id,  # 原商户订单号
+                amount={
+                    'refund': refund_amount,  # 退款金额（分）
+                    'total': total_amount,  # 原订单金额（分）
+                    'currency': 'CNY'
+                },
+                reason=refund_reason  # 退款原因
+            )
+            
+            result = json.loads(message)
+            _logger.info(f"Refund:: 微信退款API响应, code: {code}, message: {message}")
+            
+            # 8. 创建退款记录
+            refund_time = str(int(time.time() * 1000))
+            
+            if code in range(200, 300):
+                # 退款请求成功
+                wx_refund_id = result.get('refund_id', '')
+                refund_status = 1  # 退款中
+                
+                RefundOrderTable.objects.create(
+                    refund_id=refund_id,
+                    order_id=order_id,
+                    transaction_id=order.paymentid,
+                    user_id=order.uid,
+                    total_amount=total_amount,
+                    refund_amount=refund_amount,
+                    refund_reason=refund_reason,
+                    refund_status=refund_status,
+                    refund_time=refund_time,
+                    wx_refund_id=wx_refund_id,
+                    course_id=course_id,
+                    enrollment_id=enrollment_id
+                )
+                
+                _logger.info(f"Refund:: 退款记录创建成功, refund_id: {refund_id}")
+                
+                return {
+                    'code': 200,
+                    'succeed': True,
+                    'msg': '退款申请提交成功，预计1-3个工作日到账',
+                    'response': {
+                        'refund_id': refund_id,
+                        'wx_refund_id': wx_refund_id,
+                        'refund_amount': refund_amount / 100,
+                        'status': '退款中'
+                    }
+                }
+            else:
+                # 退款失败
+                error_msg = result.get('message', '退款失败')
+                _logger.error(f"Refund:: 退款失败, error: {error_msg}")
+                
+                # 仍然创建退款记录，状态为失败
+                RefundOrderTable.objects.create(
+                    refund_id=refund_id,
+                    order_id=order_id,
+                    transaction_id=order.paymentid,
+                    user_id=order.uid,
+                    total_amount=total_amount,
+                    refund_amount=refund_amount,
+                    refund_reason=refund_reason,
+                    refund_status=3,  # 退款失败
+                    refund_time=refund_time,
+                    course_id=course_id,
+                    enrollment_id=enrollment_id
+                )
+                
+                return {
+                    'code': 400,
+                    'succeed': False,
+                    'msg': f'退款失败: {error_msg}'
+                }
+                
+        except Exception as e:
+            _logger.error(f"Refund:: 退款异常: {str(e)}", exc_info=True)
+            return {'code': 500, 'succeed': False, 'msg': f'退款异常: {str(e)}'}
+    
+    @classmethod
+    def refund_notify(cls, request):
+        """
+        退款结果回调处理
+        POST /notifyRefund
+        """
+        try:
+            _logger.info("Refund Notify:: 收到微信退款回调...")
+            
+            # 处理退款通知
+            result = wxpay.callback(request.headers, request.body)
+            
+            if result and result.get('event_type') == 'REFUND.SUCCESS':
+                resp = result.get('resource')
+                refund_id = resp.get('out_refund_no')  # 商户退款单号
+                wx_refund_id = resp.get('refund_id')  # 微信退款单号
+                refund_status = resp.get('refund_status')  # SUCCESS/CLOSED/ABNORMAL
+                success_time = resp.get('success_time')
+                amount = resp.get('amount')
+                
+                _logger.info(f"Refund Notify:: 退款成功, refund_id: {refund_id}, "
+                           f"wx_refund_id: {wx_refund_id}, status: {refund_status}")
+                
+                # 更新退款记录
+                refund_record = RefundOrderTable.objects.filter(refund_id=refund_id).first()
+                if refund_record:
+                    refund_record.refund_status = 2  # 退款成功
+                    refund_record.success_time = str(int(time.time() * 1000))
+                    refund_record.wx_refund_id = wx_refund_id
+                    refund_record.save()
+                    
+                    # 更新原订单状态
+                    UserOrderTable.objects.filter(order_id=refund_record.order_id).update(
+                        refund_status=2  # 全额退款
+                    )
+                    
+                    # 更新课程报名状态
+                    if refund_record.enrollment_id:
+                        CourseEnrollmentTable.objects.filter(
+                            enrollment_id=refund_record.enrollment_id
+                        ).update(
+                            payment_status=3,  # 已退款
+                            enrollment_status=2,  # 已取消
+                            cancel_time=str(int(time.time() * 1000))
+                        )
+                        
+                        # 更新课程报名人数
+                        if refund_record.course_id:
+                            course = CoachCourseTable.objects.filter(
+                                course_id=refund_record.course_id
+                            ).first()
+                            if course:
+                                course.current_students = max(0, course.current_students - 1)
+                                course.save()
+                    
+                    _logger.info(f"Refund Notify:: 退款状态更新成功")
+                    
+                return {
+                    'code': 200,
+                    'succeed': True,
+                    'message': '退款回调处理成功'
+                }
+            else:
+                _logger.warning("Refund Notify:: 退款回调失败，事件类型不匹配")
+                return {'code': 300, 'succeed': False, 'message': '退款回调失败'}
+                
+        except Exception as e:
+            _logger.error(f"Refund Notify:: 退款回调异常: {str(e)}", exc_info=True)
+            return {'code': 500, 'succeed': False, 'message': f'退款回调异常: {str(e)}'}
+    
+    @classmethod
+    def query_refund(cls, request):
+        """
+        查询退款状态
+        POST /queryRefund
+        请求参数:
+        {
+            "access_token": "xxx",
+            "refund_id": "退款单号"  # 或者 "order_id": "订单号"
+        }
+        """
+        try:
+            request_res = json.loads(request.body)
+            refund_id = request_res.get("refund_id", None)
+            order_id = request_res.get("order_id", None)
+            
+            if not refund_id and not order_id:
+                return {'code': 400, 'succeed': False, 'msg': '退款单号或订单号不能为空'}
+            
+            # 查询退款记录
+            if refund_id:
+                refunds = RefundOrderTable.objects.filter(refund_id=refund_id)
+            else:
+                refunds = RefundOrderTable.objects.filter(order_id=order_id)
+            
+            if not refunds.exists():
+                return {'code': 404, 'succeed': False, 'msg': '未找到退款记录'}
+            
+            refund_list = []
+            for refund in refunds:
+                status_text = {
+                    1: '退款中',
+                    2: '退款成功',
+                    3: '退款失败',
+                    4: '退款关闭'
+                }.get(refund.refund_status, '未知')
+                
+                refund_list.append({
+                    'refund_id': refund.refund_id,
+                    'order_id': refund.order_id,
+                    'refund_amount': float(refund.refund_amount) / 100,
+                    'total_amount': float(refund.total_amount) / 100,
+                    'refund_reason': refund.refund_reason,
+                    'refund_status': refund.refund_status,
+                    'status_text': status_text,
+                    'refund_time': refund.refund_time,
+                    'success_time': refund.success_time,
+                    'wx_refund_id': refund.wx_refund_id
+                })
+            
+            return {
+                'code': 200,
+                'succeed': True,
+                'msg': '查询成功',
+                'response': refund_list
+            }
+            
+        except Exception as e:
+            _logger.error(f"Query Refund:: 查询退款异常: {str(e)}", exc_info=True)
+            return {'code': 500, 'succeed': False, 'msg': f'查询退款异常: {str(e)}'}
 
 
 if __name__ == '__main__':

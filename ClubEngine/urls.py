@@ -53,6 +53,11 @@ urlpatterns = [
     path('genOrder', views.genorder),
     path('serchOrder', views.search_order),
     
+    # 退款接口
+    path('refundOrder', views.minirefund, name='refund_order'),
+    path('notifyRefund', views.minirefund_notify, name='refund_notify'),
+    path('queryRefund', views.query_refund, name='query_refund'),
+    
     # 社交功能接口
     path('sendInvitation', views.send_invitation),
     path('getInvitation', views.get_invitation), 
@@ -71,4 +76,6 @@ urlpatterns = [
     path('api/courses/enroll', course_views.enroll_course, name='enroll_course'),
     path('api/courses/payment/callback', course_views.course_payment_callback, name='course_payment_callback'),
     path('api/courses/my', course_views.get_user_courses, name='get_user_courses'),
+    path('api/courses/cancel', course_views.cancel_course_enrollment, name='cancel_course'),
+    path('api/courses/batch_verify', course_views.batch_verify_enrollments, name='batch_verify_enrollments'),
 ]

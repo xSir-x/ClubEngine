@@ -843,3 +843,60 @@ def rate_competition(request):
         message = {"code": 500, "succeed": False, "msg": f"服务器内部错误: {str(e)}"}
     
     return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+
+@csrf_exempt
+def minirefund(request):
+    """退款接口"""
+    response = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = request_res.get('access_token', None)
+        if not validate_accessToken(access_token):
+            message = {"response": {}, "code": 100, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+        response = WXMinPay().refund(request=request)
+    except Exception as e:
+        response = {"response": {}, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(response, ensure_ascii=False))
+
+
+@csrf_exempt
+def minirefund_notify(request):
+    """
+    微信退款回调接口
+    注意：此接口由微信支付平台调用，不需要验证 access_token
+    安全性由微信 SDK 的签名验证保证
+    """
+    response = {}
+    try:
+        _logger.info("minirefund_notify:: 收到微信退款回调...")
+        
+        # 直接调用 refund_notify 方法，其中会验证微信签名
+        response = WXMinPay().refund_notify(request=request)
+        
+        _logger.info("minirefund_notify:: 微信退款回调处理完成")
+        
+    except Exception as e:
+        _logger.error(f"minirefund_notify:: 微信退款回调处理异常: {str(e)}")
+        response = {"response": {}, "code": 300, "succeed": False, "msg": "微信退款回调处理失败: %s" % e}
+    
+    return HttpResponse(json.dumps(response, ensure_ascii=False))
+
+
+@csrf_exempt
+def query_refund(request):
+    """查询退款接口"""
+    response = {}
+    try:
+        request_res = json.loads(request.body)
+        access_token = request_res.get('access_token', None)
+        if not validate_accessToken(access_token):
+            message = {"response": {}, "code": 100, "succeed": False, "msg": "Invalidate access token."}
+            return HttpResponse(json.dumps(message, ensure_ascii=False))
+
+        response = WXMinPay().query_refund(request=request)
+    except Exception as e:
+        response = {"response": {}, "code": 300, "succeed": False, "msg": "您的请求提交不正确或提交格式错误，请检查！[%s]" % e}
+    return HttpResponse(json.dumps(response, ensure_ascii=False))
