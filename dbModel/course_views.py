@@ -883,11 +883,11 @@ def cancel_course_enrollment(request):
         from wxpay.views import WXMinPay
         from django.http import HttpRequest
         
-        refund_request = HttpRequest()
-        refund_request.body = json.dumps({
-            'order_id': enrollment.order_id,
-            'refund_reason': cancel_reason
-        }).encode('utf-8')
+        # refund_request = HttpRequest()
+        # refund_request.body = json.dumps({
+        #     'order_id': enrollment.order_id,
+        #     'refund_reason': cancel_reason
+        # }).encode('utf-8')
 
         class MockRequest:
             def __init__(self, body_data):
