@@ -873,11 +873,11 @@ def cancel_course_enrollment(request):
         course = CoachCourseTable.objects.filter(course_id=enrollment.course_id).first()
         if course:
             # 可以添加退款规则，比如开课前24小时才能退款
-            # from datetime import datetime, timedelta
-            # course_datetime = datetime.strptime(f"{course.course_date} {course.course_time}", "%Y-%m-%d %H:%M")
-            # if course_datetime - datetime.now() < timedelta(hours=24):
-            #     return JsonResponse({'code': 400, 'message': '开课前24小时内不可退款'})
-            pass
+            from datetime import datetime, timedelta
+            course_datetime = datetime.strptime(f"{course.course_date} {course.course_time}", "%Y-%m-%d %H:%M")
+            if course_datetime - datetime.now() < timedelta(hours=8):
+                return JsonResponse({'code': 400, 'message': '开课前8小时内不可退款'})
+            
         
         # 调用退款接口
         from wxpay.views import WXMinPay
