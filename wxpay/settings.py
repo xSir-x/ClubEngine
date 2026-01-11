@@ -32,6 +32,9 @@ APPID_NAME = '涯程科技(深圳)有限责任公司'
 # NOTIFY_URL = 'https://localhost:80/notifyOrder'
 NOTIFY_URL = 'https://yclubapp.tech/notifyOrder'
 
+# 退款回调地址
+REFUND_NOTIFY_URL = 'https://yclubapp.tech/notifyRefund'
+
 # 微信支付平台证书缓存目录，减少证书下载调用次数，首次使用确保此目录为空目录。
 # 初始调试时可不设置，调试通过后再设置，示例值:'./cert'。
 # 新申请的微信支付商户号如果使用平台公钥模式，可以不用设置此参数。

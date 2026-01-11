@@ -285,7 +285,7 @@ class CourseEnrollmentTable(models.Model):
     paid_amount = models.DecimalField(verbose_name="支付金额", max_digits=10, decimal_places=2)
     
     # 状态和时间
-    enrollment_status = models.IntegerField(verbose_name="报名状态", default=1)  # 1-已报名 2-已取消 3-已完成
+    enrollment_status = models.IntegerField(verbose_name="报名状态", default=1)  # 1-已报名 2-已取消 3-已完成 4-待确认
     enroll_time = models.CharField(verbose_name="报名时间", max_length=64)
     cancel_time = models.CharField(verbose_name="取消时间", max_length=64, null=True, blank=True)
     

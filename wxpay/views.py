@@ -381,6 +381,9 @@ class WXMinPay(object):
             _logger.info(f"Refund:: 发起退款, order_id: {order_id}, refund_id: {refund_id}, "
                         f"total: {total_amount}, refund: {refund_amount}")
             
+            # 导入退款回调URL
+            from wxpay.settings import REFUND_NOTIFY_URL
+            
             code, message = wxpay.refund(
                 out_refund_no=refund_id,  # 商户退款单号
                 out_trade_no=order_id,  # 原商户订单号
@@ -389,7 +392,8 @@ class WXMinPay(object):
                     'total': total_amount,  # 原订单金额（分）
                     'currency': 'CNY'
                 },
-                reason=refund_reason  # 退款原因
+                reason=refund_reason,  # 退款原因
+                notify_url=REFUND_NOTIFY_URL  # 退款回调地址
             )
             
             result = json.loads(message)
@@ -466,6 +470,10 @@ class WXMinPay(object):
         """
         退款结果回调处理
         POST /notifyRefund
+        支持的事件类型：
+        - REFUND.SUCCESS: 退款成功
+        - REFUND.CLOSED: 退款关闭
+        - REFUND.ABNORMAL: 退款异常
         """
         try:
             _logger.info("Refund Notify:: 收到微信退款回调...")
@@ -473,20 +481,38 @@ class WXMinPay(object):
             # 处理退款通知
             result = wxpay.callback(request.headers, request.body)
             
-            if result and result.get('event_type') == 'REFUND.SUCCESS':
+            if not result:
+                _logger.error("Refund Notify:: 回调数据解析失败")
+                return {'code': 400, 'succeed': False, 'message': '回调数据解析失败'}
+            
+            event_type = result.get('event_type', '')
+            _logger.info(f"Refund Notify:: 事件类型: {event_type}")
+            
+            # 支持多种退款事件类型
+            if event_type in ['REFUND.SUCCESS', 'REFUND.CLOSED', 'REFUND.ABNORMAL']:
                 resp = result.get('resource')
+                if not resp:
+                    _logger.error("Refund Notify:: 回调资源数据为空")
+                    return {'code': 400, 'succeed': False, 'message': '回调资源数据为空'}
+                
                 refund_id = resp.get('out_refund_no')  # 商户退款单号
                 wx_refund_id = resp.get('refund_id')  # 微信退款单号
-                refund_status = resp.get('refund_status')  # SUCCESS/CLOSED/ABNORMAL
-                success_time = resp.get('success_time')
-                amount = resp.get('amount')
+                refund_status_text = resp.get('refund_status')  # SUCCESS/CLOSED/ABNORMAL
+                success_time = resp.get('success_time', '')
+                amount = resp.get('amount', {})
                 
-                _logger.info(f"Refund Notify:: 退款成功, refund_id: {refund_id}, "
-                           f"wx_refund_id: {wx_refund_id}, status: {refund_status}")
+                _logger.info(f"Refund Notify:: 退款回调数据, refund_id: {refund_id}, "
+                           f"wx_refund_id: {wx_refund_id}, status: {refund_status_text}")
                 
-                # 更新退款记录
+                # 查询退款记录
                 refund_record = RefundOrderTable.objects.filter(refund_id=refund_id).first()
-                if refund_record:
+                if not refund_record:
+                    _logger.error(f"Refund Notify:: 退款记录不存在: {refund_id}")
+                    return {'code': 404, 'succeed': False, 'message': '退款记录不存在'}
+                
+                # 根据事件类型更新退款状态
+                if event_type == 'REFUND.SUCCESS':
+                    # 退款成功
                     refund_record.refund_status = 2  # 退款成功
                     refund_record.success_time = str(int(time.time() * 1000))
                     refund_record.wx_refund_id = wx_refund_id
@@ -516,16 +542,28 @@ class WXMinPay(object):
                                 course.current_students = max(0, course.current_students - 1)
                                 course.save()
                     
-                    _logger.info(f"Refund Notify:: 退款状态更新成功")
+                    _logger.info(f"Refund Notify:: 退款成功，状态更新完成")
                     
+                elif event_type == 'REFUND.CLOSED':
+                    # 退款关闭
+                    refund_record.refund_status = 4  # 退款关闭
+                    refund_record.save()
+                    _logger.info(f"Refund Notify:: 退款关闭")
+                    
+                elif event_type == 'REFUND.ABNORMAL':
+                    # 退款异常
+                    refund_record.refund_status = 3  # 退款失败
+                    refund_record.save()
+                    _logger.warning(f"Refund Notify:: 退款异常")
+                
                 return {
                     'code': 200,
                     'succeed': True,
                     'message': '退款回调处理成功'
                 }
             else:
-                _logger.warning("Refund Notify:: 退款回调失败，事件类型不匹配")
-                return {'code': 300, 'succeed': False, 'message': '退款回调失败'}
+                _logger.warning(f"Refund Notify:: 未知的事件类型: {event_type}")
+                return {'code': 400, 'succeed': False, 'message': f'未知的事件类型: {event_type}'}
                 
         except Exception as e:
             _logger.error(f"Refund Notify:: 退款回调异常: {str(e)}", exc_info=True)

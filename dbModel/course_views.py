@@ -490,7 +490,7 @@ def enroll_course(request):
         existing = CourseEnrollmentTable.objects.filter(
             course_id=course_id,
             user_id=user_id,
-            enrollment_status__in=[1, 2]  # 已报名或待支付
+            enrollment_status__in=[1]  # 已报名
         ).first()
         
         if existing:
@@ -530,7 +530,7 @@ def enroll_course(request):
             user_name=user_name,
             paid_amount=course.current_price,
             payment_status=1,  # 1-待支付
-            enrollment_status=2,  # 2-待确认（支付后变为1-已报名）
+            enrollment_status=4,  # 4-待确认（支付后变为1-已报名）
             enroll_time=current_time
         )
         
