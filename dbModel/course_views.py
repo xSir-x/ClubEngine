@@ -269,7 +269,7 @@ def get_course_detail(request):
         # 查询报名学员列表（已支付且已报名的）
         enrollments = CourseEnrollmentTable.objects.filter(
             course_id=course_id,
-            enrollment_status=[1,3] # 已报名&已完成
+            enrollment_status=[1,3], # 已报名&已完成
             payment_status=2  # 已支付
         ).values('user_id', 'user_name', 'enrollment_id', 'enroll_time')
         
