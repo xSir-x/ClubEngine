@@ -266,12 +266,12 @@ def get_course_detail(request):
         except CoachCourseTable.DoesNotExist:
             return JsonResponse({'code': 404, 'message': '课程不存在'})
         
-        # 查询报名学员列表（已支付且已报名的）
+        # 查询报名学员列表（已支付且已报名/已完成的）
         enrollments = CourseEnrollmentTable.objects.filter(
             course_id=course_id,
-            enrollment_status=[1,3], # 已报名&已完成
+            enrollment_status__in=[1, 3],  # 1-已报名, 3-已完成
             payment_status=2  # 已支付
-        ).values('user_id', 'user_name', 'enrollment_id', 'enroll_time')
+        ).values('user_id', 'user_name', 'enrollment_id', 'enroll_time', 'enrollment_status')
         
         # 构建学员列表
         enrolled_students = []
