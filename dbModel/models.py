@@ -336,3 +336,26 @@ class RefundOrderTable(models.Model):
             models.Index(fields=['order_id']),
             models.Index(fields=['user_id', 'refund_status']),
         ]
+
+
+class CoachTable(models.Model):
+    """教练信息表"""
+    coach_id = models.CharField(verbose_name="教练ID", max_length=64, primary_key=True)
+    coach_name = models.CharField(verbose_name="教练姓名", max_length=32, unique=True)
+    description = models.CharField(verbose_name="教练简介", null=True, blank=True)
+    certification = models.CharField(verbose_name="教练资质", max_length=256, null=True, blank=True)
+    specialization = models.CharField(verbose_name="专业领域", max_length=128, null=True, blank=True)
+    experience_years = models.IntegerField(verbose_name="执教年限", null=True, blank=True)
+    status = models.IntegerField(verbose_name="状态", default=1)  # 1-在职 2-离职
+    create_time = models.CharField(verbose_name="创建时间", max_length=64)
+    update_time = models.CharField(verbose_name="更新时间", max_length=64, null=True, blank=True)
+    
+    class Meta:
+        db_table = "coach_table"
+        get_latest_by = "create_time"
+        ordering = ['-create_time']
+        verbose_name = "教练信息"
+        indexes = [
+            models.Index(fields=['coach_name']),
+            models.Index(fields=['status']),
+        ]

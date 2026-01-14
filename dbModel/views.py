@@ -493,17 +493,29 @@ class getMemberInfo(View):
             check_obj = UserInforTable.objects.filter(uid=uid)
             rating_obj = UserRatingTable.objects.filter(uid=uid)
             if not check_obj.exists():
-                # res = UserInforTable.objects.values()
-                res = {}
+                return {}
+            
             res = check_obj.values('uid', 'name', 'pic', 'profile', 'location', 'register_time').first()
             res_rating = rating_obj.values('tech_one', 'tech_two', 'tech_three',
                                            'tech_four', 'tech_five',
                                            'person_one', 'person_two', 'person_three',
                                            'person_four', 'person_five').first()
-            print("res_rating",res_rating)
-            print("res",res)
+            print("res_rating", res_rating)
+            print("res", res)
             res.update(res_rating)
             print("res after union:", res)
+            
+            # 检查是否是教练：查询 CoachTable 中是否存在该用户名
+            from dbModel.models import CoachTable
+            user_name = res.get('name')
+            is_coach = 0
+            if user_name:
+                coach_exists = CoachTable.objects.filter(coach_name=user_name, status=1).exists()
+                if coach_exists:
+                    is_coach = 1
+            
+            res['is_coach'] = is_coach
+            
             return res
         except Exception as e:
             raise Exception(e)
@@ -534,6 +546,8 @@ class getMemberInfoByName(View):
             
             for user in users_info:
                 uid = user['uid']
+                user_name = user['name']
+                
                 # 获取用户评分信息
                 rating_obj = UserRatingTable.objects.filter(uid=uid)
                 if rating_obj.exists():
@@ -549,6 +563,15 @@ class getMemberInfoByName(View):
                         'person_one': '0.0', 'person_two': '0.0', 'person_three': '0.0', 'person_four': '0.0', 'person_five': '0.0'
                     }
                     user.update(default_ratings)
+                
+                # 检查是否是教练：查询 CoachTable 中是否存在该用户名
+                from dbModel.models import CoachTable
+                is_coach = 0
+                coach_exists = CoachTable.objects.filter(coach_name=user_name, status=1).exists()
+                if coach_exists:
+                    is_coach = 1
+                
+                user['is_coach'] = is_coach
                 
                 res.append(user)
             

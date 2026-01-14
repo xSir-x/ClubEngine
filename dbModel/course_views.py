@@ -161,13 +161,13 @@ def get_courses(request):
     
     try:
         # 验证access_token (从GET参数或Header中获取)
-        access_token = request.GET.get('access_token', None)
-        if not access_token:
-            # 尝试从请求头获取
-            access_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        # access_token = request.GET.get('access_token', None)
+        # if not access_token:
+        #     # 尝试从请求头获取
+        #     access_token = request.headers.get('Authorization', '').replace('Bearer ', '')
         
-        if not validate_accessToken(access_token):
-            return JsonResponse({'code': 100, 'message': 'Invalidate access token.'})
+        # if not validate_accessToken(access_token):
+        #     return JsonResponse({'code': 100, 'message': 'Invalidate access token.'})
         
         coach_id = request.GET.get('coachId')
         course_date = request.GET.get('date')
@@ -248,12 +248,12 @@ def get_course_detail(request):
     
     try:
         # 验证access_token
-        access_token = request.GET.get('access_token', None)
-        if not access_token:
-            access_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        # access_token = request.GET.get('access_token', None)
+        # if not access_token:
+        #     access_token = request.headers.get('Authorization', '').replace('Bearer ', '')
         
-        if not validate_accessToken(access_token):
-            return JsonResponse({'code': 100, 'message': 'Invalidate access token.'})
+        # if not validate_accessToken(access_token):
+        #     return JsonResponse({'code': 100, 'message': 'Invalidate access token.'})
         
         course_id = request.GET.get('courseId')
         
