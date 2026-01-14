@@ -180,7 +180,7 @@ class WXMinPay(object):
                     paymentid=paymentid
                 )
 
-                order= UserOrderTable.objects.get(order_id=order_id).first()
+                order= UserOrderTable.objects.get(order_id=order_id)
                 course_id = order.act_id
                 user_id = order.uid
                 # 2. 更新报名记录
