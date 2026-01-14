@@ -179,9 +179,40 @@ class WXMinPay(object):
                     pay_time=pay_time,
                     paymentid=paymentid
                 )
+
+                order= UserOrderTable.objects.get(order_id=order_id).first()
+                course_id = order.act_id
+                user_id = order.uid
+                # 2. 更新报名记录
+                enrollment = CourseEnrollmentTable.objects.filter(
+                    course_id=course_id,
+                    user_id=user_id,
+                    payment_status=1  # 待支付
+                ).first()
                 
+                if not enrollment:
+                    response = {'code': 300, 'succeed': False, 'message': '支付回调失败...课程记录不存在'}
+                    return response
+                
+                # 更新支付状态
+                enrollment.payment_status = 2  # 已支付
+                enrollment.enrollment_status = 1  # 已报名
+                enrollment.order_id = order_id
+                enrollment.save()
+                
+                # 3. 更新课程报名人数
+                course = CoachCourseTable.objects.get(course_id=course_id, is_deleted=False)
+                paid_enrollments = CourseEnrollmentTable.objects.filter(
+                    course_id=course_id,
+                    payment_status=2,
+                    enrollment_status=1
+                ).count()
+                course.current_students = paid_enrollments
+                course.save()
+
+
                 _logger.info("payOrder -> notify:: 支付回调成功，order_id: %s, order_status: %s, paymentid: %s 信息入库成功..." %
-                             (order_id, order_status, paymentid))
+                             (order_id, order_status, paymentid))              
                 
                 response = {
                     'code': 200,
