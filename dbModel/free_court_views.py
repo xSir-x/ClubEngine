@@ -72,7 +72,7 @@ def check_and_reset_monthly_quota(user_id):
         old_quota = quota.available_quota
         
         # 重置逻辑：基础配额5 + 累积的分享奖励配额
-        new_total = 5 + quota.bonus_quota
+        new_total = 3 + quota.bonus_quota
         
         quota.current_month = current_month
         quota.total_quota = new_total
@@ -473,6 +473,7 @@ def add_bonus_quota(request):
     POST /api/quota/bonus
     - 通过邀请朋友获得额外配额
     - 奖励配额会在下月重置时累积到总配额中
+    - 防止重复邀请：同一个用户邀请同一个朋友只能获得一次奖励
     """
     if request.method != 'POST':
         return JsonResponse({'code': 405, 'message': '方法不允许'})
@@ -487,9 +488,25 @@ def add_bonus_quota(request):
         if not user_id:
             return JsonResponse({'code': 400, 'message': '用户ID不能为空'})
         
+        if not share_id:
+            return JsonResponse({'code': 400, 'message': '分享ID不能为空'})
+        
         current_time = str(int(time.time()))
         
         with transaction.atomic():
+            # 检查是否已经为这个分享ID发放过奖励
+            existing_bonus = QuotaHistoryTable.objects.filter(
+                user_id=user_id,
+                change_type='bonus',
+                related_id=share_id
+            ).first()
+            
+            if existing_bonus:
+                return JsonResponse({
+                    'code': 400, 
+                    'message': '该邀请已经获得过奖励，不能重复获取'
+                })
+            
             quota = check_and_reset_monthly_quota(user_id)
             
             old_quota = quota.available_quota
@@ -513,7 +530,7 @@ def add_bonus_quota(request):
                 change_time=current_time
             )
             
-            logger.info(f'用户{user_id}获得分享奖励配额{amount}次')
+            logger.info(f'用户{user_id}获得分享奖励配额{amount}次，分享ID: {share_id}')
         
         return JsonResponse({
             'code': 200,
