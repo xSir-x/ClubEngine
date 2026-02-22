@@ -359,3 +359,141 @@ class CoachTable(models.Model):
             models.Index(fields=['coach_name']),
             models.Index(fields=['status']),
         ]
+
+
+class FreeCourtSlotTable(models.Model):
+    """公益场次表"""
+    slot_id = models.CharField(verbose_name="场次ID", max_length=64, primary_key=True)
+    venue_id = models.CharField(verbose_name="场地ID", max_length=64)
+    court_id = models.CharField(verbose_name="球场ID", max_length=64)
+    court_name = models.CharField(verbose_name="球场名称", max_length=128)
+    venue_name = models.CharField(verbose_name="场地名称", max_length=128)
+    location = models.CharField(verbose_name="详细地址", max_length=256)
+    
+    # 地理位置信息
+    city = models.CharField(verbose_name="城市", max_length=50)
+    district = models.CharField(verbose_name="区域", max_length=50)
+    
+    # 时间信息
+    date = models.CharField(verbose_name="日期", max_length=32)  # YYYY-MM-DD
+    time_slot = models.CharField(verbose_name="时间段", max_length=32)  # 09:00-11:00
+    
+    # 配额管理
+    total_quota = models.IntegerField(verbose_name="总名额")
+    booked_quota = models.IntegerField(verbose_name="已抢名额", default=0)
+    
+    # 状态和时间控制
+    status = models.IntegerField(verbose_name="状态", default=0)  # 0=未开始，1=可抢，2=已抢完，3=已结束
+    open_time = models.CharField(verbose_name="开抢时间", max_length=64)  # Unix时间戳
+    end_time = models.CharField(verbose_name="抢场截止时间", max_length=64)  # Unix时间戳
+    
+    # 创建和更新时间
+    create_time = models.CharField(verbose_name="创建时间", max_length=64)
+    update_time = models.CharField(verbose_name="更新时间", max_length=64, null=True, blank=True)
+    
+    class Meta:
+        db_table = "free_court_slots"
+        get_latest_by = "create_time"
+        ordering = ['date', 'time_slot']
+        verbose_name = "公益场次"
+        indexes = [
+            models.Index(fields=['city', 'district']),
+            models.Index(fields=['date', 'status']),
+            models.Index(fields=['open_time', 'end_time']),
+        ]
+
+
+class FreeCourtBookingTable(models.Model):
+    """公益订场记录表"""
+    booking_id = models.CharField(verbose_name="订场ID", max_length=64, primary_key=True)
+    slot_id = models.CharField(verbose_name="场次ID", max_length=64)
+    user_id = models.CharField(verbose_name="用户ID", max_length=64)
+    
+    # 场次快照信息（避免场次被删除后数据丢失）
+    date = models.CharField(verbose_name="日期", max_length=32)
+    time_slot = models.CharField(verbose_name="时间段", max_length=32)
+    court_name = models.CharField(verbose_name="球场名称", max_length=128)
+    venue_name = models.CharField(verbose_name="场地名称", max_length=128)
+    location = models.CharField(verbose_name="详细地址", max_length=256)
+    
+    # 配额消耗
+    quota_cost = models.IntegerField(verbose_name="消耗配额", default=1)
+    
+    # 状态（公益场只能是confirmed，不可取消）
+    status = models.CharField(verbose_name="状态", max_length=32, default='confirmed')
+    
+    # 时间戳
+    create_time = models.CharField(verbose_name="创建时间", max_length=64)
+    
+    class Meta:
+        db_table = "free_court_bookings"
+        get_latest_by = "create_time"
+        ordering = ['-create_time']
+        verbose_name = "公益订场记录"
+        indexes = [
+            models.Index(fields=['user_id', 'status']),
+            models.Index(fields=['slot_id']),
+        ]
+        constraints = [
+            models.CheckConstraint(
+                check=models.Q(status='confirmed'),
+                name='chk_booking_status_confirmed_only'
+            )
+        ]
+
+
+class UserQuotaTable(models.Model):
+    """用户配额表"""
+    user_id = models.CharField(verbose_name="用户ID", max_length=64, primary_key=True)
+    
+    # 配额信息
+    total_quota = models.IntegerField(verbose_name="总配额", default=3)
+    used_quota = models.IntegerField(verbose_name="已使用配额", default=0)
+    available_quota = models.IntegerField(verbose_name="剩余配额", default=3)
+    
+    # 时间管理
+    current_month = models.CharField(verbose_name="当前月份", max_length=7)  # 2026-02
+    last_reset_time = models.CharField(verbose_name="上次重置时间", max_length=64)
+    
+    # 分享奖励
+    bonus_quota = models.IntegerField(verbose_name="分享奖励配额", default=0)
+    
+    # 创建和更新时间
+    create_time = models.CharField(verbose_name="创建时间", max_length=64)
+    update_time = models.CharField(verbose_name="更新时间", max_length=64)
+    
+    class Meta:
+        db_table = "user_quota"
+        get_latest_by = "update_time"
+        ordering = ['-update_time']
+        verbose_name = "用户配额"
+
+
+class QuotaHistoryTable(models.Model):
+    """配额变动历史表"""
+    id = models.AutoField(primary_key=True)
+    user_id = models.CharField(verbose_name="用户ID", max_length=64)
+    
+    # 变动信息
+    change_type = models.CharField(verbose_name="变动类型", max_length=32)  
+    # 'consume' 消耗, 'reset' 重置, 'bonus' 分享奖励, 'init' 初始化
+    change_amount = models.IntegerField(verbose_name="变动数量")  # 正数为增加，负数为减少
+    
+    # 相关信息
+    related_id = models.CharField(verbose_name="关联ID", max_length=64, null=True, blank=True)  # var
+    reason = models.CharField(verbose_name="变动原因", max_length=128)
+    
+    # 快照信息
+    before_quota = models.IntegerField(verbose_name="变动前配额")
+    after_quota = models.IntegerField(verbose_name="变动后配额")
+    
+    change_time = models.CharField(verbose_name="变动时间", max_length=64)
+    
+    class Meta:
+        db_table = "quota_history"
+        get_latest_by = "change_time"
+        ordering = ['-change_time']
+        verbose_name = "配额变动历史"
+        indexes = [
+            models.Index(fields=['user_id', 'change_type']),
+        ]

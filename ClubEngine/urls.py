@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from . import views
-from dbModel import course_views
+from dbModel import course_views, free_court_views
 
 
 urlpatterns = [
@@ -78,4 +78,11 @@ urlpatterns = [
     path('api/courses/my', course_views.get_user_courses, name='get_user_courses'),
     path('api/courses/cancel', course_views.cancel_course_enrollment, name='cancel_course'),
     path('api/courses/batch_verify', course_views.batch_verify_enrollments, name='batch_verify_enrollments'),
+
+    # 公益网球场接口
+    path('api/free-courts/list', free_court_views.get_free_court_slots, name='get_free_court_slots'),
+    path('api/free-courts/book', free_court_views.book_free_court, name='book_free_court'),
+    path('api/free-courts/my-bookings', free_court_views.get_my_free_court_bookings, name='get_my_free_court_bookings'),
+    path('api/quota/info', free_court_views.get_quota_info, name='get_quota_info'),
+    path('api/quota/bonus', free_court_views.add_bonus_quota, name='add_bonus_quota'),
 ]

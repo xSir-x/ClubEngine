@@ -534,8 +534,17 @@ def auth_register(request):
             
         state, msg = registerMembership().execute(userid, name, profile, location, register_time)
         
+        # 如果注册成功，自动为用户初始化公益场配额
         if state == 1:
-            message = {"response": state, "code": 200, "succeed": True, "msg": msg}
+            try:
+                from dbModel.free_court_views import init_user_quota
+                quota = init_user_quota(userid)
+                _logger.info(f'新用户{userid}注册成功，已自动分配公益场配额: {quota.available_quota}次/月')
+                message = {"response": state, "code": 200, "succeed": True, "msg": msg + f"，已分配公益场配额{quota.available_quota}次/月"}
+            except Exception as e:
+                # 如果配额初始化失败，记录日志但不影响注册结果
+                _logger.error(f'用户{userid}注册成功但配额初始化失败: {str(e)}')
+                message = {"response": state, "code": 200, "succeed": True, "msg": msg + "，配额初始化将在首次使用时自动完成"}
         elif state == 2:
             message = {"response": state, "code": 202, "succeed": False, "msg": msg}
         elif state == 3:

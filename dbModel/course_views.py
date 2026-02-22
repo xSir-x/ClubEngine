@@ -583,11 +583,17 @@ def course_payment_callback(request):
     try:
         data = json.loads(request.body)
         
-        # 验证access_token (支持内部调用)
+        # 验证access_token
         access_token = data.get('access_token', None)
-        if access_token != 'INTERNAL_CALL':  # 如果不是内部调用，则验证 token
-            if not validate_accessToken(access_token):
-                return JsonResponse({'code': 100, 'message': 'Invalidate access token.'})
+        if not validate_accessToken(access_token):
+            return JsonResponse({'code': 100, 'message': 'Invalidate access token.'})
+        
+        order_id = data.get('order_id')
+        course_id = data.get('course_id')
+        user_id = data.get('user_id')
+        
+        if not all([order_id, course_id, user_id]):
+            return JsonResponse({'code': 400, 'message': '参数不完整'})
         
         # 使用事务确保数据一致性
         with transaction.atomic():
