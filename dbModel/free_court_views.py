@@ -169,6 +169,7 @@ def get_free_court_slots(request):
     获取可抢的公益网球场场次列表
     GET /api/free-courts/list
     """
+    logger.info(f'get_free_court_slots 收到请求: method={request.method}, path={request.path}, META={request.META}')
     if request.method != 'GET':
         return JsonResponse({'code': 405, 'message': '方法不允许'})
     
