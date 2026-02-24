@@ -144,8 +144,9 @@ def update_slot_status(slot):
     根据时间和配额自动更新状态
     """
     current_timestamp = int(time.time())
-    open_timestamp = int(slot.open_time)
-    end_timestamp = int(slot.end_time)
+    # 使用 sanitize_integer 清理时间字段
+    open_timestamp = sanitize_integer(slot.open_time)
+    end_timestamp = sanitize_integer(slot.end_time)
     
     if current_timestamp < open_timestamp:
         # 未到开抢时间
@@ -293,15 +294,17 @@ def book_free_court(request):
             except FreeCourtSlotTable.DoesNotExist:
                 return JsonResponse({'code': 404, 'message': '场次不存在'})
             
-            # 2. 更新并检查场次状态
+            # 2. 清理并更新场次状态
+            slot.open_time = sanitize_integer(slot.open_time)
+            slot.end_time = sanitize_integer(slot.end_time)
             slot = update_slot_status(slot)
             current_timestamp = int(time.time())
             
-            # 时间校验
-            if current_timestamp < int(slot.open_time):
+            # 时间校验 - 使用已清理的时间
+            if current_timestamp < slot.open_time:
                 return JsonResponse({'code': 400, 'message': '未到开抢时间'})
             
-            if current_timestamp > int(slot.end_time):
+            if current_timestamp > slot.end_time:
                 return JsonResponse({'code': 400, 'message': '抢场时间已结束'})
             
             # 名额校验
@@ -426,7 +429,7 @@ def get_my_free_court_bookings(request):
                 'location': booking.location,
                 'quotaCost': booking.quota_cost,
                 'status': booking.status,
-                'createTime': int(booking.create_time)
+                'createTime': sanitize_integer(booking.create_time)
             })
         
         return JsonResponse({
@@ -471,7 +474,7 @@ def get_quota_info(request):
                 'available_quota': quota.available_quota,
                 'bonus_quota': quota.bonus_quota,
                 'current_month': quota.current_month,
-                'last_reset_time': int(quota.last_reset_time)
+                'last_reset_time': sanitize_integer(quota.last_reset_time)
             }
         })
     
