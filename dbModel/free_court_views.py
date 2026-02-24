@@ -163,6 +163,16 @@ def update_slot_status(slot):
     return slot
 
 
+def sanitize_integer(value):
+    """
+    Remove non-numeric characters from a string and convert it to an integer.
+    """
+    try:
+        return int(''.join(filter(str.isdigit, str(value))))
+    except ValueError:
+        raise ValueError(f"Invalid integer value: {value}")
+
+
 @csrf_exempt
 def get_free_court_slots(request):
     """
@@ -202,6 +212,10 @@ def get_free_court_slots(request):
         # 更新状态并过滤已结束的场次
         valid_slots = []
         for slot in slots:
+            # Sanitize open_time and end_time
+            slot.open_time = sanitize_integer(slot.open_time)
+            slot.end_time = sanitize_integer(slot.end_time)
+
             updated_slot = update_slot_status(slot)
             # 只返回未结束的场次
             if updated_slot.status != 3:
@@ -233,8 +247,8 @@ def get_free_court_slots(request):
                 'totalQuota': slot.total_quota,
                 'bookedQuota': slot.booked_quota,
                 'status': slot.status,
-                'openTime': int(slot.open_time),
-                'endTime': int(slot.end_time)
+                'openTime': slot.open_time,
+                'endTime': slot.end_time
             })
         
         return JsonResponse({
@@ -546,5 +560,5 @@ def add_bonus_quota(request):
         return JsonResponse({'code': 400, 'message': 'JSON格式错误'})
     
     except Exception as e:
-        logger.error(f'添加奖励配额失败: {str(e)}', exc_info=True)
+        logger.error(f'添加奖励配额失败: {str(e)}')
         return JsonResponse({'code': 500, 'message': f'服务器错误: {str(e)}'})

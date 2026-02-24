@@ -579,7 +579,7 @@ class getMemberInfoByName(View):
             
         except Exception as e:
             raise Exception(f"【getMemberInfoByName】根据用户名查询用户信息异常: {str(e)}")
-
+ 
 
 class registerMembership(View):
     def execute(self, uid, name, profile, location, register_time):
